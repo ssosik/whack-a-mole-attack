@@ -4,7 +4,8 @@ Project files for a two-player whack-a-mole / button mash game
 
 Original idea by https://github.com/DIYTechBros/ButtonSmack / https://www.youtube.com/watch?v=FXypfZi_UDI
 
-https://photos.app.goo.gl/RcQqKgQ8txA9g5Gp9
+[![Watch the video](https://img.youtube.com/vi/DrATmFxHTjc/hqdefault.jpg)](https://www.youtube.com/embed/DrATmFxHTjc)
+
 
 Use a Teensy 4 to control the game, sending serial messages to a Matrix Portal for driving the graphics on a 32x32 LED Panel.
 
