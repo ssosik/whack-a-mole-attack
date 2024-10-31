@@ -66,5 +66,5 @@ TODO
 
 # Table design
 
-I started from the playfield (16x36 inches) and then just built a table from and legs underneath that. I needed to 3d print a few spacer/bushings so that the buttons were snug in the holes I cut (I didn't have a perfectly-sized hole saw). I also 3d printed 21700 battery holders. The battery holders and perf-board are just screwed to the underside with wood screws. The PortalMatrix is piggy-backed onto the back of the LED panel on the 2x10 socket connector. The LED panel is inset into the middle of the playfield; I added supports underneath to keep it flush with the playfield surface.
+I started from the playfield (16x36 inches) and then just built a table from and legs underneath that. I needed to 3d print a few spacer/bushings so that the buttons were snug in the holes I cut (I didn't have a perfectly-sized hole saw). I also 3d printed 21700 battery holders. The battery holders and perf-board are just screwed to the underside with wood screws. The PortalMatrix is piggy-backed onto the back of the LED panel on the 2x10 socket connector. The LED panel is inset into the middle of the playfield; I added supports underneath to keep it flush with the playfield surface. I also added a 3d-printed bezel around the LED panel in an attempt to make it look like a mole hill and to discourage players from bonking it.
 
