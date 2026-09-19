@@ -31,15 +31,101 @@ Use a Teensy 4 to control the game, sending serial messages to a Matrix Portal f
 - 1/2 inch finished plywood
 - a few 3D printed pieces
 
+# Layout
+
+```
+firmware/WhackAMole/   Teensy 4.1 sketch (Arduino/Teensyduino)
+display/               CircuitPython for the Matrix Portal S3
+hardware/              3D printed bushings
+```
+
+Copy the contents of `display/` onto the CIRCUITPY drive.
+
 # Code
 
-The Teensy is programmed with the Arduino IDE. `WhackAMole.ino` just sets a few things up and then calls `Game::Update()` in the main loop.
+The Teensy owns the game. The Matrix Portal renders whatever it is told and holds no
+game state of its own.
 
-`Game.cpp` defines the game states and state transitions, called Update on the players, and sends the Serial messages to the Matrix Portal for each state to drive the display.
+| File | Role |
+| --- | --- |
+| `firmware/WhackAMole/Config.h` | Every pin, timing value, and gameplay tunable. Nothing else holds a bare pin number. |
+| `firmware/WhackAMole/Protocol.h` | The controller/display wire protocol. Mirrored by `HANDLERS` in `code.py`. |
+| `firmware/WhackAMole/WhackAMole.ino` | Wires the hardware objects together and runs the loop. |
+| `firmware/WhackAMole/Game.cpp` | Game states, transitions, and the messages sent for each. |
+| `firmware/WhackAMole/Player.cpp` | Per-player score, current mole, and lamp state. |
+| `firmware/WhackAMole/ButtonInput.cpp` | Buttons, with debounce and edge detection. Analog ladder or one GPIO per button. |
+| `firmware/WhackAMole/Lights.cpp` | Button lamps. Plain on/off or WS2812 pixels. |
+| `firmware/WhackAMole/Debug.cpp` | Hardware test screens. See below. |
+| `display/code.py` | Listens on the UART and drives the panel. |
+| `display/boot.py` | Decides whether the game or the host computer owns writes to CIRCUITPY. |
 
-`Player.cpp` defines the Player objects and their internal attributes needed to run the game. These attributes include player score, current button and points, input pins, button blink state, button debounce, etc.
+Input and lamp hardware are selected at build time in `Config.h`:
 
-`code.py` the CircuitPython code that runs on the Matrix Portal. Listen on the serial port and change the display based on the messages received. This is kinda gross code.
+```c
+#define WAM_INPUT_GPIO    0   // 0 = analog resistor ladder, 1 = one GPIO per button
+#define WAM_LIGHTS_PIXELS 0   // 0 = digital dome lamps,     1 = WS2812 in the caps
+```
+
+Both paths are kept compiling by CI, so the original wiring keeps working while a
+rebuild is in progress.
+
+# Building
+
+Needs `arduino-cli` with the Teensy core:
+
+```sh
+brew install arduino-cli
+arduino-cli core install teensy:avr \
+  --additional-urls https://www.pjrc.com/teensy/package_teensy_index.json
+```
+
+Then:
+
+```sh
+make build     # compile the configuration selected in Config.h
+make matrix    # compile all four input/lamp combinations
+make upload    # compile and flash a connected Teensy
+make lint      # clang-format check + ruff
+```
+
+# Debug mode
+
+Hold **both start buttons together for two seconds** during the attract loop. Everything
+reports to USB serial and mirrors a short banner onto the LED matrix, so the table can be
+tested standing up with nothing plugged into it.
+
+- **P1 start** — next screen
+- **P2 start** — act within the current screen
+- **both held** — leave debug mode
+
+| Screen | What it is for |
+| --- | --- |
+| LED WALK | Lights each cap in turn and names it. A cap that stays dark is a wiring fault. |
+| LED ALL | Everything on solid. Sit here with a meter on the 5 V rail. |
+| BUTTONS | Live raw values and decoded button names for both players. |
+| CALIBRATE | Walks you through pressing every button, then prints a paste-ready `kLadderThresholds` table and a safe tolerance. Not needed once the buttons are on GPIOs. |
+| DISPLAY | Sends every protocol message in turn so `code.py` can be checked against the full vocabulary without playing a round. |
+
+# Circuit schematic
+
+TODO
+
+## Pin map
+
+Authoritative version is `firmware/WhackAMole/Config.h`.
+
+| Function | Pins |
+| --- | --- |
+| Display link (Serial1) | 0 (RX), 1 (TX) |
+| Reserved for audio | 6, 7, 10, 18, 19, 20, 21, 23 |
+| Analog ladder in | 27 (P1), 38 (P2) |
+| Dome lamps | 28-32 (P1), 33-37 (P2) |
+| GPIO buttons (after rewire) | 2, 3, 4, 5, 9, 22 (P1) / 11, 12, 14, 15, 16, 25 (P2) |
+| WS2812 data (after rewire) | 24 |
+| Floating pin, PRNG seed | 17 |
+
+The display link was moved off `Serial2`. Pin 7 is `Serial2` RX **and** the I2S data pin
+used by both candidate audio designs, so `Serial2` and sound cannot coexist.
 
 # What worked well
 
@@ -54,17 +140,30 @@ The Teensy is programmed with the Arduino IDE. `WhackAMole.ino` just sets a few 
 
 - The LEDs on the dome buttons are not great, just not bright. The DIY TechBros design replaced the built-in resistor to improve brightness, but it didn't make much of an improvement for me.
 - The wiring scheme I came up with worked but it was ugly. If I were going to rewire this, I'd use a 4-pin JST connector and ribbon cable per LED button. The inline resistors would need to be moved to the perf board.
+- The analog ladder is clever but it cannot represent two buttons pressed at once — the
+  intermediate voltage decodes as some third button. Since a rewire runs a fresh connector
+  to every cap anyway, one more conductor per button buys real simultaneous-press handling
+  and retires the threshold table entirely.
 
 # Improvements
 
 - SOUNDS! There is an audio break-out board for the Teensy, adding some sounds would really make the game have an arcade feel
 - Better button LEDs. I may try to cram a few WS2812B LEDs into the Dome button housing
 
-# Circuit schematic
+## Notes for the rewire
 
-TODO
+- Drive WS2812s with **WS2812Serial**, not Adafruit NeoPixel or FastLED. The bit-banging
+  drivers disable interrupts for the length of a frame, which jitters the display link and
+  will audibly glitch audio.
+- The Teensy 4.1 is 3.3 V logic and WS2812Bs want 0.7×VDD on data. Put a **74AHCT125**
+  between the Teensy and the first pixel. This is the usual cause of flaky NeoPixel builds.
+- 330–470 Ω in series at the first pixel, 1000 µF across the 5 V rail.
+- 12 caps × 3 pixels at full white is roughly **2.2 A**. That fits the 5 A buck, but cap
+  global brightness and inject power at both ends of the chain rather than feeding it all
+  through the first connector.
+- Per-button connector: +5 V, GND, DIN, DOUT, SW. The switch's other side shares the GND
+  already in the connector.
 
 # Table design
 
 I started from the playfield (16x36 inches) and then just built a table from and legs underneath that. I needed to 3d print a few spacer/bushings so that the buttons were snug in the holes I cut (I didn't have a perfectly-sized hole saw). I also 3d printed 21700 battery holders. The battery holders and perf-board are just screwed to the underside with wood screws. The PortalMatrix is piggy-backed onto the back of the LED panel on the 2x10 socket connector. The LED panel is inset into the middle of the playfield; I added supports underneath to keep it flush with the playfield surface. I also added a 3d-printed bezel around the LED panel in an attempt to make it look like a mole hill and to discourage players from bonking it.
-

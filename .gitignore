@@ -1,0 +1,10 @@
+build/
+__pycache__/
+*.pyc
+
+# arduino-cli build artifacts if compiled in place
+*.elf
+*.hex
+*.eep
+*.lst
+*.sym

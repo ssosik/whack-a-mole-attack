@@ -1,0 +1,165 @@
+#ifndef Config_h
+#define Config_h
+
+#include <Arduino.h>
+
+// ---------------------------------------------------------------------------
+// Single source of truth for every pin, timing value, and gameplay tunable.
+// Nothing else in the firmware should contain a bare pin number or a magic
+// duration.
+// ---------------------------------------------------------------------------
+
+// --- Build-time hardware selection -----------------------------------------
+//
+// The table shipped with the original build reads all of a player's buttons
+// from one analog pin through a resistor ladder, and lights the dome caps with
+// plain digitalWrite. The rewire replaces both. Flip these to 1 as each piece
+// of hardware is actually rebuilt; the game logic above them does not change.
+//
+// Guarded so CI can build every combination via -DWAM_INPUT_GPIO=1 etc.
+// without editing this file. See `make matrix`.
+#ifndef WAM_INPUT_GPIO
+#define WAM_INPUT_GPIO 0 // 0 = analog resistor ladder, 1 = one GPIO per button
+#endif
+
+#ifndef WAM_LIGHTS_PIXELS
+#define WAM_LIGHTS_PIXELS 0 // 0 = digitalWrite dome lamps, 1 = WS2812 in the caps
+#endif
+
+namespace config {
+
+// --- Player / button counts ------------------------------------------------
+
+// Playable mole buttons per player.
+constexpr uint8_t kButtonsPerPlayer = 5;
+
+// The start button is addressed as one index past the last mole button, so a
+// single input array covers both.
+constexpr uint8_t kStartButtonIndex = kButtonsPerPlayer;
+constexpr uint8_t kInputsPerPlayer = kButtonsPerPlayer + 1;
+
+// --- Display link ----------------------------------------------------------
+//
+// Moved off Serial2 (pins 7/8). Pin 7 is the I2S data line used by both the
+// Teensy Audio Shield and a bare MAX98357A, so Serial2 and sound cannot
+// coexist. Serial1 is pins 0 (RX) / 1 (TX) on the Teensy 4.1.
+#define WAM_DISPLAY_SERIAL Serial1
+constexpr uint32_t kDisplayBaud = 115200;
+
+// --- Pins reserved for audio (Phase 4) -------------------------------------
+//
+// Not driven by this firmware yet, but claimed here so nothing else takes
+// them during the rewire. Covers both candidate designs:
+//   MAX98357A  : 7 (DIN), 20 (LRCLK), 21 (BCLK)
+//   Audio Shield: the above plus 6, 10, 18, 19, 23
+// VERIFY against the current Teensy 4.1 pinout card before soldering.
+constexpr uint8_t kReservedAudioPins[] = {6, 7, 10, 18, 19, 20, 21, 23};
+
+// --- Analog ladder input (WAM_INPUT_GPIO == 0) -----------------------------
+
+// One analog pin per player carries that player's whole button ladder.
+constexpr uint8_t kP1LadderPin = 27; // A13
+constexpr uint8_t kP2LadderPin = 38; // A14
+
+// ADC value each button settles at, in button-index order, with the start
+// button last. Regenerate these with the debug mode's calibration screen
+// rather than editing by hand.
+//                                              B    R    W    G    Y   START
+constexpr int kLadderThresholds[kInputsPerPlayer] = {440, 307, 223, 142, 687, 1023};
+
+// Half-width of the accept window around each threshold. Must be smaller than
+// half the smallest gap between adjacent thresholds or two buttons alias.
+constexpr int kLadderTolerance = 20;
+
+// Anything at or below this reads as "no button pressed".
+constexpr int kLadderIdleCeiling = 20;
+
+// --- GPIO input (WAM_INPUT_GPIO == 1) --------------------------------------
+//
+// Wired as switch-to-ground against INPUT_PULLUP, so no external resistors.
+// Avoids 0/1 (display serial), 13 (onboard LED), and kReservedAudioPins.
+//                                                     B   R   W   G   Y  START
+constexpr uint8_t kP1ButtonPins[kInputsPerPlayer] = {2, 3, 4, 5, 9, 22};
+constexpr uint8_t kP2ButtonPins[kInputsPerPlayer] = {11, 12, 14, 15, 16, 25};
+
+// --- Dome lamp output (WAM_LIGHTS_PIXELS == 0) -----------------------------
+//
+// The start buttons are not lit in the original build, so these arrays cover
+// mole buttons only.
+//                                                   B   R   W   G   Y
+constexpr uint8_t kP1LedPins[kButtonsPerPlayer] = {28, 29, 30, 31, 32};
+constexpr uint8_t kP2LedPins[kButtonsPerPlayer] = {37, 36, 35, 34, 33};
+
+// --- WS2812 output (WAM_LIGHTS_PIXELS == 1) --------------------------------
+//
+// Use the WS2812Serial library, not Adafruit_NeoPixel or FastLED: the
+// bit-banging drivers disable interrupts for the length of the frame, which
+// jitters the display link and will audibly glitch audio in Phase 4.
+//
+// WS2812Serial can only drive a serial-TX-capable pin. Pin 24 is Serial6 TX
+// and is on the library's supported list for the Teensy 4.1 (verified against
+// WS2812Serial.cpp in Teensyduino 1.60.0). It also stays clear of the display
+// link, the button pins, and every reserved audio pin.
+//
+// Teensy 4.1 runs 3.3 V logic. WS2812Bs nominally want 0.7*VDD on data, so put
+// a 74AHCT125 level shifter between this pin and the first pixel.
+constexpr uint8_t kPixelDataPin = 24;
+
+// Pixels packed into each dome cap.
+constexpr uint8_t kPixelsPerButton = 3;
+
+// Chain order is P1 mole buttons, P2 mole buttons, then the two start buttons.
+constexpr uint16_t kPixelCount =
+    (kButtonsPerPlayer * 2 + 2) * kPixelsPerButton;
+
+// Global ceiling, 0-255. 12 caps x 3 pixels at full white is roughly 2.2 A;
+// this keeps the worst case comfortably inside the buck converter's budget.
+constexpr uint8_t kPixelBrightness = 128;
+
+// --- Randomness ------------------------------------------------------------
+
+// Unconnected pin, read once at boot to seed the PRNG.
+constexpr uint8_t kFloatingSeedPin = 17;
+
+// --- Loop timing -----------------------------------------------------------
+
+// Inputs are polled every pass through loop(); game logic advances on this
+// interval. Nothing in the firmware calls delay().
+constexpr uint32_t kTickIntervalMs = 10;
+
+// A press must read stable for this long before it counts.
+constexpr uint32_t kDebounceMs = 25;
+
+// --- Gameplay tunables -----------------------------------------------------
+
+// Points awarded for an instant hit. Decays linearly to zero across
+// kMoleLifetimeMs, at which point the mole moves on by itself.
+constexpr int kMoleStartingPoints = 1000;
+
+// Preserves the original build's decay rate of one point per 20 ms.
+// Worth shortening once you have the debug mode to retune against; 20 seconds
+// is a long time for a single mole to stay up.
+constexpr uint32_t kMoleLifetimeMs = 20000;
+
+// Deducted for hitting a lit-up player's wrong button. The score floors at
+// zero rather than refusing to apply below this value.
+constexpr int kWrongButtonPenalty = 500;
+
+// Blink period of the currently-lit mole cap.
+constexpr uint32_t kLedBlinkMs = 200;
+
+// --- Debug mode ------------------------------------------------------------
+
+// Hold both start buttons together for this long during attract mode to enter
+// the debug menu, and again to leave it.
+constexpr uint32_t kDebugEntryHoldMs = 2000;
+
+// Dwell time per lamp in the LED walk screen.
+constexpr uint32_t kDebugLedWalkMs = 500;
+
+// Samples averaged per button on the calibration screen.
+constexpr uint8_t kCalibrationSamples = 32;
+
+} // namespace config
+
+#endif
