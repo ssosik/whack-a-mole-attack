@@ -11,9 +11,10 @@
 FQBN    := teensy:avr:teensy41
 SKETCH  := firmware/WhackAMole
 BUILD   := build
+CHROME  := /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 SOURCES := $(wildcard firmware/WhackAMole/*.cpp firmware/WhackAMole/*.h) $(SKETCH)/WhackAMole.ino
 
-.PHONY: all build matrix upload format format-check tidy lint-py lint clean
+.PHONY: all build matrix upload format format-check tidy lint-py lint stl wiring-pdf clean
 
 all: build
 
@@ -68,6 +69,26 @@ lint-py:
 	ruff format --check display/
 
 lint: format-check lint-py
+
+## Render the printed parts. Needs OpenSCAD: `brew install --cask openscad@snapshot`
+## (the stable cask is currently disabled). The .scad asserts on the measured
+## dimensions, so a failed render here means a part that would not fit.
+stl:
+	mkdir -p $(BUILD)/stl
+	openscad -D 'part="seat"' -o $(BUILD)/stl/button-ring-seat.stl hardware/button-led-carrier.scad
+	openscad -D 'part="plug"' -o $(BUILD)/stl/button-bore-plug.stl hardware/button-led-carrier.scad
+
+## Render docs/wiring.html to a PDF. Needs Google Chrome.
+## Chrome ignores --print-to-pdf-no-header; --no-pdf-header-footer is the flag
+## that actually suppresses the date/title/URL stamps.
+wiring-pdf:
+	python3 docs/make-print-html.py docs/wiring.html $(BUILD)/wiring-print.html
+	"$(CHROME)" --headless --disable-gpu --no-sandbox \
+	  --virtual-time-budget=12000 --no-pdf-header-footer \
+	  --print-to-pdf="$(PWD)/docs/mole-table-wiring.pdf" \
+	  "file://$(PWD)/$(BUILD)/wiring-print.html" 2>/dev/null || true
+	@test -f docs/mole-table-wiring.pdf && echo "docs/mole-table-wiring.pdf" || \
+	  (echo "PDF not produced -- is Chrome at $(CHROME)?" && exit 1)
 
 clean:
 	rm -rf $(BUILD)

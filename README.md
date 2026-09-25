@@ -158,11 +158,22 @@ used by both candidate audio designs, so `Serial2` and sound cannot coexist.
 - The Teensy 4.1 is 3.3 V logic and WS2812Bs want 0.7×VDD on data. Put a **74AHCT125**
   between the Teensy and the first pixel. This is the usual cause of flaky NeoPixel builds.
 - 330–470 Ω in series at the first pixel, 1000 µF across the 5 V rail.
-- 12 caps × 3 pixels at full white is roughly **2.2 A**. That fits the 5 A buck, but cap
-  global brightness and inject power at both ends of the chain rather than feeding it all
-  through the first connector.
+- 12 caps × 12-pixel rings = 144 pixels, **~8.6 A** at full white — past the 5 A buck.
+  Only two caps are lit during play so real draw is small, but the debug ALL-ON screen is
+  the true worst case. `kPixelBrightness` is capped at 80/255 (~2.7 A) for that reason.
+  Inject power at both ends of the chain rather than feeding it all through the first
+  connector.
 - Per-button connector: +5 V, GND, DIN, DOUT, SW. The switch's other side shares the GND
   already in the connector.
+
+## Button LED carrier
+
+`hardware/button-led-carrier.scad` — two printed parts that put a 12-pixel WS2812 ring
+behind the dome of the stock 60mm button. The ring seat friction-fits into the plunger
+cavity; the bore plug replaces the LED holder in the switch bracket and routes the wires
+down the hollow stem, so nothing flexes where the spring can reach it. Measurements and
+assembly steps are in the file. The `assert`s at the top will refuse to render if your
+ring is too tall for the 4mm cavity — measure `ring_height` before printing.
 
 # Table design
 

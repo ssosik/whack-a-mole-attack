@@ -105,16 +105,23 @@ constexpr uint8_t kP2LedPins[kButtonsPerPlayer] = {37, 36, 35, 34, 33};
 // a 74AHCT125 level shifter between this pin and the first pixel.
 constexpr uint8_t kPixelDataPin = 24;
 
-// Pixels packed into each dome cap.
-constexpr uint8_t kPixelsPerButton = 3;
+// Pixels in each dome cap: a 12-pixel WS2812 ring in the plunger cavity.
+// See hardware/button-led-carrier.scad.
+constexpr uint8_t kPixelsPerButton = 12;
 
-// Chain order is P1 mole buttons, P2 mole buttons, then the two start buttons.
-constexpr uint16_t kPixelCount =
-    (kButtonsPerPlayer * 2 + 2) * kPixelsPerButton;
+// Chain order is P1's five mole caps, then P2's five. The two start buttons are
+// plain arcade buttons with no lamp, so they contribute a switch and nothing
+// else -- they are not in the pixel chain and get no pixels allocated.
+constexpr uint16_t kPixelCount = kButtonsPerPlayer * 2 * kPixelsPerButton;
 
-// Global ceiling, 0-255. 12 caps x 3 pixels at full white is roughly 2.2 A;
-// this keeps the worst case comfortably inside the buck converter's budget.
-constexpr uint8_t kPixelBrightness = 128;
+// Global ceiling, 0-255.
+//
+// 120 pixels at full white is ~7.2 A, well past the 5 A buck converter. During
+// play only two caps are lit at a time, so the real draw is small; the worst
+// case is the debug mode's ALL-ON screen. At 80/255 that is ~2.3 A, which
+// leaves room for the matrix panel on the same supply. Raise this only after
+// measuring the rail on the ALL-ON screen.
+constexpr uint8_t kPixelBrightness = 80;
 
 // --- Randomness ------------------------------------------------------------
 
