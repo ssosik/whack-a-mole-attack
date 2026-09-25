@@ -16,6 +16,10 @@ Use a Teensy 4 to control the game, sending serial messages to a Matrix Portal f
 - [Adafruit Matrix Portal S3](https://www.adafruit.com/product/5778)
 - XL4015 5A DC Buck Stepdown converter (EBay)
 - Batteries (I used 2 21700 batteries in series, but a high-current Lipo should work too)
+  - Being replaced by a USB-C power bank plus a 9 V PD trigger board feeding the same
+    converter. Two 21700s in series run 8.4 V down to 6.0 V, which is below the XL4015's
+    8 V input floor for most of the discharge; a PD trigger holds 9 V the whole way. See
+    [the wiring reference](docs/mole-table-wiring.pdf) for the current budget.
 - 10 60mm dome LED push-buttons
 - 2 arcade buttons (player start)
 
@@ -158,13 +162,15 @@ used by both candidate audio designs, so `Serial2` and sound cannot coexist.
 - The Teensy 4.1 is 3.3 V logic and WS2812Bs want 0.7×VDD on data. Put a **74AHCT125**
   between the Teensy and the first pixel. This is the usual cause of flaky NeoPixel builds.
 - 330–470 Ω in series at the first pixel, 1000 µF across the 5 V rail.
-- 12 caps × 12-pixel rings = 144 pixels, **~8.6 A** at full white — past the 5 A buck.
-  Only two caps are lit during play so real draw is small, but the debug ALL-ON screen is
-  the true worst case. `kPixelBrightness` is capped at 80/255 (~2.7 A) for that reason.
-  Inject power at both ends of the chain rather than feeding it all through the first
-  connector.
-- Per-button connector: +5 V, GND, DIN, DOUT, SW. The switch's other side shares the GND
-  already in the connector.
+- 10 caps × 12-pixel rings = 120 pixels, **~7.2 A** at full white — far past what the
+  supply can give. Only two caps are lit during play, but the debug ALL-ON screen is the
+  true worst case, so `kPixelBrightness` is capped at 80/255 (~2.3 A). Inject power at
+  both ends of the chain rather than feeding it all through the first connector. The two
+  start buttons have no lamp and are not in the pixel chain.
+- Per-cap connector: +5 V, GND, DIN, DOUT, SW, SW-GND. Keep the switch return separate
+  from the LED return — a ring at full white puts 720 mA down that ground, and sharing it
+  offsets the input the Teensy is reading. The start buttons need two conductors only.
+- Full topology, current budget and build order: [docs/mole-table-wiring.pdf](docs/mole-table-wiring.pdf).
 
 ## Button LED carrier
 

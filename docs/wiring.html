@@ -106,7 +106,7 @@ ol.steps b{font-family:var(--display);font-weight:600;font-size:17px;display:blo
 
   <figure>
     <div class="scroll">
-      <svg viewBox="0 0 900 470" role="img" aria-label="Power flows from the battery and buck converter onto a shared 5 volt and ground bus, which taps down to each lit cap separately, while the pixel data line daisy-chains from the Teensy through a level shifter and series resistor into each ring in turn. All twelve switches, including the two unlit start buttons, return on their own GPIO.">
+      <svg viewBox="0 0 900 470" role="img" aria-label="Power flows from a USB power bank through a 9 volt PD trigger and the buck converter onto a shared 5 volt and ground bus, which taps down to each lit cap separately, while the pixel data line daisy-chains from the Teensy through a level shifter and series resistor into each ring in turn. All twelve switches, including the two unlit start buttons, return on their own GPIO.">
         <defs>
           <marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--data)"/></marker>
           <marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--sw)"/></marker>
@@ -115,25 +115,31 @@ ol.steps b{font-family:var(--display);font-weight:600;font-size:17px;display:blo
         </defs>
 
         <!-- source chain -->
-        <rect class="blk" x="16" y="22" width="104" height="48" rx="3"/>
-        <text class="t" x="68" y="43" text-anchor="middle">Battery</text>
-        <text class="ts" x="68" y="59" text-anchor="middle">2× 21700</text>
+        <rect class="blk" x="8" y="22" width="84" height="48" rx="3"/>
+        <text class="t" x="50" y="43" text-anchor="middle">Power bank</text>
+        <text class="ts" x="50" y="59" text-anchor="middle">10K · 22.5 W</text>
 
-        <path class="wg thin" d="M120,46 H144" marker-end="url(#ag)"/>
+        <path class="wg thin" d="M92,46 H100" marker-end="url(#ag)"/>
 
-        <rect class="blk" x="150" y="22" width="112" height="48" rx="3"/>
-        <text class="t" x="206" y="43" text-anchor="middle">XL4015</text>
-        <text class="ts" x="206" y="59" text-anchor="middle">5 V · 5 A</text>
+        <rect class="blk" x="104" y="22" width="84" height="48" rx="3"/>
+        <text class="t" x="146" y="43" text-anchor="middle">PD trigger</text>
+        <text class="ts" x="146" y="59" text-anchor="middle">9 V · 2.22 A</text>
+
+        <path class="wg thin" d="M188,46 H194" marker-end="url(#ag)"/>
+
+        <rect class="blk" x="198" y="22" width="84" height="48" rx="3"/>
+        <text class="t" x="240" y="43" text-anchor="middle">XL4015</text>
+        <text class="ts" x="240" y="59" text-anchor="middle">5 V out</text>
 
         <!-- rails -->
-        <path class="w5 thick" d="M262,36 H284 V96 H872"/>
-        <path class="wg thick" d="M262,58 H292 V122 H872"/>
-        <text class="tl t5" x="300" y="88">+5 V BUS · 18 AWG</text>
-        <text class="tl tg" x="300" y="140">GND BUS · 18 AWG</text>
+        <path class="w5 thick" d="M282,36 H292 V96 H872"/>
+        <path class="wg thick" d="M282,58 H300 V122 H872"/>
+        <text class="tl t5" x="314" y="88">+5 V BUS · 18 AWG</text>
+        <text class="tl tg" x="314" y="140">GND BUS · 18 AWG</text>
 
         <!-- 1000uF -->
-        <path class="wg thin" d="M330,96 V104 M320,106 H340 M320,112 H340 M330,114 V122"/>
-        <text class="ts" x="346" y="113">1000 µF</text>
+        <path class="wg thin" d="M462,96 V104 M452,106 H472 M452,112 H472 M462,114 V122"/>
+        <text class="ts" x="478" y="113">1000 µF</text>
 
         <!-- Teensy + shifter -->
         <rect class="blk-a" x="16" y="248" width="100" height="94" rx="3"/>
@@ -281,20 +287,34 @@ ol.steps b{font-family:var(--display);font-weight:600;font-size:17px;display:blo
   <div class="sechead"><h2>Current budget</h2><span class="n">worst case is a debug screen</span></div>
 
   <div class="tw"><table>
-    <thead><tr><th>Condition</th><th class="m">Pixels lit</th><th class="m">Current</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Draw at 5 V</th><th class="m">Pixels lit</th><th class="m">Current</th><th>Notes</th></tr></thead>
     <tbody>
       <tr><td>Gameplay, two moles up</td><td class="m">24</td><td class="m">≈ 0.30 A</td><td>Amber, not white. The normal case.</td></tr>
       <tr><td>Attract mode</td><td class="m">0–24</td><td class="m">≈ 0.15 A</td><td>Quiescent draw is ~1 mA per pixel.</td></tr>
-      <tr><td>Debug <code>LED ALL</code>, white</td><td class="m">120</td><td class="m">2.26 A</td><td>At <code>kPixelBrightness&nbsp;=&nbsp;80</code>.</td></tr>
+      <tr><td>Debug <code>LED ALL</code>, white</td><td class="m">120</td><td class="m">2.26 A</td><td>At <code>kPixelBrightness&nbsp;=&nbsp;80</code>. The most the rings ever pull.</td></tr>
       <tr><td>Same, brightness 255</td><td class="m">120</td><td class="m">7.20 A</td><td>Why the ceiling exists.</td></tr>
-      <tr><td>32×32 matrix panel</td><td class="m">—</td><td class="m">≈ 2.0 A</td><td>Shares the same buck.</td></tr>
-      <tr class="tot"><td>Worst realistic total</td><td class="m">120</td><td class="m">≈ 4.4 A</td><td>Against a 5 A converter.</td></tr>
+      <tr><td>32×32 matrix panel</td><td class="m">—</td><td class="m">≈ 0.4 A</td><td>Scrolling text on black. Every pixel white would be ~2 A, which the game never displays — do not budget against that figure.</td></tr>
+      <tr><td>Teensy + level shifter</td><td class="m">—</td><td class="m">≈ 0.1 A</td><td></td></tr>
+      <tr class="tot"><td>Worst case — <code>LED ALL</code> plus the rest</td><td class="m">120</td><td class="m">≈ 2.8 A</td><td>14 W out of the buck.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p style="margin-top:18px">What the supply can give back, on the other side of the converter:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Supply</th><th class="m">Into the buck</th><th class="m">Out at 5 V</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Power bank, 9 V PD profile</td><td class="m">2.22 A · 20 W</td><td class="m">≈ 3.5 A</td><td>At ~88% buck efficiency. About 20% headroom over worst case.</td></tr>
+      <tr><td>Power bank, 5 V direct</td><td class="m">3 A · 15 W</td><td class="m">—</td><td>Not usable. USB PD caps 5 V at 3 A, and it would bypass the buck entirely.</td></tr>
+      <tr><td>2× 21700 in series</td><td class="m">8.4 → 6.0 V</td><td class="m">sags</td><td>Falls below the XL4015's 8 V input floor for most of the discharge.</td></tr>
     </tbody>
   </table></div>
 
   <div class="warn">
-    <h3>Measure before you trust this</h3>
-    <p>The worst case leaves roughly 12% headroom on the buck, which is workable but not generous. The <code>LED ALL</code> debug screen exists precisely so you can put a meter on the 5&nbsp;V rail and find out. If it runs hot or sags, drop <code>kPixelBrightness</code> — gameplay never approaches this, so lowering it costs nothing you will see.</p>
+    <h3>Two things to verify, not assume</h3>
+    <p><b>The 9&nbsp;V profile has to exist.</b> A 22.5&nbsp;W bank's headline <code>10 V / 2.25 A</code> is usually SCP, a proprietary protocol no PD trigger can negotiate. What a trigger can reach is the PD 3.0 list, typically <code>5 V / 3 A</code> and <code>9 V / 2.22 A</code>. Check the label before buying the trigger.</p>
+    <p><b>The bank has to stay awake.</b> Power banks shut down below roughly 50–200&nbsp;mA, and attract mode is the quietest the table ever gets. An active PD contract usually prevents it, but it varies by model — leave the table idling for half an hour before an event, not during one.</p>
+    <p>Then put a meter on the 5&nbsp;V rail on the <code>LED ALL</code> screen, which is the only state that reaches worst case. If it sags, drop <code>kPixelBrightness</code>; gameplay never approaches this, so lowering it costs nothing you will see.</p>
   </div>
 </section>
 
@@ -338,6 +358,7 @@ ol.steps b{font-family:var(--display);font-weight:600;font-size:17px;display:blo
   <div class="tw"><table>
     <thead><tr><th>Part</th><th class="m">Qty</th><th>Why</th></tr></thead>
     <tbody>
+      <tr><td>USB-C PD trigger board</td><td class="m">1</td><td>Set to 9 V. Turns the power bank into a plain DC supply above the XL4015's 8 V input floor.</td></tr>
       <tr><td>74AHCT125 quad level shifter</td><td class="m">1</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. The usual cause of flaky pixel builds. Tie unused inputs and <code>OE</code> low.</td></tr>
       <tr><td>330–470 Ω resistor</td><td class="m">1</td><td>Series on the data line at the first pixel.</td></tr>
       <tr><td>1000 µF electrolytic, ≥ 6.3 V</td><td class="m">1</td><td>Across 5 V and ground at the bus entry.</td></tr>
