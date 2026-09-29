@@ -14,12 +14,13 @@ Use a Teensy 4 to control the game, sending serial messages to a Matrix Portal f
 - [Teensy 4.1](https://www.pjrc.com/store/teensy41.html)
 - [32x32 Adafruit LED Matrix](https://www.adafruit.com/product/2026)
 - [Adafruit Matrix Portal S3](https://www.adafruit.com/product/5778)
-- XL4015 5A DC Buck Stepdown converter (EBay)
-- Batteries (I used 2 21700 batteries in series, but a high-current Lipo should work too)
-  - Being replaced by a USB-C power bank plus a 9 V PD trigger board feeding the same
-    converter. Two 21700s in series run 8.4 V down to 6.0 V, which is below the XL4015's
-    8 V input floor for most of the discharge; a PD trigger holds 9 V the whole way. See
-    [the wiring reference](docs/mole-table-wiring.pdf) for the current budget.
+- USB-C power bank + a CH224K PD trigger board configured for 5 V
+  - Replaces the 2× 21700 pack and the XL4015 buck converter, both now removed from the
+    design. The pack ran 8.4 V down to 6.0 V, below the XL4015's 8 V input floor for most
+    of a discharge; once the current budget was corrected the table turned out to fit
+    inside a 5 V / 3 A PD contract, so the converter went away rather than being worked
+    around. [The wiring reference](docs/mole-table-wiring.pdf) records the decision, what
+    it costs, and how to reverse it.
 - 10 60mm dome LED push-buttons
 - 2 arcade buttons (player start)
 
@@ -138,7 +139,9 @@ used by both candidate audio designs, so `Serial2` and sound cannot coexist.
 - The serial communication between the teensy and the Portal Matrix worked better than I expected and was more than fast enough
 - The physical dome buttons held up well to an hour of constant abuse from a whole pack of Cub Scouts
 - The LED Matrix itself was nice and bright and refreshed quickly
-- The 21700 batteries and buck converter worked great to power the whole thing
+- The 21700 batteries and buck converter worked great to power the whole thing (though
+  the pack sat below the converter's rated input floor for most of its discharge — see
+  the decision record in the wiring reference)
 
 # What I would do different
 
@@ -164,7 +167,7 @@ used by both candidate audio designs, so `Serial2` and sound cannot coexist.
 - 330–470 Ω in series at the first pixel, 1000 µF across the 5 V rail.
 - 10 caps × 12-pixel rings = 120 pixels, **~7.2 A** at full white — far past what the
   supply can give. Only two caps are lit during play, but the debug ALL-ON screen is the
-  true worst case, so `kPixelBrightness` is capped at 80/255 (~2.3 A). Inject power at
+  true worst case, so `kPixelBrightness` is capped at 64/255 (~1.8 A). Inject power at
   both ends of the chain rather than feeding it all through the first connector. The two
   start buttons have no lamp and are not in the pixel chain.
 - Per-cap connector: +5 V, GND, DIN, DOUT, SW, SW-GND. Keep the switch return separate

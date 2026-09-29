@@ -116,12 +116,17 @@ constexpr uint16_t kPixelCount = kButtonsPerPlayer * 2 * kPixelsPerButton;
 
 // Global ceiling, 0-255.
 //
-// 120 pixels at full white is ~7.2 A, well past the 5 A buck converter. During
-// play only two caps are lit at a time, so the real draw is small; the worst
-// case is the debug mode's ALL-ON screen. At 80/255 that is ~2.3 A, which
-// leaves room for the matrix panel on the same supply. Raise this only after
-// measuring the rail on the ALL-ON screen.
-constexpr uint8_t kPixelBrightness = 80;
+// 120 pixels at full white is ~7.2 A, far past the 15 W (5 V, 3 A) the power
+// bank delivers. During play only two caps are lit, so real draw is near 1 A;
+// the worst case is the debug mode's ALL-ON screen. At 64/255 that screen pulls
+// ~1.8 A, and with the matrix panel and Teensy the table peaks around 2.3 A --
+// roughly 23% headroom on the supply.
+//
+// WS2812 output is linear in PWM but perception is not, so this reads only
+// slightly dimmer than the 80 it replaced. Raise it only after measuring the
+// rail on the ALL-ON screen. docs/wiring.html records why the supply is 5 V
+// direct with no buck converter, and what that ceiling costs.
+constexpr uint8_t kPixelBrightness = 64;
 
 // --- Randomness ------------------------------------------------------------
 
