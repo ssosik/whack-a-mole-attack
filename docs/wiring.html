@@ -517,7 +517,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
       <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
-      <tr><td>0.187" quick disconnect, receptacle</td><td class="m">30</td><td class="m">3M MNU18-187DFIK<br>DK 920044-01-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Order <b>fully insulated</b> — the sleeve is already on, there is no separate cover to buy at this size. Filter packaging to <b>Bulk</b>: the TE equivalents come on carrier tape for machine crimping.</td></tr>
+      <tr><td>0.187" × <b>0.020"</b> quick disconnect, receptacle</td><td class="m">30</td><td class="m">3M MNU18-187DFIK<br>DK 920044-01-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Order <b>fully insulated</b> — the sleeve is already on, there is no separate cover to buy at this size. Filter packaging to <b>Bulk</b>: some equivalents ship on carrier tape for machine crimping. Tab <em>thickness</em> matters as much as width — see below.</td></tr>
       <tr><td>Insulated-terminal crimper</td><td class="m">1</td><td class="m">ratcheting, 22–10 AWG</td><td>Insulated terminals need a matching nest profile. Pliers or a non-insulated crimper crush the sleeve and give a joint that passes a tug test today and fails in six months.</td></tr>
       <tr><td>JST-XH 6-pin pairs</td><td class="m">10</td><td class="m">housing + header + contacts</td><td>One per lit cap, so it unplugs for service.</td></tr>
       <tr><td>JST-XH 2-pin pairs</td><td class="m">2</td><td class="m">as above</td><td>The start buttons — switch only.</td></tr>
@@ -538,6 +538,24 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     becomes 0.7&nbsp;×&nbsp;V<sub>CC</sub> = 3.5&nbsp;V and the Teensy's 3.3&nbsp;V output sits
     <em>below</em> the threshold — which fails intermittently and with temperature rather than
     outright, and is miserable to chase.</p>
+  </div>
+
+<div class="warn">
+    <h3>0.187 comes in two tab thicknesses</h3>
+    <p>Width is not the whole spec. The FASTON 187 series is made for tabs of either
+    <b>0.020"</b> (0.51&nbsp;mm) or <b>0.032"</b> (0.81&nbsp;mm), and the receptacles are not
+    interchangeable. Cherry's R1 terminals — what the D44X has — are
+    <b>0.187" × 0.020"</b>.</p>
+    <p>Fit a receptacle made for the 0.032" tab onto a 0.020" one and the spring is
+    under-deflected: reduced contact force, and a joint that reads fine on a meter and drops
+    out when the table gets knocked. That is the intermittent-button failure this rebuild is
+    meant to eliminate, reintroduced at the connector. TE's application spec also notes that a
+    receptacle once mated to a 0.032" tab may no longer mate properly with a 0.020" one, so
+    they do not mix even as spares.</p>
+    <p>Two parts can be identical on width, gauge, insulation and colour and still be the wrong
+    one. On DigiKey, <b>Mating Tab Thickness</b> is its own filter — set it to 0.020" before
+    comparing prices. TE 2-520194-2 (A27806-ND) is the cheaper trap here: correct on every other
+    line, built for the thicker tab.</p>
   </div>
 
   <h3 class="sub-h">Wiring the level shifter</h3>
