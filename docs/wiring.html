@@ -533,14 +533,45 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   </div>
 
   <h3 class="sub-h">Wiring the level shifter</h3>
-  <p>Four gates, each with its own active-low output enable. Only one is used:</p>
-  <ul class="plain">
-    <li><b>Gate 1:</b> <code>1OE</code> → GND to enable it, <code>1A</code> ← Teensy pin 24,
-    <code>1Y</code> → 330&nbsp;Ω → the first pixel's DIN.</li>
-    <li><b>Gates 2–4:</b> tie each <code>nOE</code> → V<sub>CC</sub> to disable the output, and
-    each <code>nA</code> → GND. Floating CMOS inputs oscillate, draw current, and inject noise
-    into the rest of the package — never leave them unconnected.</li>
-  </ul>
+  <p>Four gates, one used. The asymmetry to check twice: pin&nbsp;1 goes to <b>ground</b> because
+  it enables the gate you want, while pins&nbsp;4, 10 and 13 go to <b>V<sub>CC</sub></b> because
+  <code>OE</code> is active-low and HIGH disables. Unused inputs and unused output-enables pull
+  opposite directions.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Pin</th><th class="m">Name</th><th>Connect to</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td class="m">1OE</td><td><b>GND</b></td><td>Active-low; grounding it enables the one gate in use.</td></tr>
+      <tr><td class="m">2</td><td class="m">1A</td><td>Teensy pin 24</td><td>3.3 V pixel data in.</td></tr>
+      <tr><td class="m">3</td><td class="m">1Y</td><td>330 Ω → first pixel DIN</td><td>5 V pixel data out.</td></tr>
+      <tr><td class="m">4</td><td class="m">2OE</td><td><b>V<sub>CC</sub></b></td><td rowspan="2">Gate 2 unused: output disabled, input held.</td></tr>
+      <tr><td class="m">5</td><td class="m">2A</td><td>GND</td></tr>
+      <tr><td class="m">6</td><td class="m">2Y</td><td>—</td><td>Genuinely open. That is what tri-state disabled means.</td></tr>
+      <tr><td class="m">7</td><td class="m">GND</td><td>Ground</td><td>The chip's own reference. See the note below.</td></tr>
+      <tr><td class="m">8</td><td class="m">3Y</td><td>—</td><td>Open.</td></tr>
+      <tr><td class="m">9</td><td class="m">3A</td><td>GND</td><td rowspan="2">Gate 3 unused.</td></tr>
+      <tr><td class="m">10</td><td class="m">3OE</td><td><b>V<sub>CC</sub></b></td></tr>
+      <tr><td class="m">11</td><td class="m">4Y</td><td>—</td><td>Open.</td></tr>
+      <tr><td class="m">12</td><td class="m">4A</td><td>GND</td><td rowspan="2">Gate 4 unused.</td></tr>
+      <tr><td class="m">13</td><td class="m">4OE</td><td><b>V<sub>CC</sub></b></td></tr>
+      <tr><td class="m">14</td><td class="m">V<sub>CC</sub></td><td>+5 V</td><td>0.1 µF from here to pin 7, as close to the chip as it will sit.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="warn">
+    <h3>Tie the unused inputs locally, not to the star point</h3>
+    <p>Ground them to <b>pin 7 of this chip</b>, over the shortest path on the board — not with a
+    wire running back to the bus. During pixel switching the ground bus carries amps of
+    fast-changing current, and wire has inductance, so ground at the star point and ground at
+    the chip differ by a couple hundred millivolts transiently. An input referenced to a distant
+    ground can still bounce relative to its own chip's ground. Short and local is the point.</p>
+    <p>Tying the unused inputs to V<sub>CC</sub> instead of GND works identically; convention is
+    GND. What matters is only that they are not left floating — CMOS inputs that float oscillate,
+    draw current, and inject noise into the gate you are actually using.</p>
+  </div>
+
+  <p>If the pixel chain is ever split into two, one per player, gate 2 is already sitting there:
+  wiring the socket so enabling it means moving two wires costs nothing now.</p>
 </section>
 
 <section>
