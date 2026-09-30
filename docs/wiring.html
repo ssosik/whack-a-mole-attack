@@ -496,23 +496,51 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
 <section>
   <div class="sechead"><h2>Parts</h2><span class="n">beyond the buttons</span></div>
+
+  <p>Part numbers are what was ordered, not the only thing that works — but the level
+  shifter is worth matching exactly, for the reason in the note below the table.</p>
+
   <div class="tw"><table>
-    <thead><tr><th>Part</th><th class="m">Qty</th><th>Why</th></tr></thead>
+    <thead><tr><th>Part</th><th class="m">Qty</th><th class="m">Order as</th><th>Why</th></tr></thead>
     <tbody>
-      <tr><td>USB-C PD trigger board</td><td class="m">1</td><td>CH224K or similar, configured for <b>5 V</b> by hardware jumper or resistor — not I2C, which cannot be set before the Teensy has power. Requests the 3 A contract the bus needs.</td></tr>
-      <tr><td>USB-C pigtail, 5 V + GND only</td><td class="m">1</td><td>Powers the Matrix Portal through its USB-C port from the bus, since its screw terminals are outputs.</td></tr>
-      <tr><td>100 µF electrolytic</td><td class="m">2</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
-      <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract.</td></tr>
-      <tr><td>74AHCT125 quad level shifter</td><td class="m">1</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. The usual cause of flaky pixel builds. Tie unused inputs and <code>OE</code> low.</td></tr>
-      <tr><td>330–470 Ω resistor</td><td class="m">1</td><td>Series on the data line at the first pixel.</td></tr>
-      <tr><td>1000 µF electrolytic, ≥ 6.3 V</td><td class="m">1</td><td>Across 5 V and ground at the bus entry.</td></tr>
-      <tr><td>JST-XH 6-pin pairs</td><td class="m">10</td><td>One per lit cap, so it unplugs for service.</td></tr>
-      <tr><td>JST-XH 2-pin pairs</td><td class="m">2</td><td>The start buttons — switch only.</td></tr>
-      <tr><td>Terminal strip or lever nuts</td><td class="m">1</td><td>The 5 V/GND bus taps. Ten pairs.</td></tr>
-      <tr><td>30 AWG silicone wire</td><td class="m">—</td><td>Inside the lit caps only; it has to survive the 3 mm of plunger travel.</td></tr>
-      <tr><td>0.187" female spade crimps</td><td class="m">24</td><td>Onto the D44X tabs.</td></tr>
+      <tr><td>USB-C PD sink</td><td class="m">1</td><td class="m">Adafruit&nbsp;5807</td><td>HUSB238, configured for <b>5 V</b> and <b>3 A</b> by solder jumper — not I2C, which cannot be set before the Teensy has power. The current jumper ships at 1 A; leave it there and the source may cut power when the table draws 2.5 A.</td></tr>
+      <tr><td>Level shifter, 74<b>AHCT</b>125</td><td class="m">2</td><td class="m">TI SN74AHCT125N<br>DK 296-4655-5-ND</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. 14-DIP, through-hole. See the note below.</td></tr>
+      <tr><td>14-pin DIP socket</td><td class="m">2</td><td class="m">—</td><td>On hand-soldered stripboard, turns a desoldering job into a pull.</td></tr>
+      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td>Series on the data line at the first pixel.</td></tr>
+      <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
+      <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
+      <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
+      <tr><td>0.187" female spade crimps</td><td class="m">30</td><td class="m">insulated, 22–18 AWG</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly.</td></tr>
+      <tr><td>JST-XH 6-pin pairs</td><td class="m">10</td><td class="m">housing + header + contacts</td><td>One per lit cap, so it unplugs for service.</td></tr>
+      <tr><td>JST-XH 2-pin pairs</td><td class="m">2</td><td class="m">as above</td><td>The start buttons — switch only.</td></tr>
+      <tr><td>Lever nuts</td><td class="m">6–8</td><td class="m">WAGO 221-415</td><td>The star point and the 5 V/GND bus taps. Easier than a barrier strip and reusable.</td></tr>
+      <tr><td>USB-C pigtail, 5 V + GND</td><td class="m">1</td><td class="m">—</td><td>Powers the Matrix Portal through its USB-C port, since its screw terminals are outputs.</td></tr>
+      <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td class="m">—</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract at all.</td></tr>
+      <tr><td>18 AWG stranded, red + black</td><td class="m">10 ft ea</td><td class="m">—</td><td>The 5 V/GND bus and the panel feed.</td></tr>
+      <tr><td>22 AWG stranded, red + black</td><td class="m">25 ft ea</td><td class="m">—</td><td>Per-cap power drops, switch returns, microcontroller feeds.</td></tr>
+      <tr><td>30 AWG silicone, 4 colours</td><td class="m">10 ft ea</td><td class="m">—</td><td>Inside the lit caps only; it has to survive the 3 mm of plunger travel.</td></tr>
     </tbody>
   </table></div>
+
+  <div class="warn">
+    <h3>The letter that matters is the T</h3>
+    <p>Order <code>AHCT</code>, never <code>AHC</code> or <code>HC</code>. The <b>T</b> means TTL
+    input thresholds: V<sub>IH</sub> is 2.0&nbsp;V, so a 3.3&nbsp;V signal reads reliably as HIGH
+    while the chip runs from 5&nbsp;V and drives a 5&nbsp;V output. Without it, V<sub>IH</sub>
+    becomes 0.7&nbsp;×&nbsp;V<sub>CC</sub> = 3.5&nbsp;V and the Teensy's 3.3&nbsp;V output sits
+    <em>below</em> the threshold — which fails intermittently and with temperature rather than
+    outright, and is miserable to chase.</p>
+  </div>
+
+  <h3 class="sub-h">Wiring the level shifter</h3>
+  <p>Four gates, each with its own active-low output enable. Only one is used:</p>
+  <ul class="plain">
+    <li><b>Gate 1:</b> <code>1OE</code> → GND to enable it, <code>1A</code> ← Teensy pin 24,
+    <code>1Y</code> → 330&nbsp;Ω → the first pixel's DIN.</li>
+    <li><b>Gates 2–4:</b> tie each <code>nOE</code> → V<sub>CC</sub> to disable the output, and
+    each <code>nA</code> → GND. Floating CMOS inputs oscillate, draw current, and inject noise
+    into the rest of the package — never leave them unconnected.</li>
+  </ul>
 </section>
 
 <section>
