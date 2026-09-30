@@ -85,6 +85,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 .ts{fill:var(--ink-2);font-family:var(--mono);font-size:10.5px}
 .tl{fill:var(--ink-3);font-family:var(--mono);font-size:10px;letter-spacing:.06em}
 .t5{fill:var(--v5)} .tg{fill:var(--gnd)} .td{fill:var(--data)} .tsw{fill:var(--sw)}
+.twarn{fill:var(--warn)}
 
 @media (max-width:560px){
   .wrap{padding-block:32px 56px}
@@ -281,6 +282,101 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 </section>
 
 <section>
+  <div class="sechead"><h2>Power distribution</h2><span class="n">one supply, four loads</span></div>
+
+  <p>All four loads run from the single 5&nbsp;V contract. What matters is that they are fed
+  as a <b>star from one point</b>, not chained one board to the next. The rings switch
+  current fast; share a thin feed with them and those spikes sag the rail far enough to
+  reset a microcontroller, which presents as random crashes rather than as a power problem.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 880 396" role="img" aria-label="The power bank feeds a HUSB238 sink negotiating 5 volts at 3 amps, which feeds a single star point. Four separate pairs leave that point: the NeoPixel bus at 1.81 amps, the LED panel at 0.40 amps, the Matrix Portal S3 at 0.15 amps through a USB-C pigtail rather than its screw terminals, and the Teensy at 0.10 amps into VIN with its VUSB pads cut. Total 2.46 amps of the 3 available.">
+        <defs>
+          <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--v5)"/></marker>
+        </defs>
+
+        <rect class="blk" x="16" y="172" width="110" height="50" rx="3"/>
+        <text class="t" x="71" y="194" text-anchor="middle">Power bank</text>
+        <text class="ts" x="71" y="210" text-anchor="middle">10K · 22.5 W</text>
+
+        <path class="w5 thin" d="M126,197 H142" marker-end="url(#pa)"/>
+
+        <rect class="blk" x="150" y="172" width="120" height="50" rx="3"/>
+        <text class="t" x="210" y="194" text-anchor="middle">HUSB238</text>
+        <text class="ts" x="210" y="210" text-anchor="middle">5 V · 3 A</text>
+
+        <path class="w5 thin" d="M270,197 H318"/>
+        <path class="w5" stroke-width="4.5" fill="none" stroke-linecap="round" d="M320,68 V326"/>
+        <circle cx="320" cy="197" r="5" fill="var(--v5)"/>
+        <text class="tl t5" x="296" y="352" text-anchor="middle">STAR POINT</text>
+        <text class="ts" x="296" y="368" text-anchor="middle">1000 µF here</text>
+
+        <path class="w5 thin" d="M320,68 H396" marker-end="url(#pa)"/>
+        <path class="w5 thin" d="M320,154 H396" marker-end="url(#pa)"/>
+        <path class="w5 thin" d="M320,240 H396" marker-end="url(#pa)"/>
+        <path class="w5 thin" d="M320,326 H396" marker-end="url(#pa)"/>
+
+        <rect class="blk-a" x="400" y="40" width="290" height="56" rx="3"/>
+        <text class="t" x="416" y="64">NeoPixel bus</text>
+        <text class="ts" x="416" y="82">10 rings · 120 pixels</text>
+        <text class="t" x="674" y="64" text-anchor="end">1.81 A</text>
+        <text class="ts" x="674" y="82" text-anchor="end">18 AWG</text>
+
+        <rect class="blk-a" x="400" y="126" width="290" height="56" rx="3"/>
+        <text class="t" x="416" y="150">LED panel</text>
+        <text class="ts" x="416" y="168">32×32 HUB75, fed direct</text>
+        <text class="t" x="674" y="150" text-anchor="end">0.40 A</text>
+        <text class="ts" x="674" y="168" text-anchor="end">18 AWG</text>
+
+        <rect class="blk-a" x="400" y="212" width="290" height="56" rx="3"/>
+        <text class="t" x="416" y="236">Matrix Portal S3</text>
+        <text class="ts twarn" x="416" y="254">USB-C pigtail, NOT terminals</text>
+        <text class="t" x="674" y="236" text-anchor="end">0.15 A</text>
+        <text class="ts" x="674" y="254" text-anchor="end">22 AWG</text>
+
+        <rect class="blk-a" x="400" y="298" width="290" height="56" rx="3"/>
+        <text class="t" x="416" y="322">Teensy 4.1</text>
+        <text class="ts twarn" x="416" y="340">VIN — cut the VUSB pads first</text>
+        <text class="t" x="674" y="322" text-anchor="end">0.10 A</text>
+        <text class="ts" x="674" y="340" text-anchor="end">22 AWG</text>
+
+        <text class="ts" x="706" y="236">100 µF local</text>
+        <text class="ts" x="706" y="322">100 µF local</text>
+
+        <line x1="400" y1="372" x2="690" y2="372" stroke="var(--ink-3)" stroke-width="1"/>
+        <text class="t" x="416" y="390">Total</text>
+        <text class="t t5" x="674" y="390" text-anchor="end">2.46 A of 3.0 A</text>
+      </svg>
+    </div>
+    <figcaption>Four pairs from one point, not a chain. The two annotated loads each need a board
+    modification before they can take bus power safely.</figcaption>
+  </figure>
+
+  <div class="warn">
+    <h3>Both microcontrollers need work before they take bus power</h3>
+    <p><b>Teensy 4.1 — cut the VUSB/VIN pads.</b> They are bridged from the factory, so feeding
+    <code>VIN</code> from the bus while USB is plugged into a computer back-feeds the bank into
+    the computer's USB port. This is not optional here: debug mode reports over USB serial, so
+    both will routinely be connected. Cut the two rectangular pads on the underside and confirm
+    with a meter that they are open. It is reversible with solder — and note that afterwards USB
+    no longer powers the board, so it needs the bus even to program.</p>
+    <p><b>Matrix Portal S3 — its screw terminals are outputs, not inputs.</b> They are fed from
+    its USB-C port and exist to pass power out to the panel. Adafruit discourages back-feeding
+    them because plugging USB in at the same time can damage the board. Power it through its
+    USB-C instead, from a pigtail carrying 5 V and ground off the bus; the board has its own CC
+    pulldowns, so a dumb source is fine. Unplug that pigtail when connecting a computer. Feed
+    the panel straight from the bus, not through the Portal.</p>
+  </div>
+
+  <p>Adafruit publishes no continuous current rating for the HUSB238 breakout — only that the
+  chip negotiates up to 5&nbsp;A. Nearly 2.5&nbsp;A through a small board and a 2-pin terminal
+  block is real current, so check it for warmth on the <code>LED ALL</code> screen. If it runs
+  hot, take VBUS through a separate high-current path and leave the HUSB238 doing nothing but
+  the negotiation.</p>
+</section>
+
+<section>
   <div class="sechead"><h2>Current budget</h2><span class="n">worst case is a debug screen</span></div>
 
   <div class="tw"><table>
@@ -290,9 +386,10 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>Attract mode</td><td class="m">0–24</td><td class="m">≈ 0.15 A</td><td>Quiescent draw is ~1 mA per pixel.</td></tr>
       <tr><td>Debug <code>LED ALL</code>, white</td><td class="m">120</td><td class="m">1.81 A</td><td>At <code>kPixelBrightness&nbsp;=&nbsp;64</code>. The most the rings ever pull.</td></tr>
       <tr><td>Same, brightness 255</td><td class="m">120</td><td class="m">7.20 A</td><td>Why the ceiling exists.</td></tr>
-      <tr><td>32×32 matrix panel</td><td class="m">—</td><td class="m">≈ 0.4 A</td><td>Scrolling text on black. Every pixel white would be ~2 A, which the game never displays — do not budget against that figure.</td></tr>
-      <tr><td>Teensy + level shifter</td><td class="m">—</td><td class="m">≈ 0.1 A</td><td></td></tr>
-      <tr class="tot"><td>Worst case — <code>LED ALL</code> plus the rest</td><td class="m">120</td><td class="m">≈ 2.3 A</td><td>11.5 W, against a 15 W supply.</td></tr>
+      <tr><td>32×32 LED panel</td><td class="m">—</td><td class="m">≈ 0.40 A</td><td>Scrolling text on black. Every pixel white would be ~2 A, which the game never displays — do not budget against that figure.</td></tr>
+      <tr><td>Matrix Portal S3 board</td><td class="m">—</td><td class="m">≈ 0.15 A</td><td>The controller itself, separate from the panel it drives.</td></tr>
+      <tr><td>Teensy + level shifter</td><td class="m">—</td><td class="m">≈ 0.10 A</td><td></td></tr>
+      <tr class="tot"><td>Worst case — <code>LED ALL</code> plus the rest</td><td class="m">120</td><td class="m">≈ 2.46 A</td><td>12.3 W, against a 15 W supply.</td></tr>
     </tbody>
   </table></div>
 
@@ -301,7 +398,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <div class="tw"><table>
     <thead><tr><th>Supply</th><th class="m">At 5 V</th><th>Notes</th></tr></thead>
     <tbody>
-      <tr><td>Power bank, 5 V PD contract <span class="chip">in use</span></td><td class="m">3.0 A · 15 W</td><td>Straight onto the bus. No conversion, no converter. ~23% headroom over worst case.</td></tr>
+      <tr><td>Power bank, 5 V PD contract <span class="chip">in use</span></td><td class="m">3.0 A · 15 W</td><td>Straight onto the bus. No conversion, no converter. ~18% headroom over worst case.</td></tr>
       <tr><td>Power bank, 9 V PD → XL4015</td><td class="m">≈ 3.5 A · 20 W</td><td>The path not taken. More headroom, more parts — see the decision record below.</td></tr>
       <tr><td>2× 21700 in series → XL4015</td><td class="m">sags</td><td>Falls below the XL4015's 8 V input floor for most of the discharge.</td></tr>
     </tbody>
@@ -338,8 +435,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <p>The current budget, once it was corrected. The first version counted the matrix panel at
   its all-pixels-white figure of 2.0&nbsp;A and stacked that against the <code>LED ALL</code>
   debug screen — two worst cases that never occur together. The panel shows scrolling text on
-  black, nearer 0.4&nbsp;A. Real worst case is 2.3&nbsp;A and gameplay is nearer 1&nbsp;A, so the
-  converter was converting power the table did not need converted.</p>
+  black, nearer 0.4&nbsp;A. Real worst case is 2.46&nbsp;A across all four loads, and gameplay is nearer
+  1&nbsp;A, so the converter was converting power the table did not need converted.</p>
 
   <h3 class="sub-h">What it buys</h3>
   <ul class="plain">
@@ -403,6 +500,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <thead><tr><th>Part</th><th class="m">Qty</th><th>Why</th></tr></thead>
     <tbody>
       <tr><td>USB-C PD trigger board</td><td class="m">1</td><td>CH224K or similar, configured for <b>5 V</b> by hardware jumper or resistor — not I2C, which cannot be set before the Teensy has power. Requests the 3 A contract the bus needs.</td></tr>
+      <tr><td>USB-C pigtail, 5 V + GND only</td><td class="m">1</td><td>Powers the Matrix Portal through its USB-C port from the bus, since its screw terminals are outputs.</td></tr>
+      <tr><td>100 µF electrolytic</td><td class="m">2</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract.</td></tr>
       <tr><td>74AHCT125 quad level shifter</td><td class="m">1</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. The usual cause of flaky pixel builds. Tie unused inputs and <code>OE</code> low.</td></tr>
       <tr><td>330–470 Ω resistor</td><td class="m">1</td><td>Series on the data line at the first pixel.</td></tr>
@@ -419,6 +518,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 <section>
   <div class="sechead"><h2>Build order</h2><span class="n">test as you go</span></div>
   <ol class="steps">
+    <li><b>Do the two board modifications first</b>Cut the Teensy's VUSB/VIN pads and confirm with a meter. Make the Matrix Portal's USB-C power pigtail. Both are easier on the bench than under a table, and the Teensy cut changes how you program it.</li>
     <li><b>Wire one cap completely</b>Ring, switch, connector, all six conductors. Getting the first one right tells you the gauge and connector choices work before you repeat them nine times.</li>
     <li><b>Run it on the bench</b>Level shifter, resistor, cap, one button. Flash the firmware with <code>WAM_LIGHTS_PIXELS 1</code> and open the debug <code>LED WALK</code> screen — one ring is enough to prove the data path.</li>
     <li><b>Build the power bus first</b>Before any daisy-chaining. Confirm 5 V at every tap with nothing else connected.</li>

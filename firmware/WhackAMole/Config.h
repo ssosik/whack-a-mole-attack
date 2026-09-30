@@ -119,8 +119,8 @@ constexpr uint16_t kPixelCount = kButtonsPerPlayer * 2 * kPixelsPerButton;
 // 120 pixels at full white is ~7.2 A, far past the 15 W (5 V, 3 A) the power
 // bank delivers. During play only two caps are lit, so real draw is near 1 A;
 // the worst case is the debug mode's ALL-ON screen. At 64/255 that screen pulls
-// ~1.8 A, and with the matrix panel and Teensy the table peaks around 2.3 A --
-// roughly 23% headroom on the supply.
+// ~1.8 A. With the LED panel, the Matrix Portal S3 and the Teensy the whole
+// table peaks near 2.5 A -- roughly 18% headroom on the 3 A supply.
 //
 // WS2812 output is linear in PWM but perception is not, so this reads only
 // slightly dimmer than the 80 it replaced. Raise it only after measuring the
