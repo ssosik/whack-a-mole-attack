@@ -500,6 +500,13 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <p>Part numbers are what was ordered, not the only thing that works — but the level
   shifter is worth matching exactly, for the reason in the note below the table.</p>
 
+  <p>On DigiKey the spade terminals live under <em>Connectors, Interconnects → Terminals →
+  Quick Connects</em>, and "female" is filtered as <b>Receptacle</b>. Terminal colour is a
+  gauge code and the same across manufacturers — <b>red is 22–18 AWG</b>, blue is 16–14,
+  yellow is 12–10 — so a bag of blue ones is the wrong part no matter what the label said.
+  Measure a D44X tab before ordering: arcade switches are normally 0.187" (4.8&nbsp;mm) but a
+  6.3&nbsp;mm variant exists.</p>
+
   <div class="tw"><table>
     <thead><tr><th>Part</th><th class="m">Qty</th><th class="m">Order as</th><th>Why</th></tr></thead>
     <tbody>
@@ -510,7 +517,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
       <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
-      <tr><td>0.187" female spade crimps</td><td class="m">30</td><td class="m">insulated, 22–18 AWG</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly.</td></tr>
+      <tr><td>0.187" quick disconnect, receptacle</td><td class="m">30</td><td class="m">3M MNU18-187DFIK<br>DK 920044-01-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Order <b>fully insulated</b> — the sleeve is already on, there is no separate cover to buy at this size. Filter packaging to <b>Bulk</b>: the TE equivalents come on carrier tape for machine crimping.</td></tr>
+      <tr><td>Insulated-terminal crimper</td><td class="m">1</td><td class="m">ratcheting, 22–10 AWG</td><td>Insulated terminals need a matching nest profile. Pliers or a non-insulated crimper crush the sleeve and give a joint that passes a tug test today and fails in six months.</td></tr>
       <tr><td>JST-XH 6-pin pairs</td><td class="m">10</td><td class="m">housing + header + contacts</td><td>One per lit cap, so it unplugs for service.</td></tr>
       <tr><td>JST-XH 2-pin pairs</td><td class="m">2</td><td class="m">as above</td><td>The start buttons — switch only.</td></tr>
       <tr><td>Lever nuts</td><td class="m">6–8</td><td class="m">WAGO 221-415</td><td>The star point and the 5 V/GND bus taps. Easier than a barrier strip and reusable.</td></tr>
