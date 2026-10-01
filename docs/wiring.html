@@ -519,8 +519,11 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
       <tr><td>0.187" × <b>0.020"</b> quick disconnect, receptacle</td><td class="m">30</td><td class="m">3M MNU18-187DFIK<br>DK 920044-01-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Order <b>fully insulated</b> — the sleeve is already on, there is no separate cover to buy at this size. Filter packaging to <b>Bulk</b>: some equivalents ship on carrier tape for machine crimping. Tab <em>thickness</em> matters as much as width — see below.</td></tr>
       <tr><td>Insulated-terminal crimper</td><td class="m">1</td><td class="m">ratcheting, 22–10 AWG</td><td>Insulated terminals need a matching nest profile. Pliers or a non-insulated crimper crush the sleeve and give a joint that passes a tug test today and fails in six months.</td></tr>
-      <tr><td>JST-XH 6-pin pairs</td><td class="m">10</td><td class="m">housing + header + contacts</td><td>One per lit cap, so it unplugs for service.</td></tr>
-      <tr><td>JST-XH 2-pin pairs</td><td class="m">2</td><td class="m">as above</td><td>The start buttons — switch only.</td></tr>
+      <tr><td>JST-XH housing, 6-pin</td><td class="m">10</td><td class="m">XHP-6<br>DK 455-2218-ND</td><td>Wire side, one per lit cap, so it unplugs for service.</td></tr>
+      <tr><td>JST-XH housing, 2-pin</td><td class="m">2</td><td class="m">XHP-2</td><td>The start buttons — switch only.</td></tr>
+      <tr><td>JST-XH header, 6-pin</td><td class="m">10</td><td class="m">B6B-XH-A<br>DK 455-B6B-XH-A-ND</td><td>Board side, through-hole, 2.5 mm pitch. <code>S6B-XH-A</code> is the right-angle version.</td></tr>
+      <tr><td>JST-XH header, 2-pin</td><td class="m">2</td><td class="m">B2B-XH-A</td><td>As above.</td></tr>
+      <tr><td>JST-XH crimp contact</td><td class="m">70</td><td class="m">SXH-001T-P0.6<br>DK 455-1135TR-ND</td><td>64 needed. Rated <b>22–28 AWG</b>, so the 22 AWG drops sit right at its ceiling — 24 AWG crimps far more comfortably and carries 226 mA without noticing. Arrives on a carrier strip; snip one off per crimp.</td></tr>
       <tr><td>Lever nuts</td><td class="m">6–8</td><td class="m">WAGO 221-415</td><td>The star point and the 5 V/GND bus taps. Easier than a barrier strip and reusable.</td></tr>
       <tr><td>USB-C pigtail, 5 V + GND</td><td class="m">1</td><td class="m">—</td><td>Powers the Matrix Portal through its USB-C port, since its screw terminals are outputs.</td></tr>
       <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td class="m">—</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract at all.</td></tr>
@@ -538,6 +541,18 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     becomes 0.7&nbsp;×&nbsp;V<sub>CC</sub> = 3.5&nbsp;V and the Teensy's 3.3&nbsp;V output sits
     <em>below</em> the threshold — which fails intermittently and with temperature rather than
     outright, and is miserable to chase.</p>
+  </div>
+
+<div class="warn">
+    <h3>A JST-XH connector is three part numbers</h3>
+    <p>Housing, contacts and header are ordered separately, which is most of why they are hard
+    to find. The housing on its own is an empty plastic shell.</p>
+    <p>That adds up to <b>64 crimps</b> across the harness, on small open-barrel contacts that
+    ordinary crimpers mangle. Budget for an <code>SN-28B</code> or equivalent, and for an evening
+    — with a real chance of a bad crimp hiding in the loom afterwards. Two ways around it worth
+    pricing first: <b>pre-crimped leads</b>, which only need a contact on the plug end since the
+    other end goes to the cap's internal wiring, and <b>RC balance leads</b> — a 5S LiPo balance
+    connector is a 6-pin JST-XH with the wires already crimped, and they are a cheap commodity.</p>
   </div>
 
 <div class="warn">
