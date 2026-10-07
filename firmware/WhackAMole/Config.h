@@ -85,9 +85,15 @@ constexpr int kLadderIdleCeiling = 20;
 // ribbon to the button board gathers from a single column instead of jumping
 // across under the Teensy. Pins 24-32 are on the lower half of that same left
 // row, not in the bottom cluster.
+// They run in one unbroken block down the left row: pins 9 through 32, skipping
+// only pin 10 (reserved) and the 3.3 V pin. Those two gaps fall INSIDE the block,
+// which is the point -- twelve inputs plus two unusable positions is exactly the
+// fourteen contiguous strips a 1x14 ribbon header spans, so every switch signal
+// reaches its Teensy pin along its own strip with no jumper. The two dead strips
+// get cut away from the Teensy and reused for the ribbon's ground and pixel data.
 //                                                     B   R   W   G   Y  START
-constexpr uint8_t kP1ButtonPins[kInputsPerPlayer] = {2, 3, 4, 5, 9, 11};
-constexpr uint8_t kP2ButtonPins[kInputsPerPlayer] = {12, 24, 25, 26, 27, 28};
+constexpr uint8_t kP1ButtonPins[kInputsPerPlayer] = {9, 11, 12, 24, 25, 26};
+constexpr uint8_t kP2ButtonPins[kInputsPerPlayer] = {27, 28, 29, 30, 31, 32};
 
 // --- Dome lamp output (WAM_LIGHTS_PIXELS == 0) -----------------------------
 //
@@ -103,18 +109,21 @@ constexpr uint8_t kP2LedPins[kButtonsPerPlayer] = {37, 36, 35, 34, 33};
 // bit-banging drivers disable interrupts for the length of the frame, which
 // jitters the display link and will audibly glitch audio in Phase 4.
 //
-// WS2812Serial can only drive a serial-TX-capable pin. Pin 29 is Serial7 TX and
+// WS2812Serial can only drive a serial-TX-capable pin. Pin 8 is Serial2 TX and
 // is on the library's supported list for the Teensy 4.1 (verified against
-// WS2812Serial.cpp in Teensyduino 1.60.0). It also stays clear of the display
-// link, the button pins, and every reserved audio pin.
+// WS2812Serial.cpp in Teensyduino 1.60.0).
 //
-// Chosen over the other candidates because it sits at the bottom of the left
-// pin row, below the twelve button inputs, so the level shifter can live at one
-// end of the board away from the switch wiring.
+// Chosen because it sits one strip ABOVE the twelve button inputs, so the
+// ribbon header's fourteen strips stay unbroken for the switches and the level
+// shifter sits clear of them at the top of the board.
+//
+// Caveat: pin 8 is the audio shield's I2S input (IN1). This game only ever plays
+// audio out, so nothing collides -- but anything wanting audio IN would have to
+// move the pixel data to another WS2812Serial pin.
 //
 // Teensy 4.1 runs 3.3 V logic. WS2812Bs nominally want 0.7*VDD on data, so put
 // a 74AHCT125 level shifter between this pin and the first pixel.
-constexpr uint8_t kPixelDataPin = 29;
+constexpr uint8_t kPixelDataPin = 8;
 
 // Pixels in each dome cap: a 12-pixel WS2812 ring in the plunger cavity.
 // See hardware/button-led-carrier.scad.
