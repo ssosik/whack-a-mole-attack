@@ -78,9 +78,16 @@ constexpr int kLadderIdleCeiling = 20;
 //
 // Wired as switch-to-ground against INPUT_PULLUP, so no external resistors.
 // Avoids 0/1 (display serial), 13 (onboard LED), and kReservedAudioPins.
+//
+// All twelve sit on the Teensy's LEFT pin row, in P1-then-P2 order running down
+// the board. That is a stripboard decision, not an electrical one: it puts every
+// signal on one side and leaves the right row carrying only VIN and GND, so the
+// ribbon to the button board gathers from a single column instead of jumping
+// across under the Teensy. Pins 24-32 are on the lower half of that same left
+// row, not in the bottom cluster.
 //                                                     B   R   W   G   Y  START
-constexpr uint8_t kP1ButtonPins[kInputsPerPlayer] = {2, 3, 4, 5, 9, 22};
-constexpr uint8_t kP2ButtonPins[kInputsPerPlayer] = {11, 12, 14, 15, 16, 25};
+constexpr uint8_t kP1ButtonPins[kInputsPerPlayer] = {2, 3, 4, 5, 9, 11};
+constexpr uint8_t kP2ButtonPins[kInputsPerPlayer] = {12, 24, 25, 26, 27, 28};
 
 // --- Dome lamp output (WAM_LIGHTS_PIXELS == 0) -----------------------------
 //
@@ -96,14 +103,18 @@ constexpr uint8_t kP2LedPins[kButtonsPerPlayer] = {37, 36, 35, 34, 33};
 // bit-banging drivers disable interrupts for the length of the frame, which
 // jitters the display link and will audibly glitch audio in Phase 4.
 //
-// WS2812Serial can only drive a serial-TX-capable pin. Pin 24 is Serial6 TX
-// and is on the library's supported list for the Teensy 4.1 (verified against
+// WS2812Serial can only drive a serial-TX-capable pin. Pin 29 is Serial7 TX and
+// is on the library's supported list for the Teensy 4.1 (verified against
 // WS2812Serial.cpp in Teensyduino 1.60.0). It also stays clear of the display
 // link, the button pins, and every reserved audio pin.
 //
+// Chosen over the other candidates because it sits at the bottom of the left
+// pin row, below the twelve button inputs, so the level shifter can live at one
+// end of the board away from the switch wiring.
+//
 // Teensy 4.1 runs 3.3 V logic. WS2812Bs nominally want 0.7*VDD on data, so put
 // a 74AHCT125 level shifter between this pin and the first pixel.
-constexpr uint8_t kPixelDataPin = 24;
+constexpr uint8_t kPixelDataPin = 29;
 
 // Pixels in each dome cap: a 12-pixel WS2812 ring in the plunger cavity.
 // See hardware/button-led-carrier.scad.
