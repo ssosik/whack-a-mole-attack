@@ -1741,9 +1741,10 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 <rect x="345" y="189" width="14" height="28" rx="2" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="1.4"/>
 <text class="tl" x="352" y="238" text-anchor="middle">5 V IN</text>
 <circle cx="338" cy="63.0" r="9" fill="none" stroke="var(--ink-3)" stroke-width="1.4"/>
-<text class="tl" x="352" y="66.0">100 µF</text>
+<text class="tl t5" x="325" y="59">+</text>
+<text class="tl" x="352" y="66.0">100 µF (+ to row 1)</text>
 <circle cx="240" cy="63.0" r="6" fill="none" stroke="var(--ink-3)" stroke-width="1.4"/>
-<text class="tl" x="250" y="66.0">0.1 µF</text>
+<text class="tl" x="250" y="66.0">0.1 µF (no polarity)</text>
 </svg>
     </div>
     <figcaption>27 × 35 holes, strips horizontal. Dashed red is a cut down a component&#8217;s
@@ -1778,26 +1779,47 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">21</td><td class="m">9</td><td>P1 BLUE</td><td rowspan="3">Strip, no jumper</td></tr>
       <tr><td class="m">23</td><td class="m">11</td><td>P1 RED</td></tr>
       <tr><td class="m">24</td><td class="m">12</td><td>P1 WHITE</td></tr>
-      <tr><td class="m">22</td><td class="m">—</td><td>Ribbon GND</td><td rowspan="2">Cut from Teensy; jumper to rail</td></tr>
-      <tr><td class="m">25</td><td class="m">—</td><td>Ribbon pixel in</td></tr>
+      <tr><td class="m">22</td><td class="m">—</td><td>Ribbon GND</td><td>Cut from Teensy; jumper to the GND rail</td></tr>
+      <tr><td class="m">25</td><td class="m">—</td><td>Ribbon pixel in</td><td>Cut from Teensy; fed by the 330 Ω</td></tr>
       <tr><td class="m">26–34</td><td class="m">24–32</td><td>P1 GREEN → P2 START</td><td>Strip, no jumper</td></tr>
     </tbody>
   </table></div>
 
+<div class="warn">
+    <h3>Which way round the capacitors go</h3>
+    <p><b>The 0.1 µF is ceramic and has no polarity</b> — it goes in either way. Only the
+    electrolytics care: the 100 µF here and the 1000 µF on the button board.</p>
+    <p>On a radial electrolytic the <b>stripe down the can marks the cathode</b>, the negative
+    lead, and the anode is the longer lead on an untrimmed part. So on this board the striped
+    side goes to <b>row 2</b> (GND) and the long lead to <b>row 1</b> (+5 V). Backwards, an
+    aluminium electrolytic on 5 V will heat, vent and sometimes burst — it is one of the few
+    mistakes on this board that makes a mess rather than just not working.</p>
+    <p>Check lead pitch before you commit a hole: radial electrolytics are usually 2.5 mm, which
+    spans one row, but ceramics of this size are often 5.08 mm, which spans two. Leads bend —
+    just know which you have so the cap lands on rows 1 and 2 and not rows 1 and 3.</p>
+  </div>
+
   <h3 class="sub-h">Jumpers</h3>
-  <p>Six wires on the component side. Everything else is strip.</p>
-  <ul class="plain">
-    <li><b>Row 11 right → row 1</b>, and <b>row 12 right → row 2</b>. Brings the incoming 5 V and
-    ground up to the full-width rails, which is what feeds the level shifter on the far side of
-    the Teensy&#8217;s cut.</li>
-    <li><b>Row 20 → <code>1A</code> (row 5)</b>. Teensy pin 8 into the level shifter.</li>
-    <li><b><code>1Y</code> (row 6) → 330 Ω → row 25</b>. Shifter output to the ribbon&#8217;s pixel pin.
-    Both ends are isolated segments, so the exact path is yours.</li>
-    <li><b><code>1OE</code> (row 4) → GND rail</b>, and <b>V<sub>CC</sub> (row 4, col 10) → +5 V rail</b>.</li>
-    <li><b>Unused gates:</b> <code>2A</code>, <code>3A</code>, <code>4A</code> to the GND rail;
-    <code>2OE</code>, <code>3OE</code>, <code>4OE</code> to +5 V. Outputs <code>2Y</code>,
-    <code>3Y</code>, <code>4Y</code> stay open.</li>
-  </ul>
+  <p>Everything else is strip. Numbered so they can be ticked off and metered.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">#</th><th>From</th><th>To</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td class="m">row 11, right of cut</td><td class="m">row 1</td><td>Incoming 5 V up to the rail, past the Teensy&#8217;s cut.</td></tr>
+      <tr><td class="m">2</td><td class="m">row 12, right of cut</td><td class="m">row 2</td><td>Incoming ground up to the rail.</td></tr>
+      <tr><td class="m">3</td><td class="m">row 20 (pin 8)</td><td class="m">row 5 — <code>1A</code></td><td>Pixel data into the level shifter.</td></tr>
+      <tr><td class="m">4</td><td class="m">row 6 — <code>1Y</code></td><td class="m">row 25, via 330 Ω</td><td>Shifter output to the ribbon&#8217;s pixel pin.</td></tr>
+      <tr><td class="m">5</td><td class="m">row 22, left of cut</td><td class="m">row 2</td><td><b>The ribbon&#8217;s ground.</b> Its strip is cut from the Teensy, so without this the switch returns float.</td></tr>
+      <tr><td class="m">6</td><td class="m">row 4, col 10 — V<sub>CC</sub></td><td class="m">row 1</td><td>Level shifter supply.</td></tr>
+      <tr><td class="m">7</td><td class="m">row 10, col 7 — pin 7</td><td class="m">row 2</td><td>Level shifter ground.</td></tr>
+      <tr><td class="m">8</td><td class="m"><code>1OE</code> · <code>2A</code> · <code>4A</code> · <code>3A</code></td><td class="m">row 2</td><td>One wire linking rows 4, 8 (col 7) and 6, 9 (col 10) to ground — enables gate 1, holds the unused inputs.</td></tr>
+      <tr><td class="m">9</td><td class="m"><code>2OE</code> · <code>3OE</code> · <code>4OE</code></td><td class="m">row 1</td><td>One wire linking rows 7, 8 (col 10) and 5 (col 10) to 5 V — disables the three unused outputs.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Outputs <code>2Y</code>, <code>3Y</code> and <code>4Y</code> (rows 9 col 7, 10 col 10,
+  7 col 10) stay genuinely unconnected. Jumpers 8 and 9 are each one wire touching several
+  points rather than three separate links.</p>
 
 
   <h3 class="sub-h">Button board</h3>
