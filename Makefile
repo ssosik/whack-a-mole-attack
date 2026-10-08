@@ -14,7 +14,7 @@ BUILD   := build
 CHROME  := /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 SOURCES := $(wildcard firmware/WhackAMole/*.cpp firmware/WhackAMole/*.h) $(SKETCH)/WhackAMole.ino
 
-.PHONY: all build matrix upload format format-check tidy lint-py lint stl wiring-pdf clean
+.PHONY: all build matrix upload format format-check tidy lint-py lint check-pins stl wiring-pdf clean
 
 all: build
 
@@ -68,7 +68,12 @@ lint-py:
 	ruff check display/
 	ruff format --check display/
 
-lint: format-check lint-py
+## Fail if the wiring doc's pin table has drifted from Config.h. The doc claims
+## to mirror it, and across three remaps it silently did not.
+check-pins:
+	python3 docs/check-pins.py
+
+lint: format-check lint-py check-pins
 
 ## Render the printed parts. Needs OpenSCAD: `brew install --cask openscad@snapshot`
 ## (the stable cask is currently disabled). The .scad asserts on the measured

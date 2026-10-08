@@ -40,6 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check the wiring doc's pin table against Config.h
+        run: make check-pins
+
       - uses: astral-sh/ruff-action@v3
         with:
           args: check display/

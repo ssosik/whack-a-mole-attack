@@ -150,7 +150,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         <text class="ts" x="188" y="301" text-anchor="middle">3V3 → 5 V</text>
 
         <path class="wd thin" d="M116,288 H140" marker-end="url(#ad)"/>
-        <text class="ts td" x="128" y="279" text-anchor="middle">pin 24</text>
+        <text class="ts td" x="128" y="279" text-anchor="middle">pin 8</text>
 
         <rect class="blk" x="246" y="280" width="34" height="17" rx="2"/>
         <text class="ts" x="263" y="293" text-anchor="middle">330Ω</text>
@@ -1941,11 +1941,11 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <thead><tr><th>Function</th><th class="m">Pins</th><th>Notes</th></tr></thead>
     <tbody>
       <tr><td>Display link, Serial1</td><td class="m">0 RX · 1 TX</td><td>To the Matrix Portal at 115200.</td></tr>
-      <tr><td>Pixel data</td><td class="m">29</td><td>Serial7 TX. WS2812Serial only drives certain pins; 29 sits below the button inputs on the same left row.</td></tr>
-      <tr><td>P1 buttons — B R W G Y</td><td class="m">2, 3, 4, 5, 9</td><td rowspan="4">All <code>INPUT_PULLUP</code>, switch to ground. Every one on the <b>left</b> pin row, so the right row carries only VIN and GND.</td></tr>
-      <tr><td>P1 start</td><td class="m">11</td></tr>
-      <tr><td>P2 buttons — B R W G Y</td><td class="m">12, 24, 25, 26, 27</td></tr>
-      <tr><td>P2 start</td><td class="m">28</td></tr>
+      <tr><td>Pixel data</td><td class="m">8</td><td>Serial2 TX. WS2812Serial only drives certain pins; 8 sits one strip <em>above</em> the button block so the header's fourteen strips stay unbroken.</td></tr>
+      <tr><td>P1 buttons — B R W G Y</td><td class="m">9, 11, 12, 24, 25</td><td rowspan="4">All <code>INPUT_PULLUP</code>, switch to ground. One unbroken block down the <b>left</b> row from pin 9 to pin 32, so the right row carries only VIN and GND.</td></tr>
+      <tr><td>P1 start</td><td class="m">26</td></tr>
+      <tr><td>P2 buttons — B R W G Y</td><td class="m">27, 28, 29, 30, 31</td></tr>
+      <tr><td>P2 start</td><td class="m">32</td></tr>
       <tr><td>Reserved for audio</td><td class="m">6, 7, 10, 18, 19, 20, 21, 23</td><td>Do not use. Pin 7 is I2S data, which is why the display moved off Serial2.</td></tr>
       <tr><td>PRNG seed</td><td class="m">17</td><td>Left floating deliberately.</td></tr>
     </tbody>
@@ -2044,8 +2044,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <thead><tr><th class="m">Pin</th><th class="m">Name</th><th class="m">Hole</th><th>Connect to</th><th>Why</th></tr></thead>
     <tbody>
       <tr><td class="m">1</td><td class="m">1OE</td><td class="m">r4 c7</td><td><b>GND</b></td><td>Active-low; grounding it enables the one gate in use.</td></tr>
-      <tr><td class="m">2</td><td class="m">1A</td><td class="m">r5 c7</td><td>Teensy pin 24</td><td>3.3 V pixel data in.</td></tr>
-      <tr><td class="m">3</td><td class="m">1Y</td><td class="m">r6 c7</td><td>330 Ω → first pixel DIN</td><td>5 V pixel data out.</td></tr>
+      <tr><td class="m">2</td><td class="m">1A</td><td class="m">r5 c7</td><td>Teensy pin <b>8</b> (r20)</td><td>3.3 V pixel data in.</td></tr>
+      <tr><td class="m">3</td><td class="m">1Y</td><td class="m">r6 c7</td><td>330 Ω → ribbon r25</td><td>5 V pixel data out, on to the button board.</td></tr>
       <tr><td class="m">4</td><td class="m">2OE</td><td class="m">r7 c7</td><td><b>V<sub>CC</sub></b></td><td rowspan="2">Gate 2 unused: output disabled, input held.</td></tr>
       <tr><td class="m">5</td><td class="m">2A</td><td class="m">r8 c7</td><td>GND</td></tr>
       <tr><td class="m">6</td><td class="m">2Y</td><td class="m">r9 c7</td><td>—</td><td>Genuinely open. That is what tri-state disabled means.</td></tr>
@@ -2056,7 +2056,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">11</td><td class="m">4Y</td><td class="m">r7 c10</td><td>—</td><td>Open.</td></tr>
       <tr><td class="m">12</td><td class="m">4A</td><td class="m">r6 c10</td><td>GND</td><td rowspan="2">Gate 4 unused.</td></tr>
       <tr><td class="m">13</td><td class="m">4OE</td><td class="m">r5 c10</td><td><b>V<sub>CC</sub></b></td></tr>
-      <tr><td class="m">14</td><td class="m">V<sub>CC</sub></td><td>+5 V</td><td>0.1 µF from here to pin 7, as close to the chip as it will sit.</td></tr>
+      <tr><td class="m">14</td><td class="m">V<sub>CC</sub></td><td class="m">r4 c10</td><td>+5 V</td><td>0.1 µF from here to pin 7, as close to the chip as it will sit.</td></tr>
     </tbody>
   </table></div>
 
