@@ -459,6 +459,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   comfortable decision to make early, before any of it is soldered down.</p>
 </section>
 
+
 <section>
   <div class="sechead"><h2>Chain order</h2><span class="n">must match Config.h</span></div>
   <p>The physical daisy-chain order and the pixel indices in <code>Config.h</code> are the same fact written twice. Wire them in this sequence or the wrong cap lights.</p>
@@ -1833,7 +1834,6 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   spans both columns of the DIP and so crosses its centreline cut; that is fine for a wire on
   the component side.</p>
 
-
   <h3 class="sub-h">Button board</h3>
 
   <figure>
@@ -1932,6 +1932,108 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <p><b>JST-XH is 2.5 mm pitch; stripboard is 2.54 mm.</b> Over six pins that is 0.2 mm of
     drift against about 0.18 mm of hole clearance. It goes in, but start each connector centred
     so the error splits both ways rather than accumulating toward one end.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Bring-up</h2><span class="n">test before you trust</span></div>
+
+  <p>Every test below is done with <b>nothing in the sockets</b> — no Teensy, no 74AHCT125.
+  Installed parts add their own paths (the Teensy's protection diodes especially) and turn a
+  clear reading into a confusing one. Put them in last.</p>
+
+  <h3 class="sub-h">Ribbon pinout</h3>
+  <p>Header position 1 is row 21. Needed for the adapter below and for the button board later.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Pos</th><th class="m">Row</th><th class="m">Teensy</th><th>Carries</th><th class="m">Pos</th><th class="m">Row</th><th class="m">Teensy</th><th>Carries</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td class="m">21</td><td class="m">9</td><td>P1 BLUE</td><td class="m">8</td><td class="m">28</td><td class="m">26</td><td>P1 START</td></tr>
+      <tr><td class="m">2</td><td class="m">22</td><td class="m">—</td><td><b>GND</b></td><td class="m">9</td><td class="m">29</td><td class="m">27</td><td>P2 BLUE</td></tr>
+      <tr><td class="m">3</td><td class="m">23</td><td class="m">11</td><td>P1 RED</td><td class="m">10</td><td class="m">30</td><td class="m">28</td><td>P2 RED</td></tr>
+      <tr><td class="m">4</td><td class="m">24</td><td class="m">12</td><td>P1 WHITE</td><td class="m">11</td><td class="m">31</td><td class="m">29</td><td>P2 WHITE</td></tr>
+      <tr><td class="m">5</td><td class="m">25</td><td class="m">—</td><td><b>PIXEL DATA</b></td><td class="m">12</td><td class="m">32</td><td class="m">30</td><td>P2 GREEN</td></tr>
+      <tr><td class="m">6</td><td class="m">26</td><td class="m">24</td><td>P1 GREEN</td><td class="m">13</td><td class="m">33</td><td class="m">31</td><td>P2 YELLOW</td></tr>
+      <tr><td class="m">7</td><td class="m">27</td><td class="m">25</td><td>P1 YELLOW</td><td class="m">14</td><td class="m">34</td><td class="m">32</td><td>P2 START</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-h">Stage 1 — the cuts, before any component</h3>
+  <div class="tw"><table>
+    <thead><tr><th class="m">×</th><th class="m">Probe A</th><th class="m">Probe B</th><th class="m">Expect</th><th>Catches</th></tr></thead>
+    <tbody>
+      <tr><td class="m">24</td><td class="m">r11–34 c11</td><td class="m">same row, c17</td><td class="m"><b>OPEN</b></td><td>A missed Teensy cut. Every one, not a sample — one survivor shorts a signal to whatever is opposite.</td></tr>
+      <tr><td class="m">7</td><td class="m">r4–10 c7</td><td class="m">same row, c10</td><td class="m"><b>OPEN</b></td><td>A missed DIP cut. Row 4 is the one that stops the chip working at all.</td></tr>
+      <tr><td class="m">1</td><td class="m">r22 c3</td><td class="m">r22 c11</td><td class="m"><b>OPEN</b></td><td>Ribbon ground tied to the Teensy's reserved pin 10.</td></tr>
+      <tr><td class="m">1</td><td class="m">r25 c3</td><td class="m">r25 c11</td><td class="m"><b>OPEN</b></td><td>Pixel data shorted to 3.3 V. The most expensive miss on the board.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-h">Stage 2 — after soldering, sockets empty</h3>
+  <div class="tw"><table>
+    <thead><tr><th class="m">Probe A</th><th class="m">Probe B</th><th class="m">Expect</th><th>Catches</th></tr></thead>
+    <tbody>
+      <tr><td class="m">row 1</td><td class="m">row 2</td><td class="m"><b>OPEN</b></td><td><b>Do this one first.</b> A rail-to-rail short puts the supply across a dead short at power-up.</td></tr>
+      <tr><td class="m">row N</td><td class="m">row N+1</td><td class="m"><b>OPEN</b></td><td>Solder bridges. Walk the dense areas: the DIP, the header, both Teensy pin columns.</td></tr>
+      <tr><td class="m">r21,23,24,26–34 c3</td><td class="m">same row, c11</td><td class="m">SHORT</td><td>The twelve switch strips. These should already be continuous — no jumper involved.</td></tr>
+      <tr><td class="m">r11 c18</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 1.</td></tr>
+      <tr><td class="m">r12 c18</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 2.</td></tr>
+      <tr><td class="m">r20 c11</td><td class="m">r5 c7</td><td class="m">SHORT</td><td>Jumper 3 — pixel data into the shifter.</td></tr>
+      <tr><td class="m">r6 c7</td><td class="m">r25 c3</td><td class="m"><b>≈ 330 Ω</b></td><td>Jumper 4. Not a short — the resistor is in it. A beep here means the resistor is bridged.</td></tr>
+      <tr><td class="m">r22 c3</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 5 — the ribbon ground.</td></tr>
+      <tr><td class="m">r4 c10</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 6 — socket V<sub>CC</sub>.</td></tr>
+      <tr><td class="m">r10 c7</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 7 — socket ground.</td></tr>
+      <tr><td class="m">r4c7 · r8c7 · r9c10 · r6c10</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 8, each point.</td></tr>
+      <tr><td class="m">r7c7 · r8c10 · r5c10</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 9, each point.</td></tr>
+      <tr><td class="m">r9c7 · r10c10 · r7c10</td><td class="m">everything</td><td class="m"><b>OPEN</b></td><td>The three unused outputs. If any reads to a rail, jumper 8 or 9 caught the wrong column.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-h">Stage 3 — power, still no chips</h3>
+  <ul class="plain">
+    <li>Apply 5 V. Current draw should be <b>essentially zero</b> — nothing is installed. Anything
+    above a few milliamps means a short you have not found.</li>
+    <li>Socket pin 14 (r4 c10) reads <b>5 V</b>; socket pin 7 (r10 c7) reads <b>0 V</b>. Probe the
+    socket itself, not the strip, so the socket's own solder joints are in the measurement.</li>
+    <li>Teensy VIN position (r11 c17) reads <b>5 V</b>; GND position (r12 c17) reads 0 V.</li>
+    <li>Confirm the Teensy's <b>VUSB/VIN pads are cut</b> — meter across them off-board, before it
+    goes in. If they are still joined, plugging in USB back-feeds the bank into your computer.</li>
+  </ul>
+
+  <h3 class="sub-h">Stage 4 — chips in</h3>
+  <p>Power off. Check the socket's pin-1 end matches the chip's notch. Insert the 125 and the
+  Teensy, re-check row 1 to row 2 is still open, then power up. Steady draw should be around
+  100 mA — the Teensy alone. A jump means a part is in backwards.</p>
+
+  <h3 class="sub-h">A one-button test rig</h3>
+  <p>The controller board can drive a single finished cap before the button board exists. The
+  ribbon carries signals only, so power for the ring comes straight off the HUSB238 alongside the
+  board's own feed. Use a spare <code>XHP-6</code> — the order has twenty.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">JST pin</th><th>Signal</th><th>Comes from</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td>+5 V</td><td>HUSB238 output, direct</td></tr>
+      <tr><td class="m">2</td><td>DIN</td><td>Ribbon position <b>5</b></td></tr>
+      <tr><td class="m">3</td><td>GND</td><td>HUSB238 output, direct</td></tr>
+      <tr><td class="m">4</td><td>DOUT</td><td>Nothing — end of the chain</td></tr>
+      <tr><td class="m">5</td><td>SW</td><td>Ribbon position <b>1</b> (P1 BLUE)</td></tr>
+      <tr><td class="m">6</td><td>SW GND</td><td>Ribbon position <b>2</b></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>The two grounds must end up the same node — they do, because the board's ground also comes
+  from the HUSB238. Do not power the ring from a second supply.</p>
+
+  <div class="warn">
+    <h3>Getting into debug mode with one button</h3>
+    <p>Debug entry holds <b>both</b> start buttons, which you do not have. The inputs are
+    <code>INPUT_PULLUP</code>, so grounding a pin is a press: touch a wire from ribbon positions
+    <b>8</b> and <b>14</b> to position <b>2</b> for two seconds and the firmware sees both start
+    buttons held.</p>
+    <p>Then <code>LED WALK</code> should light your cap when it reaches P1 BLUE, and
+    <code>BUTTONS</code> should name it when you press. That is the whole signal path proven —
+    level shifter, data line, switch input — on one button.</p>
   </div>
 </section>
 
