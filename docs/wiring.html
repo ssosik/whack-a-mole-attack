@@ -1812,14 +1812,26 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">5</td><td class="m">row 22, left of cut</td><td class="m">row 2</td><td><b>The ribbon&#8217;s ground.</b> Its strip is cut from the Teensy, so without this the switch returns float.</td></tr>
       <tr><td class="m">6</td><td class="m">row 4, col 10 — V<sub>CC</sub></td><td class="m">row 1</td><td>Level shifter supply.</td></tr>
       <tr><td class="m">7</td><td class="m">row 10, col 7 — pin 7</td><td class="m">row 2</td><td>Level shifter ground.</td></tr>
-      <tr><td class="m">8</td><td class="m"><code>1OE</code> · <code>2A</code> · <code>4A</code> · <code>3A</code></td><td class="m">row 2</td><td>One wire linking rows 4, 8 (col 7) and 6, 9 (col 10) to ground — enables gate 1, holds the unused inputs.</td></tr>
-      <tr><td class="m">9</td><td class="m"><code>2OE</code> · <code>3OE</code> · <code>4OE</code></td><td class="m">row 1</td><td>One wire linking rows 7, 8 (col 10) and 5 (col 10) to 5 V — disables the three unused outputs.</td></tr>
+      <tr><td class="m">8</td><td class="m"><code>1OE</code> r4 c7<br><code>2A</code> r8 c7<br><code>3A</code> r9 c10<br><code>4A</code> r6 c10</td><td class="m">row 2</td><td>To <b>ground</b>. Grounding <code>1OE</code> is what enables the one gate in use; the three <code>nA</code> pins are unused inputs being held at a level so they cannot float.</td></tr>
+      <tr><td class="m">9</td><td class="m"><code>2OE</code> r7 <b>c7</b><br><code>3OE</code> r8 c10<br><code>4OE</code> r5 c10</td><td class="m">row 1</td><td>To <b>+5 V</b>. <code>OE</code> is active-low, so high disables — these three outputs go high-Z. Note <code>2OE</code> is on <b>column 7</b>, not 10.</td></tr>
     </tbody>
   </table></div>
 
-  <p>Outputs <code>2Y</code>, <code>3Y</code> and <code>4Y</code> (rows 9 col 7, 10 col 10,
-  7 col 10) stay genuinely unconnected. Jumpers 8 and 9 are each one wire touching several
-  points rather than three separate links.</p>
+<div class="warn">
+    <h3>Row 7 has a pin on each column, and they are opposites</h3>
+    <p><code>2OE</code> is at <b>row 7, column 7</b> and goes to +5 V. <code>4Y</code> is at
+    <b>row 7, column 10</b> and must stay <b>unconnected</b> — it is a disabled output. They sit
+    on the same strip row either side of the DIP's centreline cut, so "row 7" on its own is
+    ambiguous and tying the wrong one to 5 V puts a rail on an output pin.</p>
+    <p>The same shape applies at row 4: <code>1OE</code> (col 7) goes to ground while
+    V<sub>CC</sub> (col 10) goes to 5 V. Always carry the column with the row.</p>
+  </div>
+
+  <p>Outputs <code>2Y</code> (r9 c7), <code>3Y</code> (r10 c10) and <code>4Y</code> (r7 c10)
+  stay genuinely unconnected — that is what tri-state disabled means. Jumpers 8 and 9 can each
+  be a single wire touching its several points rather than separate links, but note that 9
+  spans both columns of the DIP and so crosses its centreline cut; that is fine for a wire on
+  the component side.</p>
 
 
   <h3 class="sub-h">Button board</h3>
@@ -1835,7 +1847,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         </g>
 
         <rect class="blk" x="250" y="34" width="92" height="26" rx="2"/>
-        <text class="ts" x="296" y="51" text-anchor="middle">ribbon 2×7</text>
+        <text class="ts" x="296" y="51" text-anchor="middle">ribbon 1×14</text>
 
         <g>
           <rect class="blk-a" x="162" y="74" width="30" height="58" rx="2"/><text class="ts" x="177" y="107" text-anchor="middle" transform="rotate(-90 177 107)">P1 BLUE</text>
@@ -1966,6 +1978,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>0.187" × <b>0.020"</b> quick disconnect, receptacle</td><td class="m">30</td><td class="m">TE 2-520181-2<br>DK A27804CT-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Fully insulated, so the sleeve is already on — there is no separate cover to buy at this size. The <code>CT</code> suffix is cut tape: they arrive on a carrier strip and get snipped off one at a time. 3M MNU18-187DFIK (DK 920044-01-ND) is an equivalent loose-piece part at roughly four times the price. Tab <em>thickness</em> matters as much as width — see below.</td></tr>
       <tr><td>Crimper — insulated terminals</td><td class="m">1</td><td class="m">ratcheting, 22–10 AWG</td><td>For the spade receptacles. Insulated terminals need a matching nest profile; pliers crush the sleeve and give a joint that passes a tug test today and fails in six months. <b>This tool will not crimp JST contacts.</b></td></tr>
       <tr><td>Crimper — open barrel</td><td class="m">1</td><td class="m">SN-28B or JST WC-110</td><td>For the JST-XH contacts, which are open-barrel and need a completely different die geometry. Avoidable — see the note below.</td></tr>
+      <tr><td>Ribbon header, 1×14</td><td class="m">2</td><td class="m">2.54 mm, through-hole</td><td>One per board. Single-row on purpose: each pin lands on its own strip and aligns with a Teensy pin, where a 2×7 would short its two columns together and need a centreline cut of its own.</td></tr>
+      <tr><td>14-way cable, board to board</td><td class="m">1</td><td class="m">28 AWG</td><td>12 switch lines, ground, pixel data.</td></tr>
       <tr><td>JST-XH housing, 6-pin</td><td class="m">10</td><td class="m">XHP-6<br>DK 455-2218-ND</td><td>Wire side, one per lit cap, so it unplugs for service.</td></tr>
       <tr><td>JST-XH housing, 2-pin</td><td class="m">2</td><td class="m">XHP-2</td><td>The start buttons — switch only.</td></tr>
       <tr><td>JST-XH header, 6-pin</td><td class="m">10</td><td class="m">B6B-XH-A<br>DK 455-B6B-XH-A-ND</td><td>Board side, through-hole, 2.5 mm pitch. <code>S6B-XH-A</code> is the right-angle version.</td></tr>
@@ -2027,21 +2041,21 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   opposite directions.</p>
 
   <div class="tw"><table>
-    <thead><tr><th class="m">Pin</th><th class="m">Name</th><th>Connect to</th><th>Why</th></tr></thead>
+    <thead><tr><th class="m">Pin</th><th class="m">Name</th><th class="m">Hole</th><th>Connect to</th><th>Why</th></tr></thead>
     <tbody>
-      <tr><td class="m">1</td><td class="m">1OE</td><td><b>GND</b></td><td>Active-low; grounding it enables the one gate in use.</td></tr>
-      <tr><td class="m">2</td><td class="m">1A</td><td>Teensy pin 24</td><td>3.3 V pixel data in.</td></tr>
-      <tr><td class="m">3</td><td class="m">1Y</td><td>330 Ω → first pixel DIN</td><td>5 V pixel data out.</td></tr>
-      <tr><td class="m">4</td><td class="m">2OE</td><td><b>V<sub>CC</sub></b></td><td rowspan="2">Gate 2 unused: output disabled, input held.</td></tr>
-      <tr><td class="m">5</td><td class="m">2A</td><td>GND</td></tr>
-      <tr><td class="m">6</td><td class="m">2Y</td><td>—</td><td>Genuinely open. That is what tri-state disabled means.</td></tr>
-      <tr><td class="m">7</td><td class="m">GND</td><td>Ground</td><td>The chip's own reference. See the note below.</td></tr>
-      <tr><td class="m">8</td><td class="m">3Y</td><td>—</td><td>Open.</td></tr>
-      <tr><td class="m">9</td><td class="m">3A</td><td>GND</td><td rowspan="2">Gate 3 unused.</td></tr>
-      <tr><td class="m">10</td><td class="m">3OE</td><td><b>V<sub>CC</sub></b></td></tr>
-      <tr><td class="m">11</td><td class="m">4Y</td><td>—</td><td>Open.</td></tr>
-      <tr><td class="m">12</td><td class="m">4A</td><td>GND</td><td rowspan="2">Gate 4 unused.</td></tr>
-      <tr><td class="m">13</td><td class="m">4OE</td><td><b>V<sub>CC</sub></b></td></tr>
+      <tr><td class="m">1</td><td class="m">1OE</td><td class="m">r4 c7</td><td><b>GND</b></td><td>Active-low; grounding it enables the one gate in use.</td></tr>
+      <tr><td class="m">2</td><td class="m">1A</td><td class="m">r5 c7</td><td>Teensy pin 24</td><td>3.3 V pixel data in.</td></tr>
+      <tr><td class="m">3</td><td class="m">1Y</td><td class="m">r6 c7</td><td>330 Ω → first pixel DIN</td><td>5 V pixel data out.</td></tr>
+      <tr><td class="m">4</td><td class="m">2OE</td><td class="m">r7 c7</td><td><b>V<sub>CC</sub></b></td><td rowspan="2">Gate 2 unused: output disabled, input held.</td></tr>
+      <tr><td class="m">5</td><td class="m">2A</td><td class="m">r8 c7</td><td>GND</td></tr>
+      <tr><td class="m">6</td><td class="m">2Y</td><td class="m">r9 c7</td><td>—</td><td>Genuinely open. That is what tri-state disabled means.</td></tr>
+      <tr><td class="m">7</td><td class="m">GND</td><td class="m">r10 c7</td><td>Ground</td><td>The chip's own reference. See the note below.</td></tr>
+      <tr><td class="m">8</td><td class="m">3Y</td><td class="m">r10 c10</td><td>—</td><td>Open.</td></tr>
+      <tr><td class="m">9</td><td class="m">3A</td><td class="m">r9 c10</td><td>GND</td><td rowspan="2">Gate 3 unused.</td></tr>
+      <tr><td class="m">10</td><td class="m">3OE</td><td class="m">r8 c10</td><td><b>V<sub>CC</sub></b></td></tr>
+      <tr><td class="m">11</td><td class="m">4Y</td><td class="m">r7 c10</td><td>—</td><td>Open.</td></tr>
+      <tr><td class="m">12</td><td class="m">4A</td><td class="m">r6 c10</td><td>GND</td><td rowspan="2">Gate 4 unused.</td></tr>
+      <tr><td class="m">13</td><td class="m">4OE</td><td class="m">r5 c10</td><td><b>V<sub>CC</sub></b></td></tr>
       <tr><td class="m">14</td><td class="m">V<sub>CC</sub></td><td>+5 V</td><td>0.1 µF from here to pin 7, as close to the chip as it will sit.</td></tr>
     </tbody>
   </table></div>
