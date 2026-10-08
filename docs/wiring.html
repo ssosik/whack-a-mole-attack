@@ -1887,14 +1887,36 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     The chain order on the board is the pixel index order in <code>Config.h</code>.</figcaption>
   </figure>
 
+<h3 class="sub-h">Wire gauges</h3>
+  <p>Three jobs, three answers. The constraint that catches people is mechanical, not
+  electrical: <b>18 AWG solid is 1.02 mm and a stripboard hole is about 1.0 mm</b>, so the gauge
+  specified for the under-table runs physically will not pass through the board.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Where</th><th class="m">Gauge</th><th class="m">Type</th><th>Why that one</th></tr></thead>
+    <tbody>
+      <tr><td>Board jumpers, both boards</td><td class="m">24 AWG</td><td class="m">solid, insulated</td><td>Carries signals, or the level shifter's ~20 mA. Gauge is irrelevant; <b>solid</b> is not — stranded frays going into a hole. Cat5/Cat6 offcuts are ideal: 24 AWG solid, eight colours, thin insulation.</td></tr>
+      <tr><td>Button board 5 V/GND bus</td><td class="m">20 AWG</td><td class="m">solid, <b>insulated</b></td><td>Carries up to 1.81 A. 22 AWG would do electrically (~10 mV drop over 100 mm) — 20 AWG is for robustness and for taking solder heat at ten tap points. Must be insulated: the bus crosses about twenty strips and should connect to ten.</td></tr>
+      <tr><td>Star to boards, star to panel</td><td class="m">18 AWG</td><td class="m">stranded</td><td>300–500 mm under the table, where drop accumulates. Terminate at the board edge and transition to the 20 AWG bus — do not try to push it through a hole.</td></tr>
+      <tr><td>Per-cap drops, switch returns</td><td class="m">22 AWG</td><td class="m">stranded</td><td>The only gauge in both the spade receptacle's 22–18 range and the JST contact's 22–28.</td></tr>
+      <tr><td>Inside the lit caps</td><td class="m">28 AWG</td><td class="m">stranded silicone</td><td>Has to flex across 3 mm of plunger travel on every press, and still crimp into a JST contact.</td></tr>
+      <tr><td>Board-to-board ribbon</td><td class="m">28 AWG</td><td class="m">ribbon cable</td><td>Signals only. The ground conductor carries twelve pull-up returns — under 2 mA.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>On the button board the bus is insulated wire run along the solder side, with a window
+  stripped at each connector's +5 V and GND pad. Bare wire there would short every strip it
+  crosses on the way past.</p>
+
   <div class="warn">
     <h3>Three things stripboard will do to you</h3>
     <p><b>The cut under the Teensy.</b> Strips are horizontal and the Teensy mounts vertically,
     so every strip crossing it shorts that row's left pin to its right pin. Cut all 24 rows
     between the pin rows before anything else goes on the board.</p>
-    <p><b>Strip current.</b> Stripboard copper is roughly 35 µm × 2 mm — about 29 AWG. It will
-    carry the ring current without burning, but solder a bare solid wire along the length of
-    both bus strips anyway. Five minutes, and the question never comes up again.</p>
+    <p><b>Strip current, on the button board only.</b> Stripboard copper is roughly 35 µm × 2 mm
+    — about 29 AWG. It carries the ring current without burning, but reinforce the two bus runs
+    there with solid wire anyway. The controller board needs none of this: its rails feed only
+    the level shifter and its decoupling, which is tens of milliamps.</p>
     <p><b>JST-XH is 2.5 mm pitch; stripboard is 2.54 mm.</b> Over six pins that is 0.2 mm of
     drift against about 0.18 mm of hole clearance. It goes in, but start each connector centred
     so the error splits both ways rather than accumulating toward one end.</p>
