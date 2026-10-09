@@ -23,7 +23,7 @@ BUILD   := build
 CHROME  := /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 SOURCES := $(wildcard firmware/WhackAMole/*.cpp firmware/WhackAMole/*.h) $(SKETCH)/WhackAMole.ino
 
-.PHONY: all build matrix upload format format-check tidy lint-py lint check-pins stl wiring-pdf clean
+.PHONY: all build matrix upload monitor format format-check tidy lint-py lint check-pins stl wiring-pdf clean
 
 all: build
 
@@ -66,10 +66,45 @@ matrix:
 	exit $$rc
 
 ## Compile and flash a connected Teensy. Honours GPIO= and PIXELS=.
-## Note: if the Teensy's VUSB/VIN pads are cut, USB alone will not power it --
-## the board needs its 5 V supply connected to be programmed at all.
-upload: build
-	arduino-cli upload --fqbn $(FQBN) --input-dir $(BUILD) $(SKETCH)
+##
+## Uses `compile --upload` rather than a separate `upload --input-dir`: the
+## latter hands the Teensy Loader a path it cannot resolve and fails with
+## "could not find the file WhackAMole.ino" even with the hex sitting there.
+## The port is found rather than assumed -- auto-detection fails with
+## "no upload port provided".
+##
+## If the Teensy's VUSB/VIN pads are cut, USB alone will not power it: the board
+## needs its 5 V supply connected to be programmed at all. An unpowered Teensy
+## never enumerates and looks unplugged.
+upload:
+	@defs=`arduino-cli board details -b $(FQBN) --show-properties | sed -n 's/^build\.flags\.defs=//p'`; \
+	if [ -z "$$defs" ]; then echo "could not read build.flags.defs for $(FQBN)"; exit 1; fi; \
+	port=`arduino-cli board list | awk '/$(subst :,\:,$(FQBN))/ {print $$1; exit}'`; \
+	if [ -z "$$port" ]; then \
+	  echo "no Teensy found. Powered? (VUSB cut means USB alone will not do it.)"; \
+	  echo "A board in bootloader mode still lists, as 'Teensy Ports'."; \
+	  exit 1; \
+	fi; \
+	echo "uploading WAM_INPUT_GPIO=$(GPIO) WAM_LIGHTS_PIXELS=$(PIXELS) to $$port"; \
+	arduino-cli compile --fqbn $(FQBN) \
+	  --build-property "build.flags.defs=$$defs -DWAM_INPUT_GPIO=$(GPIO) -DWAM_LIGHTS_PIXELS=$(PIXELS)" \
+	  --upload -p "$$port" $(SKETCH)
+
+## Watch the firmware's serial output. Ctrl-C to exit.
+##
+## Every upload re-enumerates the Teensy, so the port vanishes and returns and
+## this will drop out -- restart it after each flash. `brew install tio` gets a
+## monitor that reconnects on its own, which is worth it in a flash-test loop.
+monitor:
+	@port=`ls /dev/cu.usbmodem* 2>/dev/null | head -1`; \
+	if [ -z "$$port" ]; then \
+	  echo "no /dev/cu.usbmodem* found."; \
+	  echo "The firmware must be running and calling Serial.begin() to enumerate."; \
+	  echo "A board sitting in the bootloader presents as HID, not serial."; \
+	  exit 1; \
+	fi; \
+	echo "monitoring $$port at 115200 -- Ctrl-C to exit"; \
+	arduino-cli monitor -p "$$port" -c baudrate=115200
 
 format:
 	clang-format -i $(SOURCES)
