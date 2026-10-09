@@ -1998,6 +1998,10 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <li>Teensy VIN position (r11 c17) reads <b>5 V</b>; GND position (r12 c17) reads 0 V.</li>
     <li>Confirm the Teensy's <b>VUSB/VIN pads are cut</b> — meter across them off-board, before it
     goes in. If they are still joined, plugging in USB back-feeds the bank into your computer.</li>
+    <li><b>Once they are cut, USB carries data only.</b> The Teensy needs 5 V on <code>VIN</code> to
+    run at all, including to be programmed — an unpowered one never enumerates, so it is simply
+    absent from <code>arduino-cli board list</code> and looks unplugged. Power the board first,
+    then connect USB.</li>
   </ul>
 
   <h3 class="sub-h">Stage 4 — chips in</h3>

@@ -9,6 +9,15 @@
 #   brew install clang-format llvm ruff
 
 FQBN    := teensy:avr:teensy41
+
+# Which hardware the firmware is built for. Defaults match Config.h, which is
+# still the original table: resistor ladder and plain dome lamps. Override on
+# the command line for the rebuilt hardware:
+#
+#     make upload GPIO=1 PIXELS=1
+#
+GPIO    ?= 0
+PIXELS  ?= 0
 SKETCH  := firmware/WhackAMole
 BUILD   := build
 CHROME  := /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
@@ -18,9 +27,16 @@ SOURCES := $(wildcard firmware/WhackAMole/*.cpp firmware/WhackAMole/*.h) $(SKETC
 
 all: build
 
-## Compile the default hardware configuration.
+## Compile for the hardware selected by GPIO= and PIXELS= (see the top of this
+## file). The Teensy platform has no build.extra_flags hook, so the base
+## build.flags.defs is read back and appended to rather than replaced.
 build:
-	arduino-cli compile --warnings all --fqbn $(FQBN) --build-path $(BUILD) $(SKETCH)
+	@defs=`arduino-cli board details -b $(FQBN) --show-properties | sed -n 's/^build\.flags\.defs=//p'`; \
+	if [ -z "$$defs" ]; then echo "could not read build.flags.defs for $(FQBN)"; exit 1; fi; \
+	echo "building WAM_INPUT_GPIO=$(GPIO) WAM_LIGHTS_PIXELS=$(PIXELS)"; \
+	arduino-cli compile --warnings all --fqbn $(FQBN) \
+	  --build-property "build.flags.defs=$$defs -DWAM_INPUT_GPIO=$(GPIO) -DWAM_LIGHTS_PIXELS=$(PIXELS)" \
+	  --build-path $(BUILD) $(SKETCH)
 
 ## Compile every combination of input and lamp hardware. This is what keeps the
 ## resistor-ladder path from bit-rotting while the GPIO rewire is in progress,
@@ -49,7 +65,9 @@ matrix:
 	done; \
 	exit $$rc
 
-## Compile and flash a connected Teensy.
+## Compile and flash a connected Teensy. Honours GPIO= and PIXELS=.
+## Note: if the Teensy's VUSB/VIN pads are cut, USB alone will not power it --
+## the board needs its 5 V supply connected to be programmed at all.
 upload: build
 	arduino-cli upload --fqbn $(FQBN) --input-dir $(BUILD) $(SKETCH)
 
