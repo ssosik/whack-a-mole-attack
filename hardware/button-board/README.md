@@ -8,13 +8,27 @@ and 31 hand-soldered wires. This directory is the PCB alternative.
 
 | File | What |
 | --- | --- |
-| `gen-netlist.py` | Generates both outputs below. The single source of truth. |
-| `button-board.net` | KiCad netlist, generated. Import with **File → Import → Netlist** in the PCB editor. |
+| `gen-netlist.py` | The single source of truth. Everything else derives from it. |
+| `gen-schematic.py` | Draws the schematic from that netlist. |
+| `button-board.net` | KiCad netlist, generated. Import with **File → Import → Netlist**. |
+| `button-board.kicad_sch` | KiCad schematic, generated. Open it, then **Tools → Update PCB**. |
+| `button-board.pdf` | The schematic as a drawing, for reading away from KiCad. |
 
 ```sh
 python3 hardware/button-board/gen-netlist.py            # readable net table
 python3 hardware/button-board/gen-netlist.py --kicad    # KiCad netlist
+python3 hardware/button-board/gen-schematic.py          # KiCad schematic
 ```
+
+Connections are made with net labels on pin stubs rather than drawn wires. For
+twelve connectors and three buses that is the clearer drawing, and it removes
+the class of bug where a generated wire lands a fraction off a pin and silently
+connects nothing.
+
+Both outputs are checked, not assumed. ERC reports **0 errors, 0 warnings**, and
+the schematic is exported back to a netlist and diffed against the hand-built
+one — 25 nets and 83 nodes, matching exactly. ERC alone is not sufficient: an
+earlier draft passed ERC while connecting nothing at all.
 
 Ribbon positions are read out of `firmware/WhackAMole/Config.h` rather than
 written down here, so the netlist cannot drift from the firmware the way the
