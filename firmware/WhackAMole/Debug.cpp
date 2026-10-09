@@ -10,6 +10,23 @@ const char* const kButtonNames[config::kInputsPerPlayer] = {"BLUE",   "RED",    
 const char* const kScreenNames[(uint8_t) DebugScreen::Count] = {
     "LED WALK", "LED ALL", "BUTTONS", "CALIBRATE", "DISPLAY"};
 
+// Every cap shows this sequence before the walk moves on. The three primaries
+// come first and white last: a channel that is dead shows as a cap that skips
+// one colour, and a ring expecting a different byte order shows as the names
+// not matching what you see. White alone -- the old behaviour -- lights all
+// three channels at once and hides both faults.
+struct WalkColor {
+  Color color;
+  const char* name;
+};
+const WalkColor kWalkColors[] = {
+    {colors::kRed, "RED"},
+    {colors::kGreen, "GREEN"},
+    {colors::kBlue, "BLUE"},
+    {colors::kWhite, "WHITE"},
+};
+constexpr uint8_t kWalkColorCount = sizeof(kWalkColors) / sizeof(kWalkColors[0]);
+
 // Every controller-to-display message, so the display side can be exercised
 // end to end without playing a round.
 const char* const kDisplayTestMessages[] = {
@@ -90,6 +107,7 @@ void Debug::EnterScreen(DebugScreen screen, uint32_t now_ms) {
   }
 
   _walk_index = 0;
+  _walk_color = 0;
   _display_test_index = 0;
   _cal_phase = CalPhase::Prompt;
   _cal_player = 0;
@@ -134,8 +152,11 @@ void Debug::Update(uint32_t now_ms) {
   }
 }
 
-// Light every cap in turn, both players, naming each one as it comes up. A cap
-// that stays dark here is a wiring fault, not a game bug.
+// Light every cap in turn, both players, naming each one as it comes up. Each
+// cap steps through every colour before the walk moves on, so one pass tests
+// the wiring and all three colour channels together. A cap that stays dark is a
+// wiring fault; a cap that skips a colour is a dead channel; a cap whose colour
+// does not match the name is a ring expecting a different byte order.
 void Debug::UpdateLedWalk(uint32_t now_ms) {
   if (now_ms - _last_step_ms < config::kDebugLedWalkMs) {
     return;
@@ -145,20 +166,31 @@ void Debug::UpdateLedWalk(uint32_t now_ms) {
   const uint8_t total = config::kButtonsPerPlayer * 2;
   const uint8_t player = _walk_index / config::kButtonsPerPlayer;
   const uint8_t index = _walk_index % config::kButtonsPerPlayer;
+  const WalkColor& step = kWalkColors[_walk_color];
 
   for (auto* p : _players) {
     p->Lamps().Clear();
   }
-  _players[player]->Lamps().Set(index, colors::kWhite);
+  _players[player]->Lamps().Set(index, step.color);
   _players[player]->Lamps().Show();
 
-  char line[48];
-  snprintf(line, sizeof(line), "%s %s (pin %u)", _players[player]->Name(), kButtonNames[index],
-           (unsigned) LedPinFor(player, index));
+  char line[64];
+  snprintf(line, sizeof(line), "%s %s %s (pin %u)", _players[player]->Name(),
+           kButtonNames[index], step.name, (unsigned) LedPinFor(player, index));
   Serial.println(line);
-  SetBanner(line);
 
-  _walk_index = (uint8_t) ((_walk_index + 1) % total);
+  // The banner is 24 characters, so it gets the short form without the pin.
+  char banner[24];
+  snprintf(banner, sizeof(banner), "%s %s %s", _players[player]->Name(), kButtonNames[index],
+           step.name);
+  SetBanner(banner);
+
+  // Advance the colour first; the cap only changes once it has shown them all.
+  _walk_color = (uint8_t) (_walk_color + 1);
+  if (_walk_color >= kWalkColorCount) {
+    _walk_color = 0;
+    _walk_index = (uint8_t) ((_walk_index + 1) % total);
+  }
 }
 
 // Everything on solid: the screen to sit on with a meter on the 5 V rail.

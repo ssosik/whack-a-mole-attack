@@ -25,6 +25,13 @@ constexpr Color kWhite = {255, 255, 255};
 constexpr Color kMole = {255, 200, 40};  // lit mole cap
 constexpr Color kHit = {0, 255, 60};     // brief flash on a correct hit
 constexpr Color kMiss = {255, 0, 0};     // brief flash on a wrong button
+
+// Primaries, used only by the debug walk. Driving each channel on its own is
+// what distinguishes a dead colour from a dead pixel, and catches a ring wired
+// for a different byte order -- neither of which a white-only test can show.
+constexpr Color kRed = {255, 0, 0};
+constexpr Color kGreen = {0, 255, 0};
+constexpr Color kBlue = {0, 0, 255};
 } // namespace colors
 
 class Lights {

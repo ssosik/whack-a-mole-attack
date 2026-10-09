@@ -193,8 +193,10 @@ constexpr uint32_t kLedBlinkMs = 200;
 // the debug menu, and again to leave it.
 constexpr uint32_t kDebugEntryHoldMs = 2000;
 
-// Dwell time per lamp in the LED walk screen.
-constexpr uint32_t kDebugLedWalkMs = 500;
+// Dwell per colour step in the LED walk screen. Each cap shows every colour in
+// turn before the walk moves on, so one full sweep is this times the number of
+// colours times the number of caps -- about twelve seconds as configured.
+constexpr uint32_t kDebugLedWalkMs = 300;
 
 // Samples averaged per button on the calibration screen.
 constexpr uint8_t kCalibrationSamples = 32;

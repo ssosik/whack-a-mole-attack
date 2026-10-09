@@ -63,6 +63,7 @@ private:
 
   // LedWalk
   uint8_t _walk_index = 0;
+  uint8_t _walk_color = 0;
 
   // ButtonRead
   uint32_t _last_report_ms = 0;
