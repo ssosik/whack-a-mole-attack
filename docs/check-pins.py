@@ -36,6 +36,51 @@ def doc_cell(doc, label):
     return m.group(1).strip()
 
 
+def ribbon_rows(doc):
+    """Pull (pos, row, teensy, carries) out of the ribbon pinout table.
+
+    Laid out two positions per <tr>, so each row yields two entries.
+    """
+    start = doc.index('<h3 class="sub-h">Ribbon pinout</h3>')
+    seg = doc[start:doc.index("</table>", start)]
+    out = []
+    for tr in re.findall(r"<tr>(.*?)</tr>", seg, re.S):
+        cells = [
+            re.sub(r"<[^>]+>", "", c).strip()
+            for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tr, re.S)
+        ]
+        if len(cells) == 8 and cells[0].isdigit():
+            out.append(tuple(cells[0:4]))
+            out.append(tuple(cells[4:8]))
+    return sorted(out, key=lambda e: int(e[0]))
+
+
+def check_ribbon(doc, p1, p2):
+    """The ribbon's twelve live positions carry the switch pins in order.
+
+    Positions 2 and 5 are the strips cut away from the Teensy -- they land on
+    pin 10 (reserved) and 3.3 V -- and are reused for ground and pixel data.
+    """
+    bad = []
+    entries = ribbon_rows(doc)
+    if len(entries) != 14:
+        return [f"  ribbon table has {len(entries)} positions, expected 14"]
+
+    want_pins = p1 + p2  # P1 B R W G Y START, then P2
+    live = iter(want_pins)
+    for pos, row, pin, carries in entries:
+        if int(row) != 20 + int(pos):
+            bad.append(f"  ribbon pos {pos}: row {row}, expected {20 + int(pos)}")
+        if pos in ("2", "5"):
+            if pin != "\u2014":
+                bad.append(f"  ribbon pos {pos}: expected no Teensy pin, doc says {pin!r}")
+            continue
+        want = next(live)
+        if pin != want:
+            bad.append(f"  ribbon pos {pos} ({carries}): doc says pin {pin}, Config.h says {want}")
+    return bad
+
+
 def main():
     p1, p2, pixel = config_pins(CFG.read_text())
     doc = DOC.read_text()
@@ -64,10 +109,12 @@ def main():
             f"  level shifter 1A: doc says pin {m.group(1)}, kPixelDataPin is {pixel}"
         )
 
+    bad += check_ribbon(doc, p1, p2)
+
     if bad:
         print("docs/wiring.html has drifted from Config.h:\n" + "\n".join(bad))
         return 1
-    print(f"pins OK — P1 {p1}  P2 {p2}  pixel {pixel}")
+    print(f"pins OK \u2014 P1 {p1}  P2 {p2}  pixel {pixel}  (+ ribbon table)")
     return 0
 
 
