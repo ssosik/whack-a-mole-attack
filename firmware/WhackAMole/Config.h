@@ -26,6 +26,13 @@
 #define WAM_LIGHTS_PIXELS 0 // 0 = digitalWrite dome lamps, 1 = WS2812 in the caps
 #endif
 
+// Bench convenience: boot straight into the debug screens instead of running
+// the game. Useful when there is no display attached to answer the handshake
+// and no second start button to hold.
+#ifndef WAM_BOOT_TO_DEBUG
+#define WAM_BOOT_TO_DEBUG 0
+#endif
+
 namespace config {
 
 // --- Player / button counts ------------------------------------------------

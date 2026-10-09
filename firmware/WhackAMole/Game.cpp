@@ -161,7 +161,12 @@ void Game::Tick(uint32_t now_ms) {
 
   switch (_state) {
   case Boot:
+#if WAM_BOOT_TO_DEBUG
+    _debug.Enter(now_ms);
+    NextState(DebugMode, now_ms);
+#else
     NextState(SendConReady, now_ms);
+#endif
     break;
 
   case SendConReady:
@@ -171,6 +176,17 @@ void Game::Tick(uint32_t now_ms) {
     break;
 
   case DisplayReadyWait:
+    // The debug combo is honoured here, not only in the attract states. Without
+    // this the test screens are unreachable whenever the display does not
+    // answer -- which is every bench session before the Matrix Portal is wired,
+    // and any future session where the display has failed. Being locked out of
+    // the diagnostics exactly when something is broken is the wrong behaviour.
+    if (DebugComboHeld(now_ms)) {
+      _debug.Enter(now_ms);
+      NextState(DebugMode, now_ms);
+      break;
+    }
+
     if (ReadDisplayLine() && strcmp(_rx_buf, protocol::kDisplayReady) == 0) {
       NextState(Initialized, now_ms);
       break;
