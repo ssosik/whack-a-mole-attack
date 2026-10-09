@@ -90,11 +90,12 @@ upload:
 	  --build-property "build.flags.defs=$$defs -DWAM_INPUT_GPIO=$(GPIO) -DWAM_LIGHTS_PIXELS=$(PIXELS)" \
 	  --upload -p "$$port" $(SKETCH)
 
-## Watch the firmware's serial output. Ctrl-C to exit.
+## Watch the firmware's serial output.
 ##
-## Every upload re-enumerates the Teensy, so the port vanishes and returns and
-## this will drop out -- restart it after each flash. `brew install tio` gets a
-## monitor that reconnects on its own, which is worth it in a flash-test loop.
+## Prefers tio when installed, because every upload re-enumerates the Teensy and
+## tio reconnects on its own -- arduino-cli monitor drops out and has to be
+## restarted after each flash. In tio the escape is ctrl-t: ctrl-t q to quit,
+## ctrl-t ? for the rest. Plain ctrl-c is passed through to the board.
 monitor:
 	@port=`ls /dev/cu.usbmodem* 2>/dev/null | head -1`; \
 	if [ -z "$$port" ]; then \
@@ -103,8 +104,13 @@ monitor:
 	  echo "A board sitting in the bootloader presents as HID, not serial."; \
 	  exit 1; \
 	fi; \
-	echo "monitoring $$port at 115200 -- Ctrl-C to exit"; \
-	arduino-cli monitor -p "$$port" -c baudrate=115200
+	if command -v tio >/dev/null 2>&1; then \
+	  echo "monitoring $$port with tio -- ctrl-t q to quit, reconnects after a flash"; \
+	  tio -b 115200 -a latest "$$port"; \
+	else \
+	  echo "monitoring $$port at 115200 -- ctrl-c to exit"; \
+	  arduino-cli monitor -p "$$port" -c baudrate=115200; \
+	fi
 
 format:
 	clang-format -i $(SOURCES)
