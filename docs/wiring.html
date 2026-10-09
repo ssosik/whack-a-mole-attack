@@ -1836,68 +1836,1280 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <h3 class="sub-h">Button board</h3>
 
+  <p>One dimension forces this layout. A <code>B6B-XH-A</code> is <b>5.75&nbsp;mm deep</b> — 2.3
+  strip rows — so connectors cannot sit on adjacent rows; they need a three-row pitch. Twelve in
+  one column wants 36 rows against the 35 available, so it has to be two columns. That also kills
+  the tidy scheme the controller board uses, where each signal shares a strip with its Teensy pin:
+  the ribbon's one-row pitch cannot line up with a three-row connector pitch. <b>Every switch
+  signal needs a jumper here.</b></p>
+
   <figure>
     <div class="scroll">
-      <svg viewBox="0 0 700 470" role="img" aria-label="Button board placement. Ten six-pin JST headers sit in two columns of five with the two-pin start-button headers at the bottom. Vertical five volt and ground bus wires run down the centre between the columns, fed from the star, with the 1000 microfarad capacitor across them. The 14-way ribbon header is at the top.">
-        <rect x="150" y="26" width="292" height="400" rx="3" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.4"/>
-        <text class="tl" x="296" y="18" text-anchor="middle">73 × 100 MM · STRIPS HORIZONTAL</text>
-
-        <g stroke="var(--rule)" stroke-width="1">
-          <path d="M150,60 H442 M150,100 H442 M150,140 H442 M150,180 H442 M150,220 H442 M150,260 H442 M150,300 H442 M150,340 H442 M150,380 H442"/>
-        </g>
-
-        <rect class="blk" x="250" y="34" width="92" height="26" rx="2"/>
-        <text class="ts" x="296" y="51" text-anchor="middle">ribbon 1×14</text>
-
-        <g>
-          <rect class="blk-a" x="162" y="74" width="30" height="58" rx="2"/><text class="ts" x="177" y="107" text-anchor="middle" transform="rotate(-90 177 107)">P1 BLUE</text>
-          <rect class="blk-a" x="162" y="140" width="30" height="58" rx="2"/><text class="ts" x="177" y="173" text-anchor="middle" transform="rotate(-90 177 173)">P1 RED</text>
-          <rect class="blk-a" x="162" y="206" width="30" height="58" rx="2"/><text class="ts" x="177" y="239" text-anchor="middle" transform="rotate(-90 177 239)">P1 WHITE</text>
-          <rect class="blk-a" x="162" y="272" width="30" height="58" rx="2"/><text class="ts" x="177" y="305" text-anchor="middle" transform="rotate(-90 177 305)">P1 GREEN</text>
-          <rect class="blk-a" x="162" y="338" width="30" height="58" rx="2"/><text class="ts" x="177" y="371" text-anchor="middle" transform="rotate(-90 177 371)">P1 YELLOW</text>
-        </g>
-
-        <g>
-          <rect class="blk-a" x="400" y="74" width="30" height="58" rx="2"/><text class="ts" x="415" y="107" text-anchor="middle" transform="rotate(-90 415 107)">P2 BLUE</text>
-          <rect class="blk-a" x="400" y="140" width="30" height="58" rx="2"/><text class="ts" x="415" y="173" text-anchor="middle" transform="rotate(-90 415 173)">P2 RED</text>
-          <rect class="blk-a" x="400" y="206" width="30" height="58" rx="2"/><text class="ts" x="415" y="239" text-anchor="middle" transform="rotate(-90 415 239)">P2 WHITE</text>
-          <rect class="blk-a" x="400" y="272" width="30" height="58" rx="2"/><text class="ts" x="415" y="305" text-anchor="middle" transform="rotate(-90 415 305)">P2 GREEN</text>
-          <rect class="blk-a" x="400" y="338" width="30" height="58" rx="2"/><text class="ts" x="415" y="371" text-anchor="middle" transform="rotate(-90 415 371)">P2 YELLOW</text>
-        </g>
-
-        <rect class="blk" x="232" y="392" width="46" height="24" rx="2"/>
-        <text class="ts" x="255" y="408" text-anchor="middle">P1 start</text>
-        <rect class="blk" x="314" y="392" width="46" height="24" rx="2"/>
-        <text class="ts" x="337" y="408" text-anchor="middle">P2 start</text>
-
-        <path class="w5" stroke-width="4" fill="none" stroke-linecap="round" d="M268,74 V380"/>
-        <path class="wg" stroke-width="4" fill="none" stroke-linecap="round" d="M324,74 V380"/>
-        <text class="tl t5" x="268" y="68" text-anchor="middle">+5 V</text>
-        <text class="tl tg" x="324" y="68" text-anchor="middle">GND</text>
-
-        <rect class="blk" x="282" y="196" width="28" height="28" rx="3"/>
-        <text class="ts" x="296" y="240" text-anchor="middle">1000 µF</text>
-
-        <text class="ts" x="460" y="100">Two bus wires run vertically,</text>
-        <text class="ts" x="460" y="116">across the strips, soldered to</text>
-        <text class="ts" x="460" y="132">each connector&#8217;s +5 V and GND</text>
-        <text class="ts" x="460" y="148">row. This is the star point.</text>
-        <text class="ts" x="460" y="178">Each connector&#8217;s six pins land</text>
-        <text class="ts" x="460" y="194">on six separate strips, since the</text>
-        <text class="ts" x="460" y="210">pin row runs across them.</text>
-        <text class="ts td" x="460" y="240">DOUT of one cap jumps to DIN</text>
-        <text class="ts td" x="460" y="256">of the next, down the left column</text>
-        <text class="ts td" x="460" y="272">then up the right — that order is</text>
-        <text class="ts td" x="460" y="288">the pixel index order.</text>
-        <text class="ts twarn" x="460" y="318">Start buttons carry switch only.</text>
-        <text class="ts twarn" x="460" y="334">No ring, no place in the chain —</text>
-        <text class="ts twarn" x="460" y="350">but their grounds still join the</text>
-        <text class="ts twarn" x="460" y="366">GND bus.</text>
-      </svg>
+      <svg viewBox="0 0 834 588" role="img" aria-label="Button board stripboard map, 27 columns by 35 rows. Ten six-pin cap connectors sit in two columns of five on rows 3, 6, 9, 12 and 15, with the two start connectors on row 18. A fourteen-pin ribbon header runs down column 13 between them. Three bus rails run along rows 23, 24 and 25 for five volts, LED ground and switch ground, meeting at the star point.">
+<g stroke="var(--rule)" stroke-width="9" stroke-linecap="round" opacity="0.4">
+<line x1="150" y1="56" x2="514" y2="56"/>
+<line x1="150" y1="70" x2="514" y2="70"/>
+<line x1="150" y1="84" x2="514" y2="84"/>
+<line x1="150" y1="98" x2="514" y2="98"/>
+<line x1="150" y1="112" x2="514" y2="112"/>
+<line x1="150" y1="126" x2="514" y2="126"/>
+<line x1="150" y1="140" x2="514" y2="140"/>
+<line x1="150" y1="154" x2="514" y2="154"/>
+<line x1="150" y1="168" x2="514" y2="168"/>
+<line x1="150" y1="182" x2="514" y2="182"/>
+<line x1="150" y1="196" x2="514" y2="196"/>
+<line x1="150" y1="210" x2="514" y2="210"/>
+<line x1="150" y1="224" x2="514" y2="224"/>
+<line x1="150" y1="238" x2="514" y2="238"/>
+<line x1="150" y1="252" x2="514" y2="252"/>
+<line x1="150" y1="266" x2="514" y2="266"/>
+<line x1="150" y1="280" x2="514" y2="280"/>
+<line x1="150" y1="294" x2="514" y2="294"/>
+<line x1="150" y1="308" x2="514" y2="308"/>
+<line x1="150" y1="322" x2="514" y2="322"/>
+<line x1="150" y1="336" x2="514" y2="336"/>
+<line x1="150" y1="350" x2="514" y2="350"/>
+<line x1="150" y1="364" x2="514" y2="364"/>
+<line x1="150" y1="378" x2="514" y2="378"/>
+<line x1="150" y1="392" x2="514" y2="392"/>
+<line x1="150" y1="406" x2="514" y2="406"/>
+<line x1="150" y1="420" x2="514" y2="420"/>
+<line x1="150" y1="434" x2="514" y2="434"/>
+<line x1="150" y1="448" x2="514" y2="448"/>
+<line x1="150" y1="462" x2="514" y2="462"/>
+<line x1="150" y1="476" x2="514" y2="476"/>
+<line x1="150" y1="490" x2="514" y2="490"/>
+<line x1="150" y1="504" x2="514" y2="504"/>
+<line x1="150" y1="518" x2="514" y2="518"/>
+<line x1="150" y1="532" x2="514" y2="532"/>
+</g><g fill="var(--ink-3)" opacity="0.5">
+<circle cx="150" cy="56" r="1.5"/>
+<circle cx="164" cy="56" r="1.5"/>
+<circle cx="178" cy="56" r="1.5"/>
+<circle cx="192" cy="56" r="1.5"/>
+<circle cx="206" cy="56" r="1.5"/>
+<circle cx="220" cy="56" r="1.5"/>
+<circle cx="234" cy="56" r="1.5"/>
+<circle cx="248" cy="56" r="1.5"/>
+<circle cx="262" cy="56" r="1.5"/>
+<circle cx="276" cy="56" r="1.5"/>
+<circle cx="290" cy="56" r="1.5"/>
+<circle cx="304" cy="56" r="1.5"/>
+<circle cx="318" cy="56" r="1.5"/>
+<circle cx="332" cy="56" r="1.5"/>
+<circle cx="346" cy="56" r="1.5"/>
+<circle cx="360" cy="56" r="1.5"/>
+<circle cx="374" cy="56" r="1.5"/>
+<circle cx="388" cy="56" r="1.5"/>
+<circle cx="402" cy="56" r="1.5"/>
+<circle cx="416" cy="56" r="1.5"/>
+<circle cx="430" cy="56" r="1.5"/>
+<circle cx="444" cy="56" r="1.5"/>
+<circle cx="458" cy="56" r="1.5"/>
+<circle cx="472" cy="56" r="1.5"/>
+<circle cx="486" cy="56" r="1.5"/>
+<circle cx="500" cy="56" r="1.5"/>
+<circle cx="514" cy="56" r="1.5"/>
+<circle cx="150" cy="70" r="1.5"/>
+<circle cx="164" cy="70" r="1.5"/>
+<circle cx="178" cy="70" r="1.5"/>
+<circle cx="192" cy="70" r="1.5"/>
+<circle cx="206" cy="70" r="1.5"/>
+<circle cx="220" cy="70" r="1.5"/>
+<circle cx="234" cy="70" r="1.5"/>
+<circle cx="248" cy="70" r="1.5"/>
+<circle cx="262" cy="70" r="1.5"/>
+<circle cx="276" cy="70" r="1.5"/>
+<circle cx="290" cy="70" r="1.5"/>
+<circle cx="304" cy="70" r="1.5"/>
+<circle cx="318" cy="70" r="1.5"/>
+<circle cx="332" cy="70" r="1.5"/>
+<circle cx="346" cy="70" r="1.5"/>
+<circle cx="360" cy="70" r="1.5"/>
+<circle cx="374" cy="70" r="1.5"/>
+<circle cx="388" cy="70" r="1.5"/>
+<circle cx="402" cy="70" r="1.5"/>
+<circle cx="416" cy="70" r="1.5"/>
+<circle cx="430" cy="70" r="1.5"/>
+<circle cx="444" cy="70" r="1.5"/>
+<circle cx="458" cy="70" r="1.5"/>
+<circle cx="472" cy="70" r="1.5"/>
+<circle cx="486" cy="70" r="1.5"/>
+<circle cx="500" cy="70" r="1.5"/>
+<circle cx="514" cy="70" r="1.5"/>
+<circle cx="150" cy="84" r="1.5"/>
+<circle cx="164" cy="84" r="1.5"/>
+<circle cx="178" cy="84" r="1.5"/>
+<circle cx="192" cy="84" r="1.5"/>
+<circle cx="206" cy="84" r="1.5"/>
+<circle cx="220" cy="84" r="1.5"/>
+<circle cx="234" cy="84" r="1.5"/>
+<circle cx="248" cy="84" r="1.5"/>
+<circle cx="262" cy="84" r="1.5"/>
+<circle cx="276" cy="84" r="1.5"/>
+<circle cx="290" cy="84" r="1.5"/>
+<circle cx="304" cy="84" r="1.5"/>
+<circle cx="318" cy="84" r="1.5"/>
+<circle cx="332" cy="84" r="1.5"/>
+<circle cx="346" cy="84" r="1.5"/>
+<circle cx="360" cy="84" r="1.5"/>
+<circle cx="374" cy="84" r="1.5"/>
+<circle cx="388" cy="84" r="1.5"/>
+<circle cx="402" cy="84" r="1.5"/>
+<circle cx="416" cy="84" r="1.5"/>
+<circle cx="430" cy="84" r="1.5"/>
+<circle cx="444" cy="84" r="1.5"/>
+<circle cx="458" cy="84" r="1.5"/>
+<circle cx="472" cy="84" r="1.5"/>
+<circle cx="486" cy="84" r="1.5"/>
+<circle cx="500" cy="84" r="1.5"/>
+<circle cx="514" cy="84" r="1.5"/>
+<circle cx="150" cy="98" r="1.5"/>
+<circle cx="164" cy="98" r="1.5"/>
+<circle cx="178" cy="98" r="1.5"/>
+<circle cx="192" cy="98" r="1.5"/>
+<circle cx="206" cy="98" r="1.5"/>
+<circle cx="220" cy="98" r="1.5"/>
+<circle cx="234" cy="98" r="1.5"/>
+<circle cx="248" cy="98" r="1.5"/>
+<circle cx="262" cy="98" r="1.5"/>
+<circle cx="276" cy="98" r="1.5"/>
+<circle cx="290" cy="98" r="1.5"/>
+<circle cx="304" cy="98" r="1.5"/>
+<circle cx="318" cy="98" r="1.5"/>
+<circle cx="332" cy="98" r="1.5"/>
+<circle cx="346" cy="98" r="1.5"/>
+<circle cx="360" cy="98" r="1.5"/>
+<circle cx="374" cy="98" r="1.5"/>
+<circle cx="388" cy="98" r="1.5"/>
+<circle cx="402" cy="98" r="1.5"/>
+<circle cx="416" cy="98" r="1.5"/>
+<circle cx="430" cy="98" r="1.5"/>
+<circle cx="444" cy="98" r="1.5"/>
+<circle cx="458" cy="98" r="1.5"/>
+<circle cx="472" cy="98" r="1.5"/>
+<circle cx="486" cy="98" r="1.5"/>
+<circle cx="500" cy="98" r="1.5"/>
+<circle cx="514" cy="98" r="1.5"/>
+<circle cx="150" cy="112" r="1.5"/>
+<circle cx="164" cy="112" r="1.5"/>
+<circle cx="178" cy="112" r="1.5"/>
+<circle cx="192" cy="112" r="1.5"/>
+<circle cx="206" cy="112" r="1.5"/>
+<circle cx="220" cy="112" r="1.5"/>
+<circle cx="234" cy="112" r="1.5"/>
+<circle cx="248" cy="112" r="1.5"/>
+<circle cx="262" cy="112" r="1.5"/>
+<circle cx="276" cy="112" r="1.5"/>
+<circle cx="290" cy="112" r="1.5"/>
+<circle cx="304" cy="112" r="1.5"/>
+<circle cx="318" cy="112" r="1.5"/>
+<circle cx="332" cy="112" r="1.5"/>
+<circle cx="346" cy="112" r="1.5"/>
+<circle cx="360" cy="112" r="1.5"/>
+<circle cx="374" cy="112" r="1.5"/>
+<circle cx="388" cy="112" r="1.5"/>
+<circle cx="402" cy="112" r="1.5"/>
+<circle cx="416" cy="112" r="1.5"/>
+<circle cx="430" cy="112" r="1.5"/>
+<circle cx="444" cy="112" r="1.5"/>
+<circle cx="458" cy="112" r="1.5"/>
+<circle cx="472" cy="112" r="1.5"/>
+<circle cx="486" cy="112" r="1.5"/>
+<circle cx="500" cy="112" r="1.5"/>
+<circle cx="514" cy="112" r="1.5"/>
+<circle cx="150" cy="126" r="1.5"/>
+<circle cx="164" cy="126" r="1.5"/>
+<circle cx="178" cy="126" r="1.5"/>
+<circle cx="192" cy="126" r="1.5"/>
+<circle cx="206" cy="126" r="1.5"/>
+<circle cx="220" cy="126" r="1.5"/>
+<circle cx="234" cy="126" r="1.5"/>
+<circle cx="248" cy="126" r="1.5"/>
+<circle cx="262" cy="126" r="1.5"/>
+<circle cx="276" cy="126" r="1.5"/>
+<circle cx="290" cy="126" r="1.5"/>
+<circle cx="304" cy="126" r="1.5"/>
+<circle cx="318" cy="126" r="1.5"/>
+<circle cx="332" cy="126" r="1.5"/>
+<circle cx="346" cy="126" r="1.5"/>
+<circle cx="360" cy="126" r="1.5"/>
+<circle cx="374" cy="126" r="1.5"/>
+<circle cx="388" cy="126" r="1.5"/>
+<circle cx="402" cy="126" r="1.5"/>
+<circle cx="416" cy="126" r="1.5"/>
+<circle cx="430" cy="126" r="1.5"/>
+<circle cx="444" cy="126" r="1.5"/>
+<circle cx="458" cy="126" r="1.5"/>
+<circle cx="472" cy="126" r="1.5"/>
+<circle cx="486" cy="126" r="1.5"/>
+<circle cx="500" cy="126" r="1.5"/>
+<circle cx="514" cy="126" r="1.5"/>
+<circle cx="150" cy="140" r="1.5"/>
+<circle cx="164" cy="140" r="1.5"/>
+<circle cx="178" cy="140" r="1.5"/>
+<circle cx="192" cy="140" r="1.5"/>
+<circle cx="206" cy="140" r="1.5"/>
+<circle cx="220" cy="140" r="1.5"/>
+<circle cx="234" cy="140" r="1.5"/>
+<circle cx="248" cy="140" r="1.5"/>
+<circle cx="262" cy="140" r="1.5"/>
+<circle cx="276" cy="140" r="1.5"/>
+<circle cx="290" cy="140" r="1.5"/>
+<circle cx="304" cy="140" r="1.5"/>
+<circle cx="318" cy="140" r="1.5"/>
+<circle cx="332" cy="140" r="1.5"/>
+<circle cx="346" cy="140" r="1.5"/>
+<circle cx="360" cy="140" r="1.5"/>
+<circle cx="374" cy="140" r="1.5"/>
+<circle cx="388" cy="140" r="1.5"/>
+<circle cx="402" cy="140" r="1.5"/>
+<circle cx="416" cy="140" r="1.5"/>
+<circle cx="430" cy="140" r="1.5"/>
+<circle cx="444" cy="140" r="1.5"/>
+<circle cx="458" cy="140" r="1.5"/>
+<circle cx="472" cy="140" r="1.5"/>
+<circle cx="486" cy="140" r="1.5"/>
+<circle cx="500" cy="140" r="1.5"/>
+<circle cx="514" cy="140" r="1.5"/>
+<circle cx="150" cy="154" r="1.5"/>
+<circle cx="164" cy="154" r="1.5"/>
+<circle cx="178" cy="154" r="1.5"/>
+<circle cx="192" cy="154" r="1.5"/>
+<circle cx="206" cy="154" r="1.5"/>
+<circle cx="220" cy="154" r="1.5"/>
+<circle cx="234" cy="154" r="1.5"/>
+<circle cx="248" cy="154" r="1.5"/>
+<circle cx="262" cy="154" r="1.5"/>
+<circle cx="276" cy="154" r="1.5"/>
+<circle cx="290" cy="154" r="1.5"/>
+<circle cx="304" cy="154" r="1.5"/>
+<circle cx="318" cy="154" r="1.5"/>
+<circle cx="332" cy="154" r="1.5"/>
+<circle cx="346" cy="154" r="1.5"/>
+<circle cx="360" cy="154" r="1.5"/>
+<circle cx="374" cy="154" r="1.5"/>
+<circle cx="388" cy="154" r="1.5"/>
+<circle cx="402" cy="154" r="1.5"/>
+<circle cx="416" cy="154" r="1.5"/>
+<circle cx="430" cy="154" r="1.5"/>
+<circle cx="444" cy="154" r="1.5"/>
+<circle cx="458" cy="154" r="1.5"/>
+<circle cx="472" cy="154" r="1.5"/>
+<circle cx="486" cy="154" r="1.5"/>
+<circle cx="500" cy="154" r="1.5"/>
+<circle cx="514" cy="154" r="1.5"/>
+<circle cx="150" cy="168" r="1.5"/>
+<circle cx="164" cy="168" r="1.5"/>
+<circle cx="178" cy="168" r="1.5"/>
+<circle cx="192" cy="168" r="1.5"/>
+<circle cx="206" cy="168" r="1.5"/>
+<circle cx="220" cy="168" r="1.5"/>
+<circle cx="234" cy="168" r="1.5"/>
+<circle cx="248" cy="168" r="1.5"/>
+<circle cx="262" cy="168" r="1.5"/>
+<circle cx="276" cy="168" r="1.5"/>
+<circle cx="290" cy="168" r="1.5"/>
+<circle cx="304" cy="168" r="1.5"/>
+<circle cx="318" cy="168" r="1.5"/>
+<circle cx="332" cy="168" r="1.5"/>
+<circle cx="346" cy="168" r="1.5"/>
+<circle cx="360" cy="168" r="1.5"/>
+<circle cx="374" cy="168" r="1.5"/>
+<circle cx="388" cy="168" r="1.5"/>
+<circle cx="402" cy="168" r="1.5"/>
+<circle cx="416" cy="168" r="1.5"/>
+<circle cx="430" cy="168" r="1.5"/>
+<circle cx="444" cy="168" r="1.5"/>
+<circle cx="458" cy="168" r="1.5"/>
+<circle cx="472" cy="168" r="1.5"/>
+<circle cx="486" cy="168" r="1.5"/>
+<circle cx="500" cy="168" r="1.5"/>
+<circle cx="514" cy="168" r="1.5"/>
+<circle cx="150" cy="182" r="1.5"/>
+<circle cx="164" cy="182" r="1.5"/>
+<circle cx="178" cy="182" r="1.5"/>
+<circle cx="192" cy="182" r="1.5"/>
+<circle cx="206" cy="182" r="1.5"/>
+<circle cx="220" cy="182" r="1.5"/>
+<circle cx="234" cy="182" r="1.5"/>
+<circle cx="248" cy="182" r="1.5"/>
+<circle cx="262" cy="182" r="1.5"/>
+<circle cx="276" cy="182" r="1.5"/>
+<circle cx="290" cy="182" r="1.5"/>
+<circle cx="304" cy="182" r="1.5"/>
+<circle cx="318" cy="182" r="1.5"/>
+<circle cx="332" cy="182" r="1.5"/>
+<circle cx="346" cy="182" r="1.5"/>
+<circle cx="360" cy="182" r="1.5"/>
+<circle cx="374" cy="182" r="1.5"/>
+<circle cx="388" cy="182" r="1.5"/>
+<circle cx="402" cy="182" r="1.5"/>
+<circle cx="416" cy="182" r="1.5"/>
+<circle cx="430" cy="182" r="1.5"/>
+<circle cx="444" cy="182" r="1.5"/>
+<circle cx="458" cy="182" r="1.5"/>
+<circle cx="472" cy="182" r="1.5"/>
+<circle cx="486" cy="182" r="1.5"/>
+<circle cx="500" cy="182" r="1.5"/>
+<circle cx="514" cy="182" r="1.5"/>
+<circle cx="150" cy="196" r="1.5"/>
+<circle cx="164" cy="196" r="1.5"/>
+<circle cx="178" cy="196" r="1.5"/>
+<circle cx="192" cy="196" r="1.5"/>
+<circle cx="206" cy="196" r="1.5"/>
+<circle cx="220" cy="196" r="1.5"/>
+<circle cx="234" cy="196" r="1.5"/>
+<circle cx="248" cy="196" r="1.5"/>
+<circle cx="262" cy="196" r="1.5"/>
+<circle cx="276" cy="196" r="1.5"/>
+<circle cx="290" cy="196" r="1.5"/>
+<circle cx="304" cy="196" r="1.5"/>
+<circle cx="318" cy="196" r="1.5"/>
+<circle cx="332" cy="196" r="1.5"/>
+<circle cx="346" cy="196" r="1.5"/>
+<circle cx="360" cy="196" r="1.5"/>
+<circle cx="374" cy="196" r="1.5"/>
+<circle cx="388" cy="196" r="1.5"/>
+<circle cx="402" cy="196" r="1.5"/>
+<circle cx="416" cy="196" r="1.5"/>
+<circle cx="430" cy="196" r="1.5"/>
+<circle cx="444" cy="196" r="1.5"/>
+<circle cx="458" cy="196" r="1.5"/>
+<circle cx="472" cy="196" r="1.5"/>
+<circle cx="486" cy="196" r="1.5"/>
+<circle cx="500" cy="196" r="1.5"/>
+<circle cx="514" cy="196" r="1.5"/>
+<circle cx="150" cy="210" r="1.5"/>
+<circle cx="164" cy="210" r="1.5"/>
+<circle cx="178" cy="210" r="1.5"/>
+<circle cx="192" cy="210" r="1.5"/>
+<circle cx="206" cy="210" r="1.5"/>
+<circle cx="220" cy="210" r="1.5"/>
+<circle cx="234" cy="210" r="1.5"/>
+<circle cx="248" cy="210" r="1.5"/>
+<circle cx="262" cy="210" r="1.5"/>
+<circle cx="276" cy="210" r="1.5"/>
+<circle cx="290" cy="210" r="1.5"/>
+<circle cx="304" cy="210" r="1.5"/>
+<circle cx="318" cy="210" r="1.5"/>
+<circle cx="332" cy="210" r="1.5"/>
+<circle cx="346" cy="210" r="1.5"/>
+<circle cx="360" cy="210" r="1.5"/>
+<circle cx="374" cy="210" r="1.5"/>
+<circle cx="388" cy="210" r="1.5"/>
+<circle cx="402" cy="210" r="1.5"/>
+<circle cx="416" cy="210" r="1.5"/>
+<circle cx="430" cy="210" r="1.5"/>
+<circle cx="444" cy="210" r="1.5"/>
+<circle cx="458" cy="210" r="1.5"/>
+<circle cx="472" cy="210" r="1.5"/>
+<circle cx="486" cy="210" r="1.5"/>
+<circle cx="500" cy="210" r="1.5"/>
+<circle cx="514" cy="210" r="1.5"/>
+<circle cx="150" cy="224" r="1.5"/>
+<circle cx="164" cy="224" r="1.5"/>
+<circle cx="178" cy="224" r="1.5"/>
+<circle cx="192" cy="224" r="1.5"/>
+<circle cx="206" cy="224" r="1.5"/>
+<circle cx="220" cy="224" r="1.5"/>
+<circle cx="234" cy="224" r="1.5"/>
+<circle cx="248" cy="224" r="1.5"/>
+<circle cx="262" cy="224" r="1.5"/>
+<circle cx="276" cy="224" r="1.5"/>
+<circle cx="290" cy="224" r="1.5"/>
+<circle cx="304" cy="224" r="1.5"/>
+<circle cx="318" cy="224" r="1.5"/>
+<circle cx="332" cy="224" r="1.5"/>
+<circle cx="346" cy="224" r="1.5"/>
+<circle cx="360" cy="224" r="1.5"/>
+<circle cx="374" cy="224" r="1.5"/>
+<circle cx="388" cy="224" r="1.5"/>
+<circle cx="402" cy="224" r="1.5"/>
+<circle cx="416" cy="224" r="1.5"/>
+<circle cx="430" cy="224" r="1.5"/>
+<circle cx="444" cy="224" r="1.5"/>
+<circle cx="458" cy="224" r="1.5"/>
+<circle cx="472" cy="224" r="1.5"/>
+<circle cx="486" cy="224" r="1.5"/>
+<circle cx="500" cy="224" r="1.5"/>
+<circle cx="514" cy="224" r="1.5"/>
+<circle cx="150" cy="238" r="1.5"/>
+<circle cx="164" cy="238" r="1.5"/>
+<circle cx="178" cy="238" r="1.5"/>
+<circle cx="192" cy="238" r="1.5"/>
+<circle cx="206" cy="238" r="1.5"/>
+<circle cx="220" cy="238" r="1.5"/>
+<circle cx="234" cy="238" r="1.5"/>
+<circle cx="248" cy="238" r="1.5"/>
+<circle cx="262" cy="238" r="1.5"/>
+<circle cx="276" cy="238" r="1.5"/>
+<circle cx="290" cy="238" r="1.5"/>
+<circle cx="304" cy="238" r="1.5"/>
+<circle cx="318" cy="238" r="1.5"/>
+<circle cx="332" cy="238" r="1.5"/>
+<circle cx="346" cy="238" r="1.5"/>
+<circle cx="360" cy="238" r="1.5"/>
+<circle cx="374" cy="238" r="1.5"/>
+<circle cx="388" cy="238" r="1.5"/>
+<circle cx="402" cy="238" r="1.5"/>
+<circle cx="416" cy="238" r="1.5"/>
+<circle cx="430" cy="238" r="1.5"/>
+<circle cx="444" cy="238" r="1.5"/>
+<circle cx="458" cy="238" r="1.5"/>
+<circle cx="472" cy="238" r="1.5"/>
+<circle cx="486" cy="238" r="1.5"/>
+<circle cx="500" cy="238" r="1.5"/>
+<circle cx="514" cy="238" r="1.5"/>
+<circle cx="150" cy="252" r="1.5"/>
+<circle cx="164" cy="252" r="1.5"/>
+<circle cx="178" cy="252" r="1.5"/>
+<circle cx="192" cy="252" r="1.5"/>
+<circle cx="206" cy="252" r="1.5"/>
+<circle cx="220" cy="252" r="1.5"/>
+<circle cx="234" cy="252" r="1.5"/>
+<circle cx="248" cy="252" r="1.5"/>
+<circle cx="262" cy="252" r="1.5"/>
+<circle cx="276" cy="252" r="1.5"/>
+<circle cx="290" cy="252" r="1.5"/>
+<circle cx="304" cy="252" r="1.5"/>
+<circle cx="318" cy="252" r="1.5"/>
+<circle cx="332" cy="252" r="1.5"/>
+<circle cx="346" cy="252" r="1.5"/>
+<circle cx="360" cy="252" r="1.5"/>
+<circle cx="374" cy="252" r="1.5"/>
+<circle cx="388" cy="252" r="1.5"/>
+<circle cx="402" cy="252" r="1.5"/>
+<circle cx="416" cy="252" r="1.5"/>
+<circle cx="430" cy="252" r="1.5"/>
+<circle cx="444" cy="252" r="1.5"/>
+<circle cx="458" cy="252" r="1.5"/>
+<circle cx="472" cy="252" r="1.5"/>
+<circle cx="486" cy="252" r="1.5"/>
+<circle cx="500" cy="252" r="1.5"/>
+<circle cx="514" cy="252" r="1.5"/>
+<circle cx="150" cy="266" r="1.5"/>
+<circle cx="164" cy="266" r="1.5"/>
+<circle cx="178" cy="266" r="1.5"/>
+<circle cx="192" cy="266" r="1.5"/>
+<circle cx="206" cy="266" r="1.5"/>
+<circle cx="220" cy="266" r="1.5"/>
+<circle cx="234" cy="266" r="1.5"/>
+<circle cx="248" cy="266" r="1.5"/>
+<circle cx="262" cy="266" r="1.5"/>
+<circle cx="276" cy="266" r="1.5"/>
+<circle cx="290" cy="266" r="1.5"/>
+<circle cx="304" cy="266" r="1.5"/>
+<circle cx="318" cy="266" r="1.5"/>
+<circle cx="332" cy="266" r="1.5"/>
+<circle cx="346" cy="266" r="1.5"/>
+<circle cx="360" cy="266" r="1.5"/>
+<circle cx="374" cy="266" r="1.5"/>
+<circle cx="388" cy="266" r="1.5"/>
+<circle cx="402" cy="266" r="1.5"/>
+<circle cx="416" cy="266" r="1.5"/>
+<circle cx="430" cy="266" r="1.5"/>
+<circle cx="444" cy="266" r="1.5"/>
+<circle cx="458" cy="266" r="1.5"/>
+<circle cx="472" cy="266" r="1.5"/>
+<circle cx="486" cy="266" r="1.5"/>
+<circle cx="500" cy="266" r="1.5"/>
+<circle cx="514" cy="266" r="1.5"/>
+<circle cx="150" cy="280" r="1.5"/>
+<circle cx="164" cy="280" r="1.5"/>
+<circle cx="178" cy="280" r="1.5"/>
+<circle cx="192" cy="280" r="1.5"/>
+<circle cx="206" cy="280" r="1.5"/>
+<circle cx="220" cy="280" r="1.5"/>
+<circle cx="234" cy="280" r="1.5"/>
+<circle cx="248" cy="280" r="1.5"/>
+<circle cx="262" cy="280" r="1.5"/>
+<circle cx="276" cy="280" r="1.5"/>
+<circle cx="290" cy="280" r="1.5"/>
+<circle cx="304" cy="280" r="1.5"/>
+<circle cx="318" cy="280" r="1.5"/>
+<circle cx="332" cy="280" r="1.5"/>
+<circle cx="346" cy="280" r="1.5"/>
+<circle cx="360" cy="280" r="1.5"/>
+<circle cx="374" cy="280" r="1.5"/>
+<circle cx="388" cy="280" r="1.5"/>
+<circle cx="402" cy="280" r="1.5"/>
+<circle cx="416" cy="280" r="1.5"/>
+<circle cx="430" cy="280" r="1.5"/>
+<circle cx="444" cy="280" r="1.5"/>
+<circle cx="458" cy="280" r="1.5"/>
+<circle cx="472" cy="280" r="1.5"/>
+<circle cx="486" cy="280" r="1.5"/>
+<circle cx="500" cy="280" r="1.5"/>
+<circle cx="514" cy="280" r="1.5"/>
+<circle cx="150" cy="294" r="1.5"/>
+<circle cx="164" cy="294" r="1.5"/>
+<circle cx="178" cy="294" r="1.5"/>
+<circle cx="192" cy="294" r="1.5"/>
+<circle cx="206" cy="294" r="1.5"/>
+<circle cx="220" cy="294" r="1.5"/>
+<circle cx="234" cy="294" r="1.5"/>
+<circle cx="248" cy="294" r="1.5"/>
+<circle cx="262" cy="294" r="1.5"/>
+<circle cx="276" cy="294" r="1.5"/>
+<circle cx="290" cy="294" r="1.5"/>
+<circle cx="304" cy="294" r="1.5"/>
+<circle cx="318" cy="294" r="1.5"/>
+<circle cx="332" cy="294" r="1.5"/>
+<circle cx="346" cy="294" r="1.5"/>
+<circle cx="360" cy="294" r="1.5"/>
+<circle cx="374" cy="294" r="1.5"/>
+<circle cx="388" cy="294" r="1.5"/>
+<circle cx="402" cy="294" r="1.5"/>
+<circle cx="416" cy="294" r="1.5"/>
+<circle cx="430" cy="294" r="1.5"/>
+<circle cx="444" cy="294" r="1.5"/>
+<circle cx="458" cy="294" r="1.5"/>
+<circle cx="472" cy="294" r="1.5"/>
+<circle cx="486" cy="294" r="1.5"/>
+<circle cx="500" cy="294" r="1.5"/>
+<circle cx="514" cy="294" r="1.5"/>
+<circle cx="150" cy="308" r="1.5"/>
+<circle cx="164" cy="308" r="1.5"/>
+<circle cx="178" cy="308" r="1.5"/>
+<circle cx="192" cy="308" r="1.5"/>
+<circle cx="206" cy="308" r="1.5"/>
+<circle cx="220" cy="308" r="1.5"/>
+<circle cx="234" cy="308" r="1.5"/>
+<circle cx="248" cy="308" r="1.5"/>
+<circle cx="262" cy="308" r="1.5"/>
+<circle cx="276" cy="308" r="1.5"/>
+<circle cx="290" cy="308" r="1.5"/>
+<circle cx="304" cy="308" r="1.5"/>
+<circle cx="318" cy="308" r="1.5"/>
+<circle cx="332" cy="308" r="1.5"/>
+<circle cx="346" cy="308" r="1.5"/>
+<circle cx="360" cy="308" r="1.5"/>
+<circle cx="374" cy="308" r="1.5"/>
+<circle cx="388" cy="308" r="1.5"/>
+<circle cx="402" cy="308" r="1.5"/>
+<circle cx="416" cy="308" r="1.5"/>
+<circle cx="430" cy="308" r="1.5"/>
+<circle cx="444" cy="308" r="1.5"/>
+<circle cx="458" cy="308" r="1.5"/>
+<circle cx="472" cy="308" r="1.5"/>
+<circle cx="486" cy="308" r="1.5"/>
+<circle cx="500" cy="308" r="1.5"/>
+<circle cx="514" cy="308" r="1.5"/>
+<circle cx="150" cy="322" r="1.5"/>
+<circle cx="164" cy="322" r="1.5"/>
+<circle cx="178" cy="322" r="1.5"/>
+<circle cx="192" cy="322" r="1.5"/>
+<circle cx="206" cy="322" r="1.5"/>
+<circle cx="220" cy="322" r="1.5"/>
+<circle cx="234" cy="322" r="1.5"/>
+<circle cx="248" cy="322" r="1.5"/>
+<circle cx="262" cy="322" r="1.5"/>
+<circle cx="276" cy="322" r="1.5"/>
+<circle cx="290" cy="322" r="1.5"/>
+<circle cx="304" cy="322" r="1.5"/>
+<circle cx="318" cy="322" r="1.5"/>
+<circle cx="332" cy="322" r="1.5"/>
+<circle cx="346" cy="322" r="1.5"/>
+<circle cx="360" cy="322" r="1.5"/>
+<circle cx="374" cy="322" r="1.5"/>
+<circle cx="388" cy="322" r="1.5"/>
+<circle cx="402" cy="322" r="1.5"/>
+<circle cx="416" cy="322" r="1.5"/>
+<circle cx="430" cy="322" r="1.5"/>
+<circle cx="444" cy="322" r="1.5"/>
+<circle cx="458" cy="322" r="1.5"/>
+<circle cx="472" cy="322" r="1.5"/>
+<circle cx="486" cy="322" r="1.5"/>
+<circle cx="500" cy="322" r="1.5"/>
+<circle cx="514" cy="322" r="1.5"/>
+<circle cx="150" cy="336" r="1.5"/>
+<circle cx="164" cy="336" r="1.5"/>
+<circle cx="178" cy="336" r="1.5"/>
+<circle cx="192" cy="336" r="1.5"/>
+<circle cx="206" cy="336" r="1.5"/>
+<circle cx="220" cy="336" r="1.5"/>
+<circle cx="234" cy="336" r="1.5"/>
+<circle cx="248" cy="336" r="1.5"/>
+<circle cx="262" cy="336" r="1.5"/>
+<circle cx="276" cy="336" r="1.5"/>
+<circle cx="290" cy="336" r="1.5"/>
+<circle cx="304" cy="336" r="1.5"/>
+<circle cx="318" cy="336" r="1.5"/>
+<circle cx="332" cy="336" r="1.5"/>
+<circle cx="346" cy="336" r="1.5"/>
+<circle cx="360" cy="336" r="1.5"/>
+<circle cx="374" cy="336" r="1.5"/>
+<circle cx="388" cy="336" r="1.5"/>
+<circle cx="402" cy="336" r="1.5"/>
+<circle cx="416" cy="336" r="1.5"/>
+<circle cx="430" cy="336" r="1.5"/>
+<circle cx="444" cy="336" r="1.5"/>
+<circle cx="458" cy="336" r="1.5"/>
+<circle cx="472" cy="336" r="1.5"/>
+<circle cx="486" cy="336" r="1.5"/>
+<circle cx="500" cy="336" r="1.5"/>
+<circle cx="514" cy="336" r="1.5"/>
+<circle cx="150" cy="350" r="1.5"/>
+<circle cx="164" cy="350" r="1.5"/>
+<circle cx="178" cy="350" r="1.5"/>
+<circle cx="192" cy="350" r="1.5"/>
+<circle cx="206" cy="350" r="1.5"/>
+<circle cx="220" cy="350" r="1.5"/>
+<circle cx="234" cy="350" r="1.5"/>
+<circle cx="248" cy="350" r="1.5"/>
+<circle cx="262" cy="350" r="1.5"/>
+<circle cx="276" cy="350" r="1.5"/>
+<circle cx="290" cy="350" r="1.5"/>
+<circle cx="304" cy="350" r="1.5"/>
+<circle cx="318" cy="350" r="1.5"/>
+<circle cx="332" cy="350" r="1.5"/>
+<circle cx="346" cy="350" r="1.5"/>
+<circle cx="360" cy="350" r="1.5"/>
+<circle cx="374" cy="350" r="1.5"/>
+<circle cx="388" cy="350" r="1.5"/>
+<circle cx="402" cy="350" r="1.5"/>
+<circle cx="416" cy="350" r="1.5"/>
+<circle cx="430" cy="350" r="1.5"/>
+<circle cx="444" cy="350" r="1.5"/>
+<circle cx="458" cy="350" r="1.5"/>
+<circle cx="472" cy="350" r="1.5"/>
+<circle cx="486" cy="350" r="1.5"/>
+<circle cx="500" cy="350" r="1.5"/>
+<circle cx="514" cy="350" r="1.5"/>
+<circle cx="150" cy="364" r="1.5"/>
+<circle cx="164" cy="364" r="1.5"/>
+<circle cx="178" cy="364" r="1.5"/>
+<circle cx="192" cy="364" r="1.5"/>
+<circle cx="206" cy="364" r="1.5"/>
+<circle cx="220" cy="364" r="1.5"/>
+<circle cx="234" cy="364" r="1.5"/>
+<circle cx="248" cy="364" r="1.5"/>
+<circle cx="262" cy="364" r="1.5"/>
+<circle cx="276" cy="364" r="1.5"/>
+<circle cx="290" cy="364" r="1.5"/>
+<circle cx="304" cy="364" r="1.5"/>
+<circle cx="318" cy="364" r="1.5"/>
+<circle cx="332" cy="364" r="1.5"/>
+<circle cx="346" cy="364" r="1.5"/>
+<circle cx="360" cy="364" r="1.5"/>
+<circle cx="374" cy="364" r="1.5"/>
+<circle cx="388" cy="364" r="1.5"/>
+<circle cx="402" cy="364" r="1.5"/>
+<circle cx="416" cy="364" r="1.5"/>
+<circle cx="430" cy="364" r="1.5"/>
+<circle cx="444" cy="364" r="1.5"/>
+<circle cx="458" cy="364" r="1.5"/>
+<circle cx="472" cy="364" r="1.5"/>
+<circle cx="486" cy="364" r="1.5"/>
+<circle cx="500" cy="364" r="1.5"/>
+<circle cx="514" cy="364" r="1.5"/>
+<circle cx="150" cy="378" r="1.5"/>
+<circle cx="164" cy="378" r="1.5"/>
+<circle cx="178" cy="378" r="1.5"/>
+<circle cx="192" cy="378" r="1.5"/>
+<circle cx="206" cy="378" r="1.5"/>
+<circle cx="220" cy="378" r="1.5"/>
+<circle cx="234" cy="378" r="1.5"/>
+<circle cx="248" cy="378" r="1.5"/>
+<circle cx="262" cy="378" r="1.5"/>
+<circle cx="276" cy="378" r="1.5"/>
+<circle cx="290" cy="378" r="1.5"/>
+<circle cx="304" cy="378" r="1.5"/>
+<circle cx="318" cy="378" r="1.5"/>
+<circle cx="332" cy="378" r="1.5"/>
+<circle cx="346" cy="378" r="1.5"/>
+<circle cx="360" cy="378" r="1.5"/>
+<circle cx="374" cy="378" r="1.5"/>
+<circle cx="388" cy="378" r="1.5"/>
+<circle cx="402" cy="378" r="1.5"/>
+<circle cx="416" cy="378" r="1.5"/>
+<circle cx="430" cy="378" r="1.5"/>
+<circle cx="444" cy="378" r="1.5"/>
+<circle cx="458" cy="378" r="1.5"/>
+<circle cx="472" cy="378" r="1.5"/>
+<circle cx="486" cy="378" r="1.5"/>
+<circle cx="500" cy="378" r="1.5"/>
+<circle cx="514" cy="378" r="1.5"/>
+<circle cx="150" cy="392" r="1.5"/>
+<circle cx="164" cy="392" r="1.5"/>
+<circle cx="178" cy="392" r="1.5"/>
+<circle cx="192" cy="392" r="1.5"/>
+<circle cx="206" cy="392" r="1.5"/>
+<circle cx="220" cy="392" r="1.5"/>
+<circle cx="234" cy="392" r="1.5"/>
+<circle cx="248" cy="392" r="1.5"/>
+<circle cx="262" cy="392" r="1.5"/>
+<circle cx="276" cy="392" r="1.5"/>
+<circle cx="290" cy="392" r="1.5"/>
+<circle cx="304" cy="392" r="1.5"/>
+<circle cx="318" cy="392" r="1.5"/>
+<circle cx="332" cy="392" r="1.5"/>
+<circle cx="346" cy="392" r="1.5"/>
+<circle cx="360" cy="392" r="1.5"/>
+<circle cx="374" cy="392" r="1.5"/>
+<circle cx="388" cy="392" r="1.5"/>
+<circle cx="402" cy="392" r="1.5"/>
+<circle cx="416" cy="392" r="1.5"/>
+<circle cx="430" cy="392" r="1.5"/>
+<circle cx="444" cy="392" r="1.5"/>
+<circle cx="458" cy="392" r="1.5"/>
+<circle cx="472" cy="392" r="1.5"/>
+<circle cx="486" cy="392" r="1.5"/>
+<circle cx="500" cy="392" r="1.5"/>
+<circle cx="514" cy="392" r="1.5"/>
+<circle cx="150" cy="406" r="1.5"/>
+<circle cx="164" cy="406" r="1.5"/>
+<circle cx="178" cy="406" r="1.5"/>
+<circle cx="192" cy="406" r="1.5"/>
+<circle cx="206" cy="406" r="1.5"/>
+<circle cx="220" cy="406" r="1.5"/>
+<circle cx="234" cy="406" r="1.5"/>
+<circle cx="248" cy="406" r="1.5"/>
+<circle cx="262" cy="406" r="1.5"/>
+<circle cx="276" cy="406" r="1.5"/>
+<circle cx="290" cy="406" r="1.5"/>
+<circle cx="304" cy="406" r="1.5"/>
+<circle cx="318" cy="406" r="1.5"/>
+<circle cx="332" cy="406" r="1.5"/>
+<circle cx="346" cy="406" r="1.5"/>
+<circle cx="360" cy="406" r="1.5"/>
+<circle cx="374" cy="406" r="1.5"/>
+<circle cx="388" cy="406" r="1.5"/>
+<circle cx="402" cy="406" r="1.5"/>
+<circle cx="416" cy="406" r="1.5"/>
+<circle cx="430" cy="406" r="1.5"/>
+<circle cx="444" cy="406" r="1.5"/>
+<circle cx="458" cy="406" r="1.5"/>
+<circle cx="472" cy="406" r="1.5"/>
+<circle cx="486" cy="406" r="1.5"/>
+<circle cx="500" cy="406" r="1.5"/>
+<circle cx="514" cy="406" r="1.5"/>
+<circle cx="150" cy="420" r="1.5"/>
+<circle cx="164" cy="420" r="1.5"/>
+<circle cx="178" cy="420" r="1.5"/>
+<circle cx="192" cy="420" r="1.5"/>
+<circle cx="206" cy="420" r="1.5"/>
+<circle cx="220" cy="420" r="1.5"/>
+<circle cx="234" cy="420" r="1.5"/>
+<circle cx="248" cy="420" r="1.5"/>
+<circle cx="262" cy="420" r="1.5"/>
+<circle cx="276" cy="420" r="1.5"/>
+<circle cx="290" cy="420" r="1.5"/>
+<circle cx="304" cy="420" r="1.5"/>
+<circle cx="318" cy="420" r="1.5"/>
+<circle cx="332" cy="420" r="1.5"/>
+<circle cx="346" cy="420" r="1.5"/>
+<circle cx="360" cy="420" r="1.5"/>
+<circle cx="374" cy="420" r="1.5"/>
+<circle cx="388" cy="420" r="1.5"/>
+<circle cx="402" cy="420" r="1.5"/>
+<circle cx="416" cy="420" r="1.5"/>
+<circle cx="430" cy="420" r="1.5"/>
+<circle cx="444" cy="420" r="1.5"/>
+<circle cx="458" cy="420" r="1.5"/>
+<circle cx="472" cy="420" r="1.5"/>
+<circle cx="486" cy="420" r="1.5"/>
+<circle cx="500" cy="420" r="1.5"/>
+<circle cx="514" cy="420" r="1.5"/>
+<circle cx="150" cy="434" r="1.5"/>
+<circle cx="164" cy="434" r="1.5"/>
+<circle cx="178" cy="434" r="1.5"/>
+<circle cx="192" cy="434" r="1.5"/>
+<circle cx="206" cy="434" r="1.5"/>
+<circle cx="220" cy="434" r="1.5"/>
+<circle cx="234" cy="434" r="1.5"/>
+<circle cx="248" cy="434" r="1.5"/>
+<circle cx="262" cy="434" r="1.5"/>
+<circle cx="276" cy="434" r="1.5"/>
+<circle cx="290" cy="434" r="1.5"/>
+<circle cx="304" cy="434" r="1.5"/>
+<circle cx="318" cy="434" r="1.5"/>
+<circle cx="332" cy="434" r="1.5"/>
+<circle cx="346" cy="434" r="1.5"/>
+<circle cx="360" cy="434" r="1.5"/>
+<circle cx="374" cy="434" r="1.5"/>
+<circle cx="388" cy="434" r="1.5"/>
+<circle cx="402" cy="434" r="1.5"/>
+<circle cx="416" cy="434" r="1.5"/>
+<circle cx="430" cy="434" r="1.5"/>
+<circle cx="444" cy="434" r="1.5"/>
+<circle cx="458" cy="434" r="1.5"/>
+<circle cx="472" cy="434" r="1.5"/>
+<circle cx="486" cy="434" r="1.5"/>
+<circle cx="500" cy="434" r="1.5"/>
+<circle cx="514" cy="434" r="1.5"/>
+<circle cx="150" cy="448" r="1.5"/>
+<circle cx="164" cy="448" r="1.5"/>
+<circle cx="178" cy="448" r="1.5"/>
+<circle cx="192" cy="448" r="1.5"/>
+<circle cx="206" cy="448" r="1.5"/>
+<circle cx="220" cy="448" r="1.5"/>
+<circle cx="234" cy="448" r="1.5"/>
+<circle cx="248" cy="448" r="1.5"/>
+<circle cx="262" cy="448" r="1.5"/>
+<circle cx="276" cy="448" r="1.5"/>
+<circle cx="290" cy="448" r="1.5"/>
+<circle cx="304" cy="448" r="1.5"/>
+<circle cx="318" cy="448" r="1.5"/>
+<circle cx="332" cy="448" r="1.5"/>
+<circle cx="346" cy="448" r="1.5"/>
+<circle cx="360" cy="448" r="1.5"/>
+<circle cx="374" cy="448" r="1.5"/>
+<circle cx="388" cy="448" r="1.5"/>
+<circle cx="402" cy="448" r="1.5"/>
+<circle cx="416" cy="448" r="1.5"/>
+<circle cx="430" cy="448" r="1.5"/>
+<circle cx="444" cy="448" r="1.5"/>
+<circle cx="458" cy="448" r="1.5"/>
+<circle cx="472" cy="448" r="1.5"/>
+<circle cx="486" cy="448" r="1.5"/>
+<circle cx="500" cy="448" r="1.5"/>
+<circle cx="514" cy="448" r="1.5"/>
+<circle cx="150" cy="462" r="1.5"/>
+<circle cx="164" cy="462" r="1.5"/>
+<circle cx="178" cy="462" r="1.5"/>
+<circle cx="192" cy="462" r="1.5"/>
+<circle cx="206" cy="462" r="1.5"/>
+<circle cx="220" cy="462" r="1.5"/>
+<circle cx="234" cy="462" r="1.5"/>
+<circle cx="248" cy="462" r="1.5"/>
+<circle cx="262" cy="462" r="1.5"/>
+<circle cx="276" cy="462" r="1.5"/>
+<circle cx="290" cy="462" r="1.5"/>
+<circle cx="304" cy="462" r="1.5"/>
+<circle cx="318" cy="462" r="1.5"/>
+<circle cx="332" cy="462" r="1.5"/>
+<circle cx="346" cy="462" r="1.5"/>
+<circle cx="360" cy="462" r="1.5"/>
+<circle cx="374" cy="462" r="1.5"/>
+<circle cx="388" cy="462" r="1.5"/>
+<circle cx="402" cy="462" r="1.5"/>
+<circle cx="416" cy="462" r="1.5"/>
+<circle cx="430" cy="462" r="1.5"/>
+<circle cx="444" cy="462" r="1.5"/>
+<circle cx="458" cy="462" r="1.5"/>
+<circle cx="472" cy="462" r="1.5"/>
+<circle cx="486" cy="462" r="1.5"/>
+<circle cx="500" cy="462" r="1.5"/>
+<circle cx="514" cy="462" r="1.5"/>
+<circle cx="150" cy="476" r="1.5"/>
+<circle cx="164" cy="476" r="1.5"/>
+<circle cx="178" cy="476" r="1.5"/>
+<circle cx="192" cy="476" r="1.5"/>
+<circle cx="206" cy="476" r="1.5"/>
+<circle cx="220" cy="476" r="1.5"/>
+<circle cx="234" cy="476" r="1.5"/>
+<circle cx="248" cy="476" r="1.5"/>
+<circle cx="262" cy="476" r="1.5"/>
+<circle cx="276" cy="476" r="1.5"/>
+<circle cx="290" cy="476" r="1.5"/>
+<circle cx="304" cy="476" r="1.5"/>
+<circle cx="318" cy="476" r="1.5"/>
+<circle cx="332" cy="476" r="1.5"/>
+<circle cx="346" cy="476" r="1.5"/>
+<circle cx="360" cy="476" r="1.5"/>
+<circle cx="374" cy="476" r="1.5"/>
+<circle cx="388" cy="476" r="1.5"/>
+<circle cx="402" cy="476" r="1.5"/>
+<circle cx="416" cy="476" r="1.5"/>
+<circle cx="430" cy="476" r="1.5"/>
+<circle cx="444" cy="476" r="1.5"/>
+<circle cx="458" cy="476" r="1.5"/>
+<circle cx="472" cy="476" r="1.5"/>
+<circle cx="486" cy="476" r="1.5"/>
+<circle cx="500" cy="476" r="1.5"/>
+<circle cx="514" cy="476" r="1.5"/>
+<circle cx="150" cy="490" r="1.5"/>
+<circle cx="164" cy="490" r="1.5"/>
+<circle cx="178" cy="490" r="1.5"/>
+<circle cx="192" cy="490" r="1.5"/>
+<circle cx="206" cy="490" r="1.5"/>
+<circle cx="220" cy="490" r="1.5"/>
+<circle cx="234" cy="490" r="1.5"/>
+<circle cx="248" cy="490" r="1.5"/>
+<circle cx="262" cy="490" r="1.5"/>
+<circle cx="276" cy="490" r="1.5"/>
+<circle cx="290" cy="490" r="1.5"/>
+<circle cx="304" cy="490" r="1.5"/>
+<circle cx="318" cy="490" r="1.5"/>
+<circle cx="332" cy="490" r="1.5"/>
+<circle cx="346" cy="490" r="1.5"/>
+<circle cx="360" cy="490" r="1.5"/>
+<circle cx="374" cy="490" r="1.5"/>
+<circle cx="388" cy="490" r="1.5"/>
+<circle cx="402" cy="490" r="1.5"/>
+<circle cx="416" cy="490" r="1.5"/>
+<circle cx="430" cy="490" r="1.5"/>
+<circle cx="444" cy="490" r="1.5"/>
+<circle cx="458" cy="490" r="1.5"/>
+<circle cx="472" cy="490" r="1.5"/>
+<circle cx="486" cy="490" r="1.5"/>
+<circle cx="500" cy="490" r="1.5"/>
+<circle cx="514" cy="490" r="1.5"/>
+<circle cx="150" cy="504" r="1.5"/>
+<circle cx="164" cy="504" r="1.5"/>
+<circle cx="178" cy="504" r="1.5"/>
+<circle cx="192" cy="504" r="1.5"/>
+<circle cx="206" cy="504" r="1.5"/>
+<circle cx="220" cy="504" r="1.5"/>
+<circle cx="234" cy="504" r="1.5"/>
+<circle cx="248" cy="504" r="1.5"/>
+<circle cx="262" cy="504" r="1.5"/>
+<circle cx="276" cy="504" r="1.5"/>
+<circle cx="290" cy="504" r="1.5"/>
+<circle cx="304" cy="504" r="1.5"/>
+<circle cx="318" cy="504" r="1.5"/>
+<circle cx="332" cy="504" r="1.5"/>
+<circle cx="346" cy="504" r="1.5"/>
+<circle cx="360" cy="504" r="1.5"/>
+<circle cx="374" cy="504" r="1.5"/>
+<circle cx="388" cy="504" r="1.5"/>
+<circle cx="402" cy="504" r="1.5"/>
+<circle cx="416" cy="504" r="1.5"/>
+<circle cx="430" cy="504" r="1.5"/>
+<circle cx="444" cy="504" r="1.5"/>
+<circle cx="458" cy="504" r="1.5"/>
+<circle cx="472" cy="504" r="1.5"/>
+<circle cx="486" cy="504" r="1.5"/>
+<circle cx="500" cy="504" r="1.5"/>
+<circle cx="514" cy="504" r="1.5"/>
+<circle cx="150" cy="518" r="1.5"/>
+<circle cx="164" cy="518" r="1.5"/>
+<circle cx="178" cy="518" r="1.5"/>
+<circle cx="192" cy="518" r="1.5"/>
+<circle cx="206" cy="518" r="1.5"/>
+<circle cx="220" cy="518" r="1.5"/>
+<circle cx="234" cy="518" r="1.5"/>
+<circle cx="248" cy="518" r="1.5"/>
+<circle cx="262" cy="518" r="1.5"/>
+<circle cx="276" cy="518" r="1.5"/>
+<circle cx="290" cy="518" r="1.5"/>
+<circle cx="304" cy="518" r="1.5"/>
+<circle cx="318" cy="518" r="1.5"/>
+<circle cx="332" cy="518" r="1.5"/>
+<circle cx="346" cy="518" r="1.5"/>
+<circle cx="360" cy="518" r="1.5"/>
+<circle cx="374" cy="518" r="1.5"/>
+<circle cx="388" cy="518" r="1.5"/>
+<circle cx="402" cy="518" r="1.5"/>
+<circle cx="416" cy="518" r="1.5"/>
+<circle cx="430" cy="518" r="1.5"/>
+<circle cx="444" cy="518" r="1.5"/>
+<circle cx="458" cy="518" r="1.5"/>
+<circle cx="472" cy="518" r="1.5"/>
+<circle cx="486" cy="518" r="1.5"/>
+<circle cx="500" cy="518" r="1.5"/>
+<circle cx="514" cy="518" r="1.5"/>
+<circle cx="150" cy="532" r="1.5"/>
+<circle cx="164" cy="532" r="1.5"/>
+<circle cx="178" cy="532" r="1.5"/>
+<circle cx="192" cy="532" r="1.5"/>
+<circle cx="206" cy="532" r="1.5"/>
+<circle cx="220" cy="532" r="1.5"/>
+<circle cx="234" cy="532" r="1.5"/>
+<circle cx="248" cy="532" r="1.5"/>
+<circle cx="262" cy="532" r="1.5"/>
+<circle cx="276" cy="532" r="1.5"/>
+<circle cx="290" cy="532" r="1.5"/>
+<circle cx="304" cy="532" r="1.5"/>
+<circle cx="318" cy="532" r="1.5"/>
+<circle cx="332" cy="532" r="1.5"/>
+<circle cx="346" cy="532" r="1.5"/>
+<circle cx="360" cy="532" r="1.5"/>
+<circle cx="374" cy="532" r="1.5"/>
+<circle cx="388" cy="532" r="1.5"/>
+<circle cx="402" cy="532" r="1.5"/>
+<circle cx="416" cy="532" r="1.5"/>
+<circle cx="430" cy="532" r="1.5"/>
+<circle cx="444" cy="532" r="1.5"/>
+<circle cx="458" cy="532" r="1.5"/>
+<circle cx="472" cy="532" r="1.5"/>
+<circle cx="486" cy="532" r="1.5"/>
+<circle cx="500" cy="532" r="1.5"/>
+<circle cx="514" cy="532" r="1.5"/>
+</g>
+<text class="tl" x="30" y="60" text-anchor="end">1</text>
+<text class="tl" x="30" y="74" text-anchor="end">2</text>
+<text class="tl" x="30" y="88" text-anchor="end">3</text>
+<text class="tl" x="30" y="102" text-anchor="end">4</text>
+<text class="tl" x="30" y="116" text-anchor="end">5</text>
+<text class="tl" x="30" y="130" text-anchor="end">6</text>
+<text class="tl" x="30" y="144" text-anchor="end">7</text>
+<text class="tl" x="30" y="158" text-anchor="end">8</text>
+<text class="tl" x="30" y="172" text-anchor="end">9</text>
+<text class="tl" x="30" y="186" text-anchor="end">10</text>
+<text class="tl" x="30" y="200" text-anchor="end">11</text>
+<text class="tl" x="30" y="214" text-anchor="end">12</text>
+<text class="tl" x="30" y="228" text-anchor="end">13</text>
+<text class="tl" x="30" y="242" text-anchor="end">14</text>
+<text class="tl" x="30" y="256" text-anchor="end">15</text>
+<text class="tl" x="30" y="270" text-anchor="end">16</text>
+<text class="tl" x="30" y="284" text-anchor="end">17</text>
+<text class="tl" x="30" y="298" text-anchor="end">18</text>
+<text class="tl" x="30" y="312" text-anchor="end">19</text>
+<text class="tl" x="30" y="326" text-anchor="end">20</text>
+<text class="tl" x="30" y="340" text-anchor="end">21</text>
+<text class="tl" x="30" y="354" text-anchor="end">22</text>
+<text class="tl" x="30" y="368" text-anchor="end">23</text>
+<text class="tl" x="30" y="382" text-anchor="end">24</text>
+<text class="tl" x="30" y="396" text-anchor="end">25</text>
+<text class="tl" x="30" y="410" text-anchor="end">26</text>
+<text class="tl" x="30" y="424" text-anchor="end">27</text>
+<text class="tl" x="30" y="438" text-anchor="end">28</text>
+<text class="tl" x="30" y="452" text-anchor="end">29</text>
+<text class="tl" x="30" y="466" text-anchor="end">30</text>
+<text class="tl" x="30" y="480" text-anchor="end">31</text>
+<text class="tl" x="30" y="494" text-anchor="end">32</text>
+<text class="tl" x="30" y="508" text-anchor="end">33</text>
+<text class="tl" x="30" y="522" text-anchor="end">34</text>
+<text class="tl" x="30" y="536" text-anchor="end">35</text>
+<text class="tl" x="150" y="10" text-anchor="middle">1</text>
+<text class="tl" x="164" y="10" text-anchor="middle">2</text>
+<text class="tl" x="220" y="10" text-anchor="middle">6</text>
+<text class="tl" x="234" y="10" text-anchor="middle">7</text>
+<text class="tl" x="290" y="10" text-anchor="middle">11</text>
+<text class="tl" x="318" y="10" text-anchor="middle">13</text>
+<text class="tl" x="360" y="10" text-anchor="middle">16</text>
+<text class="tl" x="416" y="10" text-anchor="middle">20</text>
+<text class="tl" x="430" y="10" text-anchor="middle">21</text>
+<text class="tl" x="514" y="10" text-anchor="middle">27</text>
+<text class="tl" x="164" y="44" text-anchor="end" transform="rotate(-90 164 44)" fill="var(--ink-3)">+5V</text>
+<text class="tl" x="360" y="44" text-anchor="end" transform="rotate(-90 360 44)" fill="var(--ink-3)">+5V</text>
+<text class="tl" x="178" y="44" text-anchor="end" transform="rotate(-90 178 44)" fill="var(--ink-3)">DIN</text>
+<text class="tl" x="374" y="44" text-anchor="end" transform="rotate(-90 374 44)" fill="var(--ink-3)">DIN</text>
+<text class="tl" x="192" y="44" text-anchor="end" transform="rotate(-90 192 44)" fill="var(--ink-3)">GND</text>
+<text class="tl" x="388" y="44" text-anchor="end" transform="rotate(-90 388 44)" fill="var(--ink-3)">GND</text>
+<text class="tl" x="206" y="44" text-anchor="end" transform="rotate(-90 206 44)" fill="var(--ink-3)">DOUT</text>
+<text class="tl" x="402" y="44" text-anchor="end" transform="rotate(-90 402 44)" fill="var(--ink-3)">DOUT</text>
+<text class="tl" x="220" y="44" text-anchor="end" transform="rotate(-90 220 44)" fill="var(--ink-3)">SW</text>
+<text class="tl" x="416" y="44" text-anchor="end" transform="rotate(-90 416 44)" fill="var(--ink-3)">SW</text>
+<text class="tl" x="234" y="44" text-anchor="end" transform="rotate(-90 234 44)" fill="var(--ink-3)">SWG</text>
+<text class="tl" x="430" y="44" text-anchor="end" transform="rotate(-90 430 44)" fill="var(--ink-3)">SWG</text>
+<line x1="150" y1="364" x2="514" y2="364" stroke="var(--v5)" stroke-width="9" stroke-linecap="round"/>
+<text class="tl" x="526" y="368" fill="var(--v5)">+5 V RAIL</text>
+<line x1="150" y1="378" x2="514" y2="378" stroke="var(--gnd)" stroke-width="9" stroke-linecap="round"/>
+<text class="tl" x="526" y="382" fill="var(--gnd)">LED GND RAIL</text>
+<line x1="150" y1="392" x2="514" y2="392" stroke="var(--sw)" stroke-width="9" stroke-linecap="round"/>
+<text class="tl" x="526" y="396" fill="var(--sw)">SW GND RAIL</text>
+<rect x="157" y="73" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="164" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="178" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="192" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="206" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="220" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="84" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="151" y="87" text-anchor="end">P1 BLUE</text>
+<rect x="353" y="73" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="360" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="374" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="388" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="402" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="416" cy="84" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="84" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="87">P2 BLUE</text>
+<rect x="157" y="115" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="164" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="178" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="192" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="206" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="220" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="126" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="151" y="129" text-anchor="end">P1 RED</text>
+<rect x="353" y="115" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="360" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="374" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="388" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="402" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="416" cy="126" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="126" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="129">P2 RED</text>
+<rect x="157" y="157" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="164" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="178" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="192" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="206" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="220" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="168" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="151" y="171" text-anchor="end">P1 WHITE</text>
+<rect x="353" y="157" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="360" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="374" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="388" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="402" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="416" cy="168" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="168" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="171">P2 WHITE</text>
+<rect x="157" y="199" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="164" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="178" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="192" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="206" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="220" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="210" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="151" y="213" text-anchor="end">P1 GREEN</text>
+<rect x="353" y="199" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="360" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="374" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="388" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="402" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="416" cy="210" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="210" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="213">P2 GREEN</text>
+<rect x="157" y="241" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="164" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="178" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="192" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="206" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="220" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="252" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="151" y="255" text-anchor="end">P1 YELLOW</text>
+<rect x="353" y="241" width="84" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="360" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="374" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="388" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="402" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="416" cy="252" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="252" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="255">P2 YELLOW</text>
+<rect x="213" y="283" width="28" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="220" cy="294" r="3.4" fill="var(--ink)"/>
+<circle cx="234" cy="294" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="207" y="297" text-anchor="end">P1 START</text>
+<rect x="409" y="283" width="28" height="22" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+<circle cx="416" cy="294" r="3.4" fill="var(--ink)"/>
+<circle cx="430" cy="294" r="3.4" fill="var(--ink)"/>
+<text class="tl" x="443" y="297">P2 START</text>
+<rect x="311" y="77" width="14" height="196" rx="3" fill="var(--surface)" stroke="var(--data)" stroke-width="1.8"/>
+<circle cx="318" cy="84" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="98" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="112" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="126" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="140" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="154" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="168" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="182" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="196" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="210" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="224" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="238" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="252" r="3.4" fill="var(--data)"/>
+<circle cx="318" cy="266" r="3.4" fill="var(--data)"/>
+<text class="ts td" x="318" y="70" text-anchor="middle">1×14</text>
+<line x1="171.0" y1="69" x2="171.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="185.0" y1="69" x2="185.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="199.0" y1="69" x2="199.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="213.0" y1="69" x2="213.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="69" x2="227.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="241.0" y1="69" x2="241.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="353.0" y1="69" x2="353.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="367.0" y1="69" x2="367.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="381.0" y1="69" x2="381.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="395.0" y1="69" x2="395.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="69" x2="409.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="69" x2="423.0" y2="99" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="171.0" y1="111" x2="171.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="185.0" y1="111" x2="185.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="199.0" y1="111" x2="199.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="213.0" y1="111" x2="213.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="111" x2="227.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="241.0" y1="111" x2="241.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="353.0" y1="111" x2="353.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="367.0" y1="111" x2="367.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="381.0" y1="111" x2="381.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="395.0" y1="111" x2="395.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="111" x2="409.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="111" x2="423.0" y2="141" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="171.0" y1="153" x2="171.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="185.0" y1="153" x2="185.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="199.0" y1="153" x2="199.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="213.0" y1="153" x2="213.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="153" x2="227.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="241.0" y1="153" x2="241.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="353.0" y1="153" x2="353.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="367.0" y1="153" x2="367.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="381.0" y1="153" x2="381.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="395.0" y1="153" x2="395.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="153" x2="409.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="153" x2="423.0" y2="183" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="171.0" y1="195" x2="171.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="185.0" y1="195" x2="185.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="199.0" y1="195" x2="199.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="213.0" y1="195" x2="213.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="195" x2="227.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="241.0" y1="195" x2="241.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="353.0" y1="195" x2="353.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="367.0" y1="195" x2="367.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="381.0" y1="195" x2="381.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="395.0" y1="195" x2="395.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="195" x2="409.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="195" x2="423.0" y2="225" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="171.0" y1="237" x2="171.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="185.0" y1="237" x2="185.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="199.0" y1="237" x2="199.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="213.0" y1="237" x2="213.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="237" x2="227.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="241.0" y1="237" x2="241.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="353.0" y1="237" x2="353.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="367.0" y1="237" x2="367.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="381.0" y1="237" x2="381.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="395.0" y1="237" x2="395.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="237" x2="409.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="237" x2="423.0" y2="267" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="227.0" y1="279" x2="227.0" y2="309" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="409.0" y1="279" x2="409.0" y2="309" stroke="var(--v5)" stroke-width="2.6"/>
+<line x1="423.0" y1="279" x2="423.0" y2="309" stroke="var(--v5)" stroke-width="2.6"/>
+<path d="M164,84 V364" stroke="var(--v5)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<path d="M360,84 V364" stroke="var(--v5)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<path d="M192,84 V378" stroke="var(--gnd)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<path d="M388,84 V378" stroke="var(--gnd)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<path d="M234,84 V392" stroke="var(--sw)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<path d="M430,84 V392" stroke="var(--sw)" stroke-width="2" stroke-dasharray="3 3" fill="none" opacity="0.85"/>
+<text class="ts" x="526" y="434">dashed = bus wire, soldered</text>
+<text class="ts" x="526" y="448">only where it taps a connector</text>
+<text class="ts t5" x="526" y="476">red ticks = strip cuts (63)</text>
+</svg>
     </div>
-    <figcaption>Ten lit caps in two columns, bus wires down the centre, start buttons at the foot.
-    The chain order on the board is the pixel index order in <code>Config.h</code>.</figcaption>
+    <figcaption>Five cap pairs on rows 3, 6, 9, 12 and 15; both start buttons on row 18; the
+    ribbon down column 13 between the blocks. Three bus rails along the bottom meet at the star.</figcaption>
   </figure>
+
+  <h4 style="font-family:var(--display);font-weight:600;font-size:17px;margin:26px 0 10px">Cuts — 63</h4>
+  <div class="tw"><table>
+    <thead><tr><th class="m">Rows</th><th class="m">Between columns</th><th class="m">×</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td class="m">3 6 9 12 15</td><td class="m">2|3 3|4 4|5 5|6 6|7 7|8</td><td class="m">30</td><td>Isolates the six pins of each P1 cap. The last also keeps SW GND off the ribbon's segment.</td></tr>
+      <tr><td class="m">3 6 9 12 15</td><td class="m">15|16 16|17 17|18 18|19 19|20</td><td class="m">25</td><td>Same for P2. The first keeps the ribbon segment off <code>+5&nbsp;V</code>. SW GND runs out to the right edge, where nothing else sits.</td></tr>
+      <tr><td class="m">18</td><td class="m">6|7 · 19|20 · 20|21</td><td class="m">3</td><td>Separates each start button's SW from its own return.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Nothing is cut on the rows between — they carry no component, and the bus wires cross them
+  without touching. The three rails on rows 23–25 stay uncut end to end.</p>
+
+  <h4 style="font-family:var(--display);font-weight:600;font-size:17px;margin:26px 0 10px">Jumpers — 31 wires</h4>
+  <div class="tw"><table>
+    <thead><tr><th>What</th><th class="m">×</th><th class="m">Gauge</th><th class="m">Colour</th><th>Route</th></tr></thead>
+    <tbody>
+      <tr><td><b>+5 V bus</b></td><td class="m">2</td><td class="m">20 AWG solid</td><td class="m">red</td><td>Columns 2 and 16, row 3 down to the rail on row 23. Stripped and soldered at each cap's pin 1 — five taps per wire.</td></tr>
+      <tr><td><b>LED GND bus</b></td><td class="m">2</td><td class="m">20 AWG solid</td><td class="m">black</td><td>Columns 4 and 18 down to row 24, tapped at each cap's pin 3.</td></tr>
+      <tr><td><b>SW GND bus</b></td><td class="m">2</td><td class="m">24 AWG solid</td><td class="m">grey</td><td>Columns 7 and 21 down to row 25, tapped at every cap <em>and</em> both start buttons — twelve taps. Thin on purpose: it carries under 2 mA, and it stays a separate net so ring current never shares the switch return.</td></tr>
+      <tr><td><b>Switch signals</b></td><td class="m">12</td><td class="m">24 AWG solid</td><td class="m">blue</td><td>Ribbon position <em>n</em> to that cap's SW pin — column 6 for P1, column 20 for P2. Diagonals of various lengths; this is what the three-row pitch costs.</td></tr>
+      <tr><td><b>Pixel chain</b></td><td class="m">10</td><td class="m">24 AWG solid</td><td class="m">green</td><td>Ribbon position 5 into P1 BLUE's DIN, then each cap's DOUT (column 5 or 19) to the next cap's DIN (column 3 or 17). P2 YELLOW's DOUT is left open.</td></tr>
+      <tr><td><b>Ribbon ground</b></td><td class="m">1</td><td class="m">24 AWG solid</td><td class="m">grey</td><td>Ribbon position 2 to the SW GND rail. That row has no cuts, so anywhere along it reaches.</td></tr>
+      <tr><td><b>Star tie</b></td><td class="m">1</td><td class="m">20 AWG solid</td><td class="m">black</td><td>SW GND rail to LED GND rail, <b>at one point only</b>. This is what makes it a star — the two returns are separate everywhere else and meet here.</td></tr>
+      <tr><td><b>Power in</b></td><td class="m">2</td><td class="m">18 AWG stranded</td><td class="m">red / black</td><td>HUSB238 to the +5 V and LED GND rails at the right-hand end. 18 AWG will not pass a stripboard hole — terminate at the edge and transition to the 20 AWG bus.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The 1000 µF sits across the +5 V and LED GND rails beside the power entry, striped lead to
+  row 24.</p>
+
+  <div class="warn">
+    <h3>The chain order is not the board order</h3>
+    <p>Pixels run P1 blue, red, white, green, yellow, then P2 in the same sequence — down the left
+    column and then down the right, <em>not</em> left-to-right across each row. The rows pair the
+    two players for physical tidiness and the chain ignores that pairing completely. Follow the
+    pixel index, not the layout.</p>
+  </div>
 
 <h3 class="sub-h">Wire gauges</h3>
   <p>Three jobs, three answers. The constraint that catches people is mechanical, not
