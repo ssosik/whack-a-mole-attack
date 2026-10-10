@@ -19,3 +19,11 @@ claude.resume
 *.swp
 *.swo
 *~
+
+# KiCad: lock files, auto-backups, and per-user project state
+*.lck
+*-backups/
+*.kicad_prl
+
+# VS Code Local History
+.history/

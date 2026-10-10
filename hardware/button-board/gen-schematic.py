@@ -40,6 +40,8 @@ SYMBOL[NL.RIBBON] = ("Connector_Generic", "Conn_01x14", 14)
 SYMBOL[NL.POWER] = ("Connector_Generic", "Conn_01x02", 2)
 SYMBOL[NL.C1] = ("Device", "C_Polarized", 2)
 SYMBOL[NL.NT1] = ("Device", "NetTie_2", 2)
+for ref in NL.HOLES:
+    SYMBOL[ref] = ("Mechanical", "MountingHole", 0)
 
 STUB = 5.08             # how far the label sits off the pin
 
@@ -127,7 +129,7 @@ def main():
 
     # Lay the connectors out in two columns, caps left and right as on the board.
     order = [r for r, _, _ in NL.CAPS] + [r for r, _, _ in NL.STARTS] + \
-            [NL.RIBBON, NL.POWER, NL.C1, NL.NT1]
+            [NL.RIBBON, NL.POWER, NL.C1, NL.NT1] + NL.HOLES
     # Everything must land on KiCad's 1.27 mm connection grid. An origin that
     # is off-grid drags every pin with it and ERC fills with endpoint_off_grid,
     # so positions are expressed in grid units and multiplied, never rounded.
@@ -135,7 +137,7 @@ def main():
     place = {}
     for i, ref in enumerate(order):
         col, row = divmod(i, 8)
-        place[ref] = (G * (48 + col * 72), G * (32 + row * 34))
+        place[ref] = (round(G * (48 + col * 72), 4), round(G * (32 + row * 34), 4))
 
     comp_note = {c[0]: c[3] for c in comps}
     comp_val = {c[0]: c[1] for c in comps}

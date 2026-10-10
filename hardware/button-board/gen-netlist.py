@@ -17,21 +17,34 @@ Import with pcbnew: File > Import > Netlist. Footprint names are checked
 against KiCad 10's libraries; verify them if you are on a different release.
 """
 import argparse
+import pathlib
 import sys
 from collections import defaultdict
 
 FP_CAP = "Connector_JST:JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical"
 FP_START = "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
-FP_RIBBON = "Connector_PinHeader_2.54mm:PinHeader_1x14_P2.54mm_Vertical"
-FP_PWR = "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+FP_RIBBON = "Connector_JST:JST_XH_B14B-XH-A_1x14_P2.50mm_Vertical"
+# Deliberately NOT a JST XH. J11, J12 and J14 are all 2-pin, and a power lead
+# in a start-button socket puts +5 V onto a Teensy input through the switch
+# line. A screw terminal cannot accept an XH plug at all, so the mistake stops
+# being possible rather than merely unlikely. 5 mm pitch, 1.3 mm drill: the
+# common KF301/DG126/MX126 part, and it takes 18-22 AWG directly.
+FP_PWR = "TerminalBlock:TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm"
 FP_CAP1000 = "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
 FP_NETTIE = "NetTie:NetTie-2_THT_Pad1.0mm"
+# Unplated. A plated hole would tie GND_LED to whatever the board bolts to at
+# four points, which is exactly the many-paths-to-ground the net tie exists to
+# prevent. The screws are structure, not a conductor.
+FP_HOLE = "MountingHole:MountingHole_3.2mm_M3"
 
 # The ribbon's fourteen positions in order, as the Teensy pin each one lands on.
 # Positions 2 and 5 reach pin 10 (reserved for audio) and 3.3 V, so their strips
 # are cut on the controller board and reused for ground and pixel data.
 RIBBON_TEENSY = [9, 10, 11, 12, "3V3", 24, 25, 26, 27, 28, 29, 30, 31, 32]
-CFG = "firmware/WhackAMole/Config.h"
+# Resolved against the repo, not the working directory: these scripts are run
+# from wherever is convenient, and a CWD-relative path here fails after the
+# shell has already truncated the redirect target.
+CFG = pathlib.Path(__file__).resolve().parents[2] / "firmware/WhackAMole/Config.h"
 CAP_COLOURS = ["BLUE", "RED", "WHITE", "GREEN", "YELLOW"]
 
 
@@ -78,6 +91,11 @@ CAPS, STARTS = connectors()
 
 RIBBON, POWER, C1, NT1 = "J13", "J14", "C1", "NT1"
 
+# M3 mounting holes. They carry no net, so they exist here only so that
+# "Update PCB from Schematic" sees a symbol behind each one -- a footprint with
+# no symbol is the kind KiCad offers to delete for you.
+HOLES = ["H1", "H2", "H3", "H4"]
+
 # Cap connector pinout, as wired in the caps already built.
 CAP_PINS = {1: "+5V", 2: "DIN", 3: "GND", 4: "DOUT", 5: "SW", 6: "SWGND"}
 
@@ -90,9 +108,11 @@ def build():
     for ref, label, _ in STARTS:
         comps.append((ref, "B2B-XH-A", FP_START, label))
     comps.append((RIBBON, "1x14", FP_RIBBON, "to controller"))
-    comps.append((POWER, "B2B-XH-A", FP_PWR, "from HUSB238"))
+    comps.append((POWER, "MX126-5.0-02P", FP_PWR, "+5V in, from HUSB238"))
     comps.append((C1, "1000uF/16V", FP_CAP1000, "bulk at the star"))
     comps.append((NT1, "NetTie", FP_NETTIE, "LED GND to SW GND, single point"))
+    for ref in HOLES:
+        comps.append((ref, "M3", FP_HOLE, "mounting hole, unplated"))
 
     nets = defaultdict(list)
 

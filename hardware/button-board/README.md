@@ -10,14 +10,19 @@ and 31 hand-soldered wires. This directory is the PCB alternative.
 | --- | --- |
 | `gen-netlist.py` | The single source of truth. Everything else derives from it. |
 | `gen-schematic.py` | Draws the schematic from that netlist. |
-| `button-board.net` | KiCad netlist, generated. Import with **File → Import → Netlist**. |
-| `button-board.kicad_sch` | KiCad schematic, generated. Open it, then **Tools → Update PCB**. |
+| `button-board/` | The KiCad project. `button-board.net` and `button-board.kicad_sch` in it are generated; `button-board.kicad_pcb` is laid out by hand. |
 | `button-board.pdf` | The schematic as a drawing, for reading away from KiCad. |
 
 ```sh
-python3 hardware/button-board/gen-netlist.py            # readable net table
-python3 hardware/button-board/gen-netlist.py --kicad    # KiCad netlist
-python3 hardware/button-board/gen-schematic.py          # KiCad schematic
+cd hardware/button-board
+python3 gen-netlist.py                               # readable net table
+python3 gen-netlist.py --kicad > button-board/button-board.net
+python3 gen-schematic.py       > button-board/button-board.kicad_sch
+
+# Regenerating the schematic assigns fresh symbol UUIDs, so the board's
+# footprint links go stale. Re-import with "Update PCB from Schematic" and
+# tick "Re-link footprints to schematic symbols based on their reference
+# designators", or the 20 existing footprints come back as orphans.
 ```
 
 Connections are made with net labels on pin stubs rather than drawn wires. For
