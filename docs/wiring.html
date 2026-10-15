@@ -265,12 +265,12 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
         <line x1="392" y1="62" x2="392" y2="306" stroke="var(--rule)" stroke-width="1"/>
 
-        <text class="t t5" x="402" y="84">+5 V</text><text class="ts" x="512" y="84">30 AWG in cap → 22 AWG</text>
-        <text class="t tg" x="402" y="124">GND</text><text class="ts" x="512" y="124">30 AWG in cap → 22 AWG</text>
-        <text class="t td" x="402" y="164">DIN</text><text class="ts" x="512" y="164">from upstream cap DOUT</text>
-        <text class="t td" x="402" y="204">DOUT</text><text class="ts" x="512" y="204">to downstream cap DIN</text>
-        <text class="t tsw" x="402" y="244">SW</text><text class="ts" x="512" y="244">NO tab → Teensy GPIO</text>
-        <text class="t tsw" x="402" y="284">SW GND</text><text class="ts" x="512" y="284">COM tab → ground</text>
+        <text class="t t5" x="402" y="84">+5 V</text><text class="ts" x="512" y="84">red · 28 AWG, unbroken</text>
+        <text class="t tg" x="402" y="124">GND</text><text class="ts" x="512" y="124">black · 28 AWG, unbroken</text>
+        <text class="t td" x="402" y="164">DIN</text><text class="ts" x="512" y="164">yellow · 28 AWG · from upstream DOUT</text>
+        <text class="t td" x="402" y="204">DOUT</text><text class="ts" x="512" y="204">blue · 28 AWG · to downstream DIN</text>
+        <text class="t tsw" x="402" y="244">SW</text><text class="ts" x="512" y="244">white · 22 AWG · NO tab</text>
+        <text class="t tsw" x="402" y="284">SW GND</text><text class="ts" x="512" y="284">green · 22 AWG · COM tab</text>
 
         <rect class="blk" x="800" y="62" width="56" height="244" rx="3"/>
         <text class="t" x="828" y="184" text-anchor="middle" transform="rotate(-90 828 184)">JST-XH 6P</text>
@@ -279,6 +279,102 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     </div>
     <figcaption>Keep the two grounds separate all the way back. A ring at full white returns 720&nbsp;mA; sharing that return with the switch puts an IR offset across the input the Teensy is trying to read.</figcaption>
   </figure>
+</section>
+
+<section>
+  <div class="sechead"><h2>Cap pigtails</h2><span class="n">one harness per button, cap to PCB</span></div>
+
+  <p>The button board is a PCB mounted <b>centrally under the table</b>, and every cap reaches
+  it directly: one six-conductor pigtail per button, terminated in a <code>XHP-6</code> plug, long
+  enough to run from its dome to the board with no intermediate joint. There is no per-cap
+  junction and no bus to tap — ten identical harnesses, each one plugged into its own connector.</p>
+
+  <p>That is the whole reason the PCB is worth building. The stripboard version needed a
+  5&nbsp;V/GND bus soldered across twenty strips with a stripped window at each of ten tap
+  points; here the board distributes power in copper and the harness carries it.</p>
+
+  <h3 class="sub-h">Conductor colours</h3>
+
+  <p>The same six colours on every cap, in the order the connector expects. <b>These are
+  conductor functions, not cap identities</b> — the yellow wire is pixel data in all ten
+  harnesses, including the ones inside the red and the green domes.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Pin</th><th>Signal</th><th class="m">Colour</th><th class="m">Gauge</th><th>Terminates at</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td>+5&nbsp;V</td><td class="m">red</td><td class="m">28 AWG</td><td>Ring <code>5V</code> pad</td></tr>
+      <tr><td class="m">2</td><td>DIN</td><td class="m">yellow</td><td class="m">28 AWG</td><td>Ring <code>DI</code> pad</td></tr>
+      <tr><td class="m">3</td><td>GND</td><td class="m">black</td><td class="m">28 AWG</td><td>Ring <code>GND</code> pad</td></tr>
+      <tr><td class="m">4</td><td>DOUT</td><td class="m">blue</td><td class="m">28 AWG</td><td>Ring <code>DO</code> pad</td></tr>
+      <tr><td class="m">5</td><td>SW</td><td class="m">white</td><td class="m">22 AWG</td><td>D44X <b>NO</b> tab, via 0.187" receptacle</td></tr>
+      <tr><td class="m">6</td><td>SW GND</td><td class="m">green</td><td class="m">22 AWG</td><td>D44X <b>COM</b> tab, via 0.187" receptacle</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><b>Two gauges in one harness, and the reason is mechanical both times.</b> Pins 5 and 6 are
+  22&nbsp;AWG because that is the only gauge inside both the spade receptacle's 22–18&nbsp;AWG
+  range and the JST contact's 22–28. Pins 1–4 are 28&nbsp;AWG because nothing forces them to be
+  thicker: a cap draws about <b>180&nbsp;mA</b> at the configured brightness, which is
+  <b>38&nbsp;mV</b> round trip over half a metre, so the ring sees 4.96&nbsp;V. Raise the
+  brightness to full white and it is 153&nbsp;mV — still 4.85&nbsp;V, and still nowhere near
+  anything a WS2812B reacts to. Thermally it is not close either: 180&nbsp;mA against roughly
+  1.4&nbsp;A for 28&nbsp;AWG in free air.</p>
+
+  <p><b>One conductor from the ring pad to the connector, with no joint in between.</b> An
+  earlier revision ran 30&nbsp;AWG inside the cap and spliced to a heavier pigtail, on the
+  grounds that 30&nbsp;AWG flexes best across the plunger travel. That is gone, and the reason it
+  had to go is that <b>30&nbsp;AWG is below the XH contact's 22–28 range</b> — it could never be
+  crimped, so the splice existed only to get back into spec. Running 28&nbsp;AWG the whole way is
+  in spec at both ends and removes four solder joints per cap: forty across the table, every one
+  of them buried in a stem bore where it cannot be inspected.</p>
+
+  <p>If you are buying wire rather than using 28&nbsp;AWG you already have, <b>26&nbsp;AWG</b> is
+  the better pick — mid-range for the contact instead of at its thin edge, and 1.65× the copper.
+  Either is fine. Use <b>stranded silicone</b> either way: at these gauges the insulation decides
+  how well it survives the flexing, and PVC stiffens.</p>
+
+  <div class="warn">
+    <h3>With no splice, the bore-plug strain relief is load-bearing</h3>
+    <p>The splice used to absorb any pull on the harness. Without it, the far end of a
+    half-metre run is a 28&nbsp;AWG conductor soldered to a small pad on the ring, and
+    <b>every tug on the pigtail arrives at that pad</b>. The zip tie at the bore plug stops
+    being good practice and becomes the part that keeps the ring alive.</p>
+    <p>Cinch it on the <b>bundle jacket, never on individual conductors</b> — a tie pulled down
+    onto bare 28&nbsp;AWG insulation is a slow wire stripper. Leave a 15&nbsp;mm service loop on
+    the ring side of the tie, so the plunger travel is taken up by slack and not by the solder
+    joints.</p>
+  </div>
+
+  <div class="warn">
+    <h3>Pins 1–4 and pins 5–6 need different crimp nests</h3>
+    <p>28&nbsp;AWG and 22&nbsp;AWG sit at opposite ends of what an <code>SXH-001T-P0.6</code>
+    accepts, and on an SN-28B those are two different nests. Crimp the four 28s, change nest,
+    then the two 22s. The 22 nest closed onto a 28&nbsp;AWG conductor gives a joint that passes a
+    gentle tug today and lets go in six months — tug-test every contact <i>before</i> it goes
+    into the housing, while it can still be cut off and redone.</p>
+  </div>
+
+  <h3 class="sub-h">Length</h3>
+
+  <p>One measurement decides the wire order, and it is the only number here that depends on your
+  table rather than on the parts. Measure from the <b>farthest</b> cap's stem bore to where the
+  PCB will sit, follow the route the harness will actually take — down the leg, along a rail,
+  not the straight line — then add 15&nbsp;% for dressing and 80&nbsp;mm of service loop at the
+  board so a connector can be unplugged without tension on it.</p>
+
+  <p>Cut <b>all ten to that same length</b>. Harnesses that differ per position cannot be
+  swapped when one fails, and the saved wire is worth less than the ability to move a cap. For a
+  board at the centre of a two-player table, expect 400–600&nbsp;mm each, so budget roughly
+  6&nbsp;m of each of the four 28&nbsp;AWG ring colours and 7&nbsp;m of each of the two
+  22&nbsp;AWG switch colours — the switch pair serves the two start buttons as well. Order
+  30&nbsp;ft a colour and stop thinking about it.</p>
+
+  <h3 class="sub-h">Start buttons</h3>
+
+  <p>Two conductors, no ring, no power: <code>XHP-2</code> into <code>J11</code> and
+  <code>J12</code>. <b>White</b> to the <b>NO</b> tab and <b>green</b> to <b>COM</b>, both
+  22&nbsp;AWG — the same two colours and the same gauge as pins 5 and 6 of a cap harness, because
+  it is the same circuit. Nothing on the start buttons is lit.</p>
 </section>
 
 <section>
@@ -515,7 +611,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
         <rect class="blk-a" x="320" y="40" width="250" height="92" rx="3"/>
         <text class="t" x="340" y="68">Button board</text>
-        <text class="ts" x="340" y="86">12 × JST-XH · 5 V/GND bus</text>
+        <text class="ts" x="340" y="86">PCB · 85 × 56 mm · 12 × JST-XH</text>
         <text class="ts" x="340" y="102">1000 µF · the star lives here</text>
         <text class="tl" x="340" y="122">THE RINGS&#8217; CURRENT STOPS HERE</text>
 
@@ -532,7 +628,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         <path class="wg thin" d="M596,132 V174" marker-end="url(#lb)"/>
         <path class="wg thin" d="M570,110 H596 V132" />
         <path class="wg thin" d="M570,220 H596 V174" />
-        <text class="t" x="610" y="146">14-way ribbon</text>
+        <text class="t" x="610" y="146">14-way harness</text>
         <text class="ts" x="610" y="162">12 switch · GND · pixel data</text>
 
         <path class="ws thin" d="M570,250 H700 V340 H574" marker-end="url(#lc)"/>
@@ -540,7 +636,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         <text class="ts tsw" x="712" y="310">TX · RX · GND</text>
 
         <path class="wd thin" d="M570,76 H760" marker-end="url(#ld)"/>
-        <text class="ts td" x="666" y="68" text-anchor="middle">12 × JST to buttons</text>
+        <text class="ts td" x="666" y="68" text-anchor="middle">10 cap pigtails + 2 start</text>
 
         <text class="tl" x="12" y="410">Power fans out from the star to each board separately. Only signals cross between boards.</text>
       </svg>
@@ -1834,7 +1930,70 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   spans both columns of the DIP and so crosses its centreline cut; that is fine for a wire on
   the component side.</p>
 
-  <h3 class="sub-h">Button board</h3>
+  <h3 class="sub-h">Button board — the PCB</h3>
+
+  <p>Fabricated, not cut: <b>85 × 56&nbsp;mm, two layers</b>, with <code>GND_LED</code> poured on
+  both and every track at 1.0&nbsp;mm. It replaces 63 stripboard cuts and 31 hand-soldered wires
+  with fourteen connectors and one screw terminal, and it mounts <b>centrally under the table</b>
+  on four M3 standoffs at 78 × 49&nbsp;mm centres, so every cap harness reaches it directly.</p>
+
+  <p>The generator in <code>hardware/button-board/</code> is the source of truth for the netlist;
+  the board is laid out by hand against it, and the two are diffed rather than trusted.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Ref</th><th>Part</th><th>Carries</th><th>Mates with</th></tr></thead>
+    <tbody>
+      <tr><td class="m">J1–J5</td><td><code>B6B-XH-A</code></td><td>P1 caps — blue, red, white, green, yellow</td><td><code>XHP-6</code> cap pigtail</td></tr>
+      <tr><td class="m">J6–J10</td><td><code>B6B-XH-A</code></td><td>P2 caps — blue, red, white, green, yellow</td><td><code>XHP-6</code> cap pigtail</td></tr>
+      <tr><td class="m">J11</td><td><code>B2B-XH-A</code></td><td>P1 START — switch and switch ground</td><td><code>XHP-2</code></td></tr>
+      <tr><td class="m">J12</td><td><code>B2B-XH-A</code></td><td>P2 START — switch and switch ground</td><td><code>XHP-2</code></td></tr>
+      <tr><td class="m">J13</td><td><code>B14B-XH-A</code></td><td>12 switch lines, ground, pixel data</td><td><code>XHP-14</code> — see the warning below</td></tr>
+      <tr><td class="m">J14</td><td>MX126 screw terminal</td><td>+5&nbsp;V in from the star, 1.81&nbsp;A</td><td>bare 18&nbsp;AWG, no plug</td></tr>
+      <tr><td class="m">C1</td><td>1000 µF / 16 V</td><td>bulk at the star point</td><td>—</td></tr>
+      <tr><td class="m">NT1</td><td>net tie</td><td><code>GND_LED</code> to <code>GND_SW</code>, single point</td><td>—</td></tr>
+      <tr><td class="m">H1–H4</td><td>M3, unplated</td><td>nothing — see below</td><td>M3 standoff</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><b>J1 to J10 are in pixel-chain order, which is not a tidy physical order.</b> The chain
+  runs P1 blue, red, white, green, yellow, then P2 in the same sequence, and the two rows of
+  connectors on the board pair the players for physical tidiness only. Plug by the
+  silkscreen reference, never by position.</p>
+
+  <p><b>The screw terminal is deliberately not a JST.</b> J11, J12 and J14 were all 2-pin
+  <code>B2B-XH-A</code> in the first revision, which meant the power lead physically fitted both
+  start-button sockets — and landing +5&nbsp;V on a start socket puts it onto a Teensy GPIO
+  through the switch line. A screw terminal cannot accept an XH plug at all, so that mistake
+  stopped being possible rather than merely unlikely. It also takes the 18&nbsp;AWG feed directly,
+  with no transition.</p>
+
+  <p><b>The mounting holes are unplated on purpose.</b> Plated holes would bond
+  <code>GND_LED</code> to whatever the board bolts to at four points, which is exactly the
+  many-paths-to-ground that <code>NT1</code> exists to prevent. The screws are structure, not a
+  conductor. Use nylon standoffs if the frame is metal and you want to stop even thinking
+  about it.</p>
+
+  <div class="warn">
+    <h3>The 14-pin JST will not fit the controller's stripboard — the cable is asymmetric</h3>
+    <p>JST-XH is <b>2.5&nbsp;mm</b> pitch and stripboard is <b>2.54&nbsp;mm</b>. Over the
+    thirteen gaps of a 14-pin connector that accumulates <b>0.52&nbsp;mm</b>; centre it and the
+    end pins still sit 0.26&nbsp;mm out, against roughly <b>0.18&nbsp;mm</b> of clearance in a
+    1.0&nbsp;mm hole. It does not seat. The six-pin version works for the same reason it is
+    marginal — five gaps is 0.20&nbsp;mm, or ±0.10&nbsp;mm centred.</p>
+    <p>So the board-to-board cable has <b>a different connector on each end</b>:
+    <code>XHP-14</code> into <code>J13</code> at the PCB, and a 2.54&nbsp;mm 1×14 socket onto the
+    pin header at the controller. That also means it cannot be IDC ribbon — XH needs individual
+    crimped contacts, so this is a hand-crimped harness of fourteen conductors. Build it once,
+    carefully, and label both ends.</p>
+    <p>Do not solve this by reaming the stripboard holes. You will tear copper off the strips
+    the connector is supposed to be landing on.</p>
+  </div>
+
+  <h3 class="sub-h">Button board — stripboard alternative</h3>
+
+  <p>The original, kept because it needs no fabrication and no two-week lead time. If you are
+  building the PCB above, skip to <b>Wire gauges</b> — everything from here to there is
+  stripboard-only, and the cut list and jumper tables do not apply to the PCB.</p>
 
   <p>One dimension forces this layout. A <code>B6B-XH-A</code> is <b>5.75&nbsp;mm deep</b> — 2.3
   strip rows — so connectors cannot sit on adjacent rows; they need a three-row pitch. Twelve in
@@ -3112,25 +3271,28 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   </div>
 
 <h3 class="sub-h">Wire gauges</h3>
-  <p>Three jobs, three answers. The constraint that catches people is mechanical, not
-  electrical: <b>18 AWG solid is 1.02 mm and a stripboard hole is about 1.0 mm</b>, so the gauge
-  specified for the under-table runs physically will not pass through the board.</p>
+  <p>Every gauge here is chosen by a mechanical limit, not an electrical one — the currents
+  are small enough that almost anything would carry them. The constraint that catches people
+  first: <b>18 AWG solid is 1.02 mm and a stripboard hole is about 1.0 mm</b>, so the gauge
+  specified for the under-table runs physically will not pass through the board. Terminate it
+  at a screw terminal or a board edge instead.</p>
 
   <div class="tw"><table>
     <thead><tr><th>Where</th><th class="m">Gauge</th><th class="m">Type</th><th>Why that one</th></tr></thead>
     <tbody>
-      <tr><td>Board jumpers, both boards</td><td class="m">24 AWG</td><td class="m">solid, insulated</td><td>Carries signals, or the level shifter's ~20 mA. Gauge is irrelevant; <b>solid</b> is not — stranded frays going into a hole. Cat5/Cat6 offcuts are ideal: 24 AWG solid, eight colours, thin insulation.</td></tr>
-      <tr><td>Button board 5 V/GND bus</td><td class="m">20 AWG</td><td class="m">solid, <b>insulated</b></td><td>Carries up to 1.81 A. 22 AWG would do electrically (~10 mV drop over 100 mm) — 20 AWG is for robustness and for taking solder heat at ten tap points. Must be insulated: the bus crosses about twenty strips and should connect to ten.</td></tr>
-      <tr><td>Star to boards, star to panel</td><td class="m">18 AWG</td><td class="m">stranded</td><td>300–500 mm under the table, where drop accumulates. Terminate at the board edge and transition to the 20 AWG bus — do not try to push it through a hole.</td></tr>
-      <tr><td>Per-cap drops, switch returns</td><td class="m">22 AWG</td><td class="m">stranded</td><td>The only gauge in both the spade receptacle's 22–18 range and the JST contact's 22–28.</td></tr>
-      <tr><td>Inside the lit caps</td><td class="m">28 AWG</td><td class="m">stranded silicone</td><td>Has to flex across 3 mm of plunger travel on every press, and still crimp into a JST contact.</td></tr>
-      <tr><td>Board-to-board ribbon</td><td class="m">28 AWG</td><td class="m">ribbon cable</td><td>Signals only. The ground conductor carries twelve pull-up returns — under 2 mA.</td></tr>
+      <tr><td>Cap pigtail — ring conductors<br><span class="n">pins 1–4, ring pad to connector</span></td><td class="m">28 AWG</td><td class="m">stranded silicone</td><td>180&nbsp;mA per cap — 38&nbsp;mV round trip over half a metre, against a 1.4&nbsp;A free-air rating. The gauge is set by the crimp window, not the current: 22–28 is what the XH contact takes, so 28 is the thin end of legal and 26 the comfortable middle. <b>Silicone, and one unbroken run</b> — it has to flex across 3&nbsp;mm of plunger travel on every press.</td></tr>
+      <tr><td>Cap pigtail — switch pair<br><span class="n">pins 5–6</span></td><td class="m">22 AWG</td><td class="m">stranded</td><td>The only gauge inside both the spade receptacle's 22–18 range and the JST contact's 22–28. Forced at the D44X end, so it runs the whole length.</td></tr>
+      <tr><td>Start buttons</td><td class="m">22 AWG</td><td class="m">stranded</td><td>Same circuit as a cap's pins 5 and 6, so the same gauge and the same two colours. No power, no ring.</td></tr>
+      <tr><td>Board to board, 14-way<br><span class="n">PCB build</span></td><td class="m">24 AWG</td><td class="m">stranded</td><td>Signals only; the ground conductor carries twelve pull-up returns, under 2&nbsp;mA. Stranded and crimped, <b>not</b> IDC ribbon — the XH end needs individual contacts. See the warning above about the two ends differing.</td></tr>
+      <tr><td>Star to boards, star to panel</td><td class="m">18 AWG</td><td class="m">stranded</td><td>300–500&nbsp;mm under the table, where drop accumulates. On the PCB it lands straight in the screw terminal; on stripboard, terminate at the board edge and transition to the 20 AWG bus.</td></tr>
+      <tr><td>Board jumpers<br><span class="n">stripboard only</span></td><td class="m">24 AWG</td><td class="m">solid, insulated</td><td>Carries signals, or the level shifter's ~20 mA. Gauge is irrelevant; <b>solid</b> is not — stranded frays going into a hole. Cat5/Cat6 offcuts are ideal: 24 AWG solid, eight colours, thin insulation.</td></tr>
+      <tr><td>Button board 5 V/GND bus<br><span class="n">stripboard only</span></td><td class="m">20 AWG</td><td class="m">solid, <b>insulated</b></td><td>Carries up to 1.81 A. 22 AWG would do electrically (~10 mV drop over 100 mm) — 20 AWG is for robustness and for taking solder heat at ten tap points. Must be insulated: the bus crosses about twenty strips and should connect to ten. <b>The PCB needs none of this</b> — it distributes power in copper.</td></tr>
     </tbody>
   </table></div>
 
-  <p>On the button board the bus is insulated wire run along the solder side, with a window
-  stripped at each connector's +5 V and GND pad. Bare wire there would short every strip it
-  crosses on the way past.</p>
+  <p><b>On the stripboard button board only:</b> the bus is insulated wire run along the solder
+  side, with a window stripped at each connector's +5 V and GND pad. Bare wire there would short
+  every strip it crosses on the way past. The PCB has no bus wire at all.</p>
 
   <div class="warn">
     <h3>Three things stripboard will do to you</h3>
@@ -3155,7 +3317,10 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   clear reading into a confusing one. Put them in last.</p>
 
   <h3 class="sub-h">Ribbon pinout</h3>
-  <p>Header position 1 is row 21. Needed for the adapter below and for the button board later.</p>
+  <p>Header position 1 is row 21 on the controller stripboard, and position 1 at
+  <code>J13</code> on the button board PCB. This table is the one reference both ends of the
+  board-to-board harness are built against; it is checked against <code>Config.h</code> on every
+  build by <code>docs/check-pins.py</code>, so it cannot quietly drift from the firmware.</p>
 
   <div class="tw"><table>
     <thead><tr><th class="m">Pos</th><th class="m">Row</th><th class="m">Teensy</th><th>Carries</th><th class="m">Pos</th><th class="m">Row</th><th class="m">Teensy</th><th>Carries</th></tr></thead>
@@ -3169,6 +3334,45 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">7</td><td class="m">27</td><td class="m">25</td><td>P1 YELLOW</td><td class="m">14</td><td class="m">34</td><td class="m">32</td><td>P2 START</td></tr>
     </tbody>
   </table></div>
+
+  <p><b>Positions 2 and 5 are not switch lines.</b> They land on Teensy pin 10 (reserved for
+  audio) and on 3.3&nbsp;V, so those two strips are cut away from the Teensy on the controller
+  board and reused — position 2 for ground and position 5 for pixel data. Everything else in the
+  table is a switch line straight to a GPIO.</p>
+
+  <h3 class="sub-h">Building the 14-way harness</h3>
+
+  <p>Fourteen conductors, 24&nbsp;AWG stranded, with <b>a different connector on each end</b> for
+  the pitch reason in the warning further up: <code>XHP-14</code> at the PCB, a 2.54&nbsp;mm 1×14
+  socket at the controller. Crimp the XH end first — it is the one with no second chance, since
+  a mis-crimped contact has to be cut off and the conductor is then too short.</p>
+
+  <p>On colour: a 14-way rainbow ribbon <b>repeats after ten conductors</b>, so positions 11–14
+  carry the same colours as 1–4 and colour alone cannot identify a conductor. Do not rely on it.
+  Mark position 1 at both ends — a dab of paint or a single band of heatshrink — and verify
+  against the table with a meter before the first power-up. The ten-colour sequence below is the
+  usual order if you want to record what you actually built.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Pos</th><th class="m">Colour</th><th>Carries</th><th class="m">Pos</th><th class="m">Colour</th><th>Carries</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td class="m">brown</td><td>P1 BLUE</td><td class="m">8</td><td class="m">grey</td><td>P1 START</td></tr>
+      <tr><td class="m">2</td><td class="m">red</td><td><b>GND</b></td><td class="m">9</td><td class="m">white</td><td>P2 BLUE</td></tr>
+      <tr><td class="m">3</td><td class="m">orange</td><td>P1 RED</td><td class="m">10</td><td class="m">black</td><td>P2 RED</td></tr>
+      <tr><td class="m">4</td><td class="m">yellow</td><td>P1 WHITE</td><td class="m">11</td><td class="m">brown <span class="n">(repeat)</span></td><td>P2 WHITE</td></tr>
+      <tr><td class="m">5</td><td class="m">green</td><td><b>PIXEL DATA</b></td><td class="m">12</td><td class="m">red <span class="n">(repeat)</span></td><td>P2 GREEN</td></tr>
+      <tr><td class="m">6</td><td class="m">blue</td><td>P1 GREEN</td><td class="m">13</td><td class="m">orange <span class="n">(repeat)</span></td><td>P2 YELLOW</td></tr>
+      <tr><td class="m">7</td><td class="m">violet</td><td>P1 YELLOW</td><td class="m">14</td><td class="m">yellow <span class="n">(repeat)</span></td><td>P2 START</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="warn">
+    <h3>Two conductors in this harness are not switch lines</h3>
+    <p>Position 2 is ground and position 5 is pixel data. If the harness goes in reversed, pixel
+    data lands on a GPIO configured as an input with a pull-up and ground lands on the start
+    button line — no damage, but nothing lights and one button reads permanently pressed, which
+    looks like a firmware fault. The pin-1 marks are what stop you chasing that for an hour.</p>
+  </div>
 
   <h3 class="sub-h">Stage 1 — the cuts, before any component</h3>
   <div class="tw"><table>
@@ -3389,26 +3593,33 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>USB-C PD sink</td><td class="m">1</td><td class="m">Adafruit&nbsp;5807</td><td>HUSB238, configured for <b>5 V</b> and <b>3 A</b> by solder jumper — not I2C, which cannot be set before the Teensy has power. The current jumper ships at 1 A; leave it there and the source may cut power when the table draws 2.5 A.</td></tr>
       <tr><td>Level shifter, 74<b>AHCT</b>125</td><td class="m">2</td><td class="m">TI SN74AHCT125N<br>DK 296-4655-5-ND</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. 14-DIP, through-hole. See the note below.</td></tr>
       <tr><td>14-pin DIP socket</td><td class="m">2</td><td class="m">—</td><td>On hand-soldered stripboard, turns a desoldering job into a pull.</td></tr>
-      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td>Series on the data line at the first pixel.</td></tr>
+      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td><b>One per cap, in series at that cap's <code>DIN</code>, at the cap end of the pigtail.</b> The central-PCB star puts about a metre of wire between consecutive pixels — out to the board and back again — and metre-long unterminated hops are where WS2812 chains pick up reflections and show sparkle or wrong-coloured pixels. Ten resistors, not one.</td></tr>
       <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
       <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
       <tr><td>0.187" × <b>0.020"</b> quick disconnect, receptacle</td><td class="m">30</td><td class="m">TE 2-520181-2<br>DK A27804CT-ND</td><td>Onto the D44X tabs. 24 needed; the spares are for the ones you crimp badly. Fully insulated, so the sleeve is already on — there is no separate cover to buy at this size. The <code>CT</code> suffix is cut tape: they arrive on a carrier strip and get snipped off one at a time. 3M MNU18-187DFIK (DK 920044-01-ND) is an equivalent loose-piece part at roughly four times the price. Tab <em>thickness</em> matters as much as width — see below.</td></tr>
       <tr><td>Crimper — insulated terminals</td><td class="m">1</td><td class="m">ratcheting, 22–10 AWG</td><td>For the spade receptacles. Insulated terminals need a matching nest profile; pliers crush the sleeve and give a joint that passes a tug test today and fails in six months. <b>This tool will not crimp JST contacts.</b></td></tr>
       <tr><td>Crimper — open barrel</td><td class="m">1</td><td class="m">SN-28B or JST WC-110</td><td>For the JST-XH contacts, which are open-barrel and need a completely different die geometry. Avoidable — see the note below.</td></tr>
-      <tr><td>Ribbon header, 1×14</td><td class="m">2</td><td class="m">2.54 mm, through-hole</td><td>One per board. Single-row on purpose: each pin lands on its own strip and aligns with a Teensy pin, where a 2×7 would short its two columns together and need a centreline cut of its own.</td></tr>
-      <tr><td>14-way cable, board to board</td><td class="m">1</td><td class="m">28 AWG</td><td>12 switch lines, ground, pixel data.</td></tr>
+      <tr><td>Ribbon header, 1×14</td><td class="m">1</td><td class="m">2.54 mm, through-hole</td><td><b>Controller board only</b> — the PCB end is a JST. Single-row on purpose: each pin lands on its own strip and aligns with a Teensy pin, where a 2×7 would short its two columns together and need a centreline cut of its own.</td></tr>
+      <tr><td>1×14 socket, 2.54 mm</td><td class="m">1</td><td class="m">crimp or IDC</td><td>The controller end of the board-to-board harness, onto the header above.</td></tr>
+      <tr><td>14-way harness wire</td><td class="m">~1 m</td><td class="m">24 AWG stranded</td><td>Fourteen conductors: 12 switch lines, ground, pixel data. Crimped at both ends, not IDC — see <b>Building the 14-way harness</b>.</td></tr>
+      <tr><td><b>Button board PCB</b></td><td class="m">1</td><td class="m">85 × 56 mm, 2-layer</td><td>Gerbers from <code>hardware/button-board/</code>. 1.6 mm, 1 oz, HASL — no option on that board matters. Allow two to three weeks.</td></tr>
+      <tr><td>JST-XH header, 14-pin</td><td class="m">1</td><td class="m">B14B-XH-A</td><td><code>J13</code> on the PCB. Will <b>not</b> fit 2.54 mm stripboard — that is why the harness is asymmetric.</td></tr>
+      <tr><td>JST-XH housing, 14-pin</td><td class="m">1</td><td class="m">XHP-14</td><td>The PCB end of the board-to-board harness.</td></tr>
+      <tr><td>Screw terminal, 2-pos</td><td class="m">1</td><td class="m">5 mm pitch<br>MX126 / KF301 / DG126</td><td><code>J14</code>, the +5 V entry. Takes the 18 AWG feed directly. Deliberately not a JST so the power lead cannot be put into a start-button socket.</td></tr>
+      <tr><td>M3 standoff + screws</td><td class="m">4</td><td class="m">nylon, 10 mm</td><td>Mounts the PCB centrally under the table, 78 × 49 mm centres. Nylon because the holes are unplated and the ground must stay single-point.</td></tr>
       <tr><td>JST-XH housing, 6-pin</td><td class="m">10</td><td class="m">XHP-6<br>DK 455-2218-ND</td><td>Wire side, one per lit cap, so it unplugs for service.</td></tr>
       <tr><td>JST-XH housing, 2-pin</td><td class="m">2</td><td class="m">XHP-2</td><td>The start buttons — switch only.</td></tr>
       <tr><td>JST-XH header, 6-pin</td><td class="m">10</td><td class="m">B6B-XH-A<br>DK 455-B6B-XH-A-ND</td><td>Board side, through-hole, 2.5 mm pitch. <code>S6B-XH-A</code> is the right-angle version.</td></tr>
       <tr><td>JST-XH header, 2-pin</td><td class="m">2</td><td class="m">B2B-XH-A</td><td>As above.</td></tr>
-      <tr><td>JST-XH crimp contact</td><td class="m">70</td><td class="m">SXH-001T-P0.6<br>DK 455-1135TR-ND</td><td>64 needed. Rated <b>22–28 AWG</b>, so the 22 AWG drops sit right at its ceiling — 24 AWG crimps far more comfortably and carries 226 mA without noticing. Arrives on a carrier strip; snip one off per crimp.</td></tr>
+      <tr><td>JST-XH crimp contact</td><td class="m">100</td><td class="m">SXH-001T-P0.6<br>DK 455-1135TR-ND</td><td>78 needed — 60 for the cap pigtails, 4 for the start buttons, 14 for the PCB end of the board-to-board harness. Rated <b>22–28 AWG</b>, which this build uses both ends of: the 22&nbsp;AWG switch pair sits at its ceiling and the 28&nbsp;AWG ring conductors at its floor. Both are in spec, but they are <b>different nests on the crimper</b> — see the warning in <b>Cap pigtails</b>. 26&nbsp;AWG is the comfortable middle if you would rather not work at either edge. Arrives on a carrier strip; snip one off per crimp.</td></tr>
       <tr><td>Lever nuts</td><td class="m">6–8</td><td class="m">WAGO 221-415</td><td>The star point and the 5 V/GND bus taps. Easier than a barrier strip and reusable.</td></tr>
       <tr><td>USB-C pigtail, 5 V + GND</td><td class="m">1</td><td class="m">—</td><td>Powers the Matrix Portal through its USB-C port, since its screw terminals are outputs.</td></tr>
       <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td class="m">—</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract at all.</td></tr>
       <tr><td>18 AWG stranded, red + black</td><td class="m">10 ft ea</td><td class="m">—</td><td>The 5 V/GND bus and the panel feed.</td></tr>
-      <tr><td>22 AWG stranded, red + black</td><td class="m">25 ft ea</td><td class="m">—</td><td>Per-cap power drops, switch returns, microcontroller feeds.</td></tr>
-      <tr><td>30 AWG silicone, 4 colours</td><td class="m">10 ft ea</td><td class="m">—</td><td>Inside the lit caps only; it has to survive the 3 mm of plunger travel.</td></tr>
+      <tr><td>22 AWG stranded, white + green</td><td class="m">30 ft ea</td><td class="m">—</td><td>The switch pair in all twelve harnesses — pins 5 and 6 of a cap, both pins of a start button. White is <code>SW</code>, green is <code>SW GND</code>, everywhere.</td></tr>
+      <tr><td>22 AWG stranded, red + black</td><td class="m">15 ft ea</td><td class="m">—</td><td>Microcontroller feeds, and the stripboard build's per-cap power drops.</td></tr>
+      <tr><td>28 AWG silicone, 4 colours<br><span class="n">red, yellow, black, blue</span></td><td class="m">30 ft ea</td><td class="m">—</td><td>The ring conductors of every cap pigtail, ring pad to connector in one unbroken run — so it needs the full harness length, not just the length inside the cap. Silicone for the 3 mm of plunger travel. 26 AWG is the more comfortable crimp if you are ordering fresh.</td></tr>
     </tbody>
   </table></div>
 
@@ -3500,8 +3711,11 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <li><b>Do the two board modifications first</b>Cut the Teensy's VUSB/VIN pads and confirm with a meter. Make the Matrix Portal's USB-C power pigtail. Both are easier on the bench than under a table, and the Teensy cut changes how you program it.</li>
     <li><b>Wire one cap completely</b>Ring, switch, connector, all six conductors. Getting the first one right tells you the gauge and connector choices work before you repeat them nine times.</li>
     <li><b>Run it on the bench</b>Level shifter, resistor, cap, one button. Flash the firmware with <code>WAM_LIGHTS_PIXELS 1</code> and open the debug <code>LED WALK</code> screen — one ring is enough to prove the data path.</li>
-    <li><b>Build the power bus first</b>Before any daisy-chaining. Confirm 5 V at every tap with nothing else connected.</li>
-    <li><b>Add caps to the chain one at a time</b>Each addition is a new failure point, and <code>LED WALK</code> names the cap it is lighting. A break shows up immediately as everything downstream going dark.</li>
+    <li><b>Order the PCB early</b>Two to three weeks of lead time runs in parallel with everything else here. Nothing downstream of the one-cap bench test is blocked by it.</li>
+    <li><b>Build the 14-way harness and meter it end to end</b>Fourteen crimps with a different connector on each end, against the <b>Ribbon pinout</b> table. Continuity-check all fourteen and confirm no two are shorted <i>before</i> it goes near either board — it is the one part of this build that is tedious to redo in place.</li>
+    <li><b>Populate the PCB, power it with nothing plugged in</b>Screw terminal, the 1000 µF, the net tie, then the connectors. Feed 5 V into <code>J14</code> and confirm the rail at each of the ten cap connectors with the caps still unplugged. Ten minutes here beats finding a solder bridge with ten rings attached.</li>
+    <li><b>Make the ten pigtails to one length</b>All identical, all interchangeable. Label each at the connector end with its cap, because the chain order is not the board order.</li>
+    <li><b>Add caps to the chain one at a time</b>Plug them in <code>J1</code> to <code>J10</code> order. Each addition is a new failure point, and <code>LED WALK</code> names the cap it is lighting. A break shows up immediately as everything downstream going dark.</li>
     <li><b>Meter the rail on <code>LED ALL</code></b>The only screen that reaches worst-case current. Do this before the table sees players, not after.</li>
     <li><b>Verify every switch on <code>BUTTONS</code></b>Press all twelve, the two start buttons included, and confirm each decodes as the right name. This is what catches a swapped pair in the loom.</li>
   </ol>
