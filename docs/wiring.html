@@ -500,6 +500,11 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     USB-C instead, from a pigtail carrying 5 V and ground off the bus; the board has its own CC
     pulldowns, so a dumb source is fine. Unplug that pigtail when connecting a computer. Feed
     the panel straight from the bus, not through the Portal.</p>
+    <p><b>That pigtail hangs off the star, not off a second port on the bank.</b> A bank shares
+    one power budget across its ports, so a second cord buys no headroom — and it leaves the
+    Portal's ground meeting the controller's only inside the bank, which drags the return path
+    of the <code>Serial1</code> display link outside the star. One supply, one star, four
+    loads.</p>
   </div>
 
   <p>Adafruit publishes no continuous current rating for the HUSB238 breakout — only that the
@@ -660,7 +665,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         <rect class="blk-a" x="320" y="308" width="250" height="92" rx="3"/>
         <text class="t" x="340" y="336">Matrix Portal S3</text>
         <text class="ts" x="340" y="354">+ 32×32 LED panel</text>
-        <text class="ts twarn" x="340" y="370">powered from the bank&#8217;s USB-A port</text>
+        <text class="ts twarn" x="340" y="370">USB-C pigtail in, NOT its terminals</text>
 
         <path class="wg thin" d="M596,132 V174" marker-end="url(#lb)"/>
         <path class="wg thin" d="M570,110 H596 V132" />
@@ -3553,6 +3558,25 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <p>Nothing on this board gets warm. If anything does, stop.</p>
 
+  <div class="rule-box">
+    <h3>On the bench, a USB-A power pigtail is enough — and only on the bench</h3>
+    <p>Before the HUSB238 and the star exist, the easiest 5 V for this stage is a <b>moulded
+    USB-A male pigtail with 20 AWG tinned leads</b> — the sort sold for LED strip — straight
+    into J14. Draw here is C1's leakage, so cable quality is irrelevant and every reading will
+    be honest.</p>
+    <p>It cannot stay for the build. A sacrificed charge cable is usually <b>28 AWG</b>: at
+    0.2128 Ω/m, 300 mm of it drops <b>231 mV</b> round trip at the 1.81 A of
+    <code>LED ALL</code>, and a metre drops <b>770 mV</b>. Copper-clad aluminium adds half again,
+    unmarked. The Type-A contacts themselves are rated only about 1.5 A. And nothing on a USB-A
+    port negotiates — the D+/D− signature is a <em>port</em> advertising to a <em>device</em>,
+    so a dumb load simply gets whatever that port's limiter allows.</p>
+    <p>If you do cut a cable up: keep it under 250 mm, confirm polarity with a meter on a live
+    charger rather than trusting the colours, cut D+/D− back and heatshrink each stub
+    separately, and <b>do not use the braid as ground</b> — it is a drain wire bonded to the
+    shell at one end. <b>Do not tin the ends</b> either; solder creeps under screw pressure and
+    the joint loosens over months. Bare twisted stranded, or a crimped ferrule.</p>
+  </div>
+
   <h3 class="sub-h">A one-button test rig</h3>
   <p>The controller board can drive a single finished cap before the button board exists. The
   ribbon carries signals only, so power for the ring comes straight off the HUSB238 alongside the
@@ -3742,7 +3766,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>JST-XH header, 2-pin</td><td class="m">2</td><td class="m">B2B-XH-A</td><td>As above.</td></tr>
       <tr><td>JST-XH crimp contact</td><td class="m">100</td><td class="m">SXH-001T-P0.6<br>DK 455-1135TR-ND</td><td>78 needed — 60 for the cap pigtails, 4 for the start buttons, 14 for the PCB end of the board-to-board harness. Rated <b>22–28 AWG</b>, which this build uses both ends of: the 22&nbsp;AWG switch pair sits at its ceiling and the 28&nbsp;AWG ring conductors at its floor. Both are in spec, but they are <b>different nests on the crimper</b> — see the warning in <b>Cap pigtails</b>. 26&nbsp;AWG is the comfortable middle if you would rather not work at either edge. Arrives on a carrier strip; snip one off per crimp.</td></tr>
       <tr><td>Lever nuts</td><td class="m">6–8</td><td class="m">WAGO 221-415</td><td>The star point and the 5 V/GND bus taps. Easier than a barrier strip and reusable.</td></tr>
-      <tr><td>USB-C pigtail, 5 V + GND</td><td class="m">1</td><td class="m">—</td><td>Powers the Matrix Portal through its USB-C port, since its screw terminals are outputs.</td></tr>
+      <tr><td>USB-C pigtail, 5 V + GND</td><td class="m">1</td><td class="m">—</td><td>Powers the Matrix Portal through its USB-C port, since its screw terminals are outputs. Off the star, not off a second port on the bank.</td></tr>
+      <tr><td>USB-A pigtail, 20 AWG leads <span class="chip">bench only</span></td><td class="m">1</td><td class="m">—</td><td>Feeds J14 for the <b>PCB stages</b>, before the star exists. Buy one moulded rather than cutting up a charge cable — see the rule box in <b>PCB Stage 2</b>. Not part of the finished table.</td></tr>
       <tr><td>USB-C to USB-C cable</td><td class="m">1</td><td class="m">—</td><td>An A-to-C cable has no CC lines and cannot carry a PD contract at all.</td></tr>
       <tr><td>18 AWG stranded, red + black</td><td class="m">10 ft ea</td><td class="m">—</td><td>The 5 V/GND bus and the panel feed.</td></tr>
       <tr><td>22 AWG stranded, white + green</td><td class="m">30 ft ea</td><td class="m">—</td><td>The switch pair in all twelve harnesses — pins 5 and 6 of a cap, both pins of a start button. White is <code>SW</code>, green is <code>SW GND</code>, everywhere.</td></tr>
