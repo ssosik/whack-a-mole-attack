@@ -3349,9 +3349,11 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 <section>
   <div class="sechead"><h2>Bring-up</h2><span class="n">test before you trust</span></div>
 
-  <p>Every test below is done with <b>nothing in the sockets</b> — no Teensy, no 74AHCT125.
-  Installed parts add their own paths (the Teensy's protection diodes especially) and turn a
-  clear reading into a confusing one. Put them in last.</p>
+  <p>Stages 1 to 4 are the <b>controller board</b>, and every test in them is done with
+  <b>nothing in the sockets</b> — no Teensy, no 74AHCT125. Installed parts add their own paths
+  (the Teensy's protection diodes especially) and turn a clear reading into a confusing one. Put
+  them in last. The two <b>PCB stages</b> after them cover the button board, which has no
+  sockets and nothing hidden.</p>
 
   <h3 class="sub-h">Ribbon pinout</h3>
   <p>Header position 1 is row 21 on the controller stripboard, and position 1 at
@@ -3461,6 +3463,95 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <p>Power off. Check the socket's pin-1 end matches the chip's notch. Insert the 125 and the
   Teensy, re-check row 1 to row 2 is still open, then power up. Steady draw should be around
   100 mA — the Teensy alone. A jump means a part is in backwards.</p>
+
+  <h3 class="sub-h">PCB Stage 1 — populated, nothing plugged in</h3>
+
+  <p>The whole board is fourteen connectors and three components, so every net is reachable with
+  two probes and none of it is hidden under a chip. Do this before a single pigtail goes on:
+  a fault found now costs a reflow, and the same fault found with ten caps attached costs an
+  afternoon.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">×</th><th class="m">Probe A</th><th class="m">Probe B</th><th class="m">Expect</th><th>Catches</th></tr></thead>
+    <tbody>
+      <tr><td class="m">1</td><td class="m">J14 <code>+5V</code></td><td class="m">J14 <code>GND</code></td><td class="m"><b>OPEN</b></td><td>A short across the rail. <b>Read the note below first</b> — C1 will beep briefly as it charges, and that is not a fault.</td></tr>
+      <tr><td class="m">10</td><td class="m">J14 <code>+5V</code></td><td class="m">each cap pin <b>1</b></td><td class="m">continuity</td><td>A cold joint on a +5 V pad. That cap's ring stays dark and nothing downstream is affected, so it looks like a dead ring.</td></tr>
+      <tr><td class="m">10</td><td class="m">J14 <code>GND</code></td><td class="m">each cap pin <b>3</b></td><td class="m">continuity</td><td>A cold joint on an LED-ground pad — same symptom, opposite pad.</td></tr>
+      <tr><td class="m">1</td><td class="m">any cap pin <b>3</b></td><td class="m">same cap pin <b>6</b></td><td class="m">continuity</td><td><b>This one is supposed to beep.</b> It is NT1 bridging the two grounds at the single star point. An OPEN here means the net tie did not get soldered.</td></tr>
+      <tr><td class="m">13</td><td class="m">each J13 pos</td><td class="m">the pos next to it</td><td class="m"><b>OPEN</b></td><td>A solder bridge on the 14-pin connector. At 2.5 mm pitch this is the highest-risk joint on the board, and a bridge here ties two switch lines together — two buttons that always read as pressed at once.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="rule-box">
+    <h3>+5 V to GND is not a continuity test — it is a capacitor test</h3>
+    <p>C1 is <b>1000 µF</b>, and a continuity tester pushes DC. Into an empty capacitor that
+    looks like a dead short for a moment, so the beeper sounds and then stops as the cap fills.
+    <b>A brief beep that goes quiet is correct.</b> A beep that stays on is a short.</p>
+    <p>Use the <b>resistance range instead of the beeper</b> and the ambiguity disappears: the
+    reading climbs from near zero and keeps going, settling anywhere from hundreds of kΩ to
+    open. Stuck at a few ohms is the fault. <b>Short C1's pads with a screwdriver before each
+    retest</b> — a charged cap gives a confusing second reading, and swapping the probes just
+    charges it the other way.</p>
+  </div>
+
+  <h4 style="font-family:var(--display);font-weight:600;font-size:17px;margin:26px 0 10px">Switch lines — each to its own ribbon position, and to no other</h4>
+
+  <p>Twelve checks, and then the one that matters: with the probe still on a J13 position,
+  sweep the other probe across the <i>neighbouring</i> cap connectors' pin 5. Every one must be
+  open. This is what catches a swapped pair, which otherwise shows up as two buttons scoring
+  each other's hits.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Probe A</th><th class="m">Probe B</th><th>Is</th></tr></thead>
+    <tbody>
+      <tr><td class="m">J1.5</td><td class="m">J13 pos 1</td><td>P1 BLUE</td></tr>
+      <tr><td class="m">J2.5</td><td class="m">J13 pos 3</td><td>P1 RED</td></tr>
+      <tr><td class="m">J3.5</td><td class="m">J13 pos 4</td><td>P1 WHITE</td></tr>
+      <tr><td class="m">J4.5</td><td class="m">J13 pos 6</td><td>P1 GREEN</td></tr>
+      <tr><td class="m">J5.5</td><td class="m">J13 pos 7</td><td>P1 YELLOW</td></tr>
+      <tr><td class="m">J6.5</td><td class="m">J13 pos 9</td><td>P2 BLUE</td></tr>
+      <tr><td class="m">J7.5</td><td class="m">J13 pos 10</td><td>P2 RED</td></tr>
+      <tr><td class="m">J8.5</td><td class="m">J13 pos 11</td><td>P2 WHITE</td></tr>
+      <tr><td class="m">J9.5</td><td class="m">J13 pos 12</td><td>P2 GREEN</td></tr>
+      <tr><td class="m">J10.5</td><td class="m">J13 pos 13</td><td>P2 YELLOW</td></tr>
+      <tr><td class="m">J11.1</td><td class="m">J13 pos 8</td><td>P1 START <span class="n">(start, 2-pin)</span></td></tr>
+      <tr><td class="m">J12.1</td><td class="m">J13 pos 14</td><td>P2 START <span class="n">(start, 2-pin)</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h4 style="font-family:var(--display);font-weight:600;font-size:17px;margin:26px 0 10px">Pixel chain — ten hops, in chain order</h4>
+
+  <p>The chain order is not the board order, so follow the table rather than the layout.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th class="m">Probe A</th><th class="m">Probe B</th><th>Is</th></tr></thead>
+    <tbody>
+      <tr><td class="m">J13.5</td><td class="m">J1.2</td><td>Pixel data in, off the ribbon</td></tr>
+      <tr><td class="m">J1.4</td><td class="m">J2.2</td><td>P1 BLUE out, P1 RED in</td></tr>
+      <tr><td class="m">J2.4</td><td class="m">J3.2</td><td>P1 RED out, P1 WHITE in</td></tr>
+      <tr><td class="m">J3.4</td><td class="m">J4.2</td><td>P1 WHITE out, P1 GREEN in</td></tr>
+      <tr><td class="m">J4.4</td><td class="m">J5.2</td><td>P1 GREEN out, P1 YELLOW in</td></tr>
+      <tr><td class="m">J5.4</td><td class="m">J6.2</td><td>P1 YELLOW out, P2 BLUE in</td></tr>
+      <tr><td class="m">J6.4</td><td class="m">J7.2</td><td>P2 BLUE out, P2 RED in</td></tr>
+      <tr><td class="m">J7.4</td><td class="m">J8.2</td><td>P2 RED out, P2 WHITE in</td></tr>
+      <tr><td class="m">J8.4</td><td class="m">J9.2</td><td>P2 WHITE out, P2 GREEN in</td></tr>
+      <tr><td class="m">J9.4</td><td class="m">J10.2</td><td>P2 GREEN out, P2 YELLOW in</td></tr>
+      <tr><td class="m">J10.4</td><td class="m"><b>nothing</b></td><td><b>Must read OPEN to every other pad</b> — deliberate end of the chain</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-h">PCB Stage 2 — 5 V in, still nothing plugged in</h3>
+
+  <p>Feed the screw terminal from the star and leave every connector empty. <b>Steady draw
+  should be essentially zero</b> — C1's leakage, microamps. Anything measurable means a short
+  the continuity checks missed, so pull power rather than looking for it live.</p>
+
+  <p>Then meter <b>5 V between pin 1 and pin 3 at all ten cap connectors</b>. All ten within a
+  few millivolts of each other and of the terminal; the board is a plane and a 1.0 mm track, so
+  there is nothing here to cause a drop. One connector reading low is a partial joint that
+  passed continuity because a meter's test current is a thousandth of what a ring draws.</p>
+
+  <p>Nothing on this board gets warm. If anything does, stop.</p>
 
   <h3 class="sub-h">A one-button test rig</h3>
   <p>The controller board can drive a single finished cap before the button board exists. The
