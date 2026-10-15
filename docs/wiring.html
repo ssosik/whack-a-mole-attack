@@ -354,6 +354,43 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     into the housing, while it can still be cut off and redone.</p>
   </div>
 
+  <h3 class="sub-h">Where the series resistors go</h3>
+
+  <p>A WS2812 chain wants a series resistor of a few hundred ohms at each data input. There are
+  ten hops in this chain and <b>only the first one passes through the controller board</b>, which
+  decides where the resistors can physically live.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Hop</th><th>Driven by</th><th>Resistor sits</th></tr></thead>
+    <tbody>
+      <tr><td>Into cap 1</td><td>74AHCT125 <code>1Y</code> on the controller board</td><td><b>On the stripboard</b> — Jumper 4, between <code>1Y</code> and ribbon position 5. Already in the cut-and-jumper tables.</td></tr>
+      <tr><td>Into caps 2–10</td><td>the last WS2812 <i>inside the previous cap</i></td><td><b>At the receiving ring's <code>DI</code> pad</b>, inside that cap. Nine of them.</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><b>Nine of these cannot go on the controller board, and it is not a matter of taste.</b> The
+  data for hops 2–10 leaves one cap's ring <code>DO</code>, crosses the PCB on
+  <code>DATA_J1_J2</code> and its siblings, and enters the next cap's <code>DI</code>. The
+  controller board is not in that path at any point, so a resistor there has no electrical
+  relationship to the signal. <b>Cap 1 gets none of its own</b> — it already sits behind the
+  stripboard's resistor, and two in series would put 660&nbsp;Ω on that line, past the useful
+  range.</p>
+
+  <p>Fit them as part of the ring wiring: one leg into the <code>DI</code> pad, the yellow
+  28&nbsp;AWG onto the other leg, heatshrink over the body. That adds no joints — the wire was
+  going onto that pad regardless, the resistor just lands in the middle of it. Keep the leg
+  lengths short and let the bore plug support the body.</p>
+
+  <div class="rule-box">
+    <h3>These nine are insurance, not a requirement</h3>
+    <p> A pixel chain is not a passive bus —
+    every WS2812 re-clocks and re-drives the signal, so the metre-long hops this star topology
+    creates are driven by an active repeater at each end and will usually work bare. The reason
+    to fit them during assembly is that retrofitting one means opening a cap. If you would rather
+    not, build the chain, run <code>LED WALK</code>, and add a resistor only to a cap that
+    sparkles or shows the wrong colour.</p>
+  </div>
+
   <h3 class="sub-h">Length</h3>
 
   <p>One measurement decides the wire order, and it is the only number here that depends on your
@@ -3593,7 +3630,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>USB-C PD sink</td><td class="m">1</td><td class="m">Adafruit&nbsp;5807</td><td>HUSB238, configured for <b>5 V</b> and <b>3 A</b> by solder jumper — not I2C, which cannot be set before the Teensy has power. The current jumper ships at 1 A; leave it there and the source may cut power when the table draws 2.5 A.</td></tr>
       <tr><td>Level shifter, 74<b>AHCT</b>125</td><td class="m">2</td><td class="m">TI SN74AHCT125N<br>DK 296-4655-5-ND</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. 14-DIP, through-hole. See the note below.</td></tr>
       <tr><td>14-pin DIP socket</td><td class="m">2</td><td class="m">—</td><td>On hand-soldered stripboard, turns a desoldering job into a pull.</td></tr>
-      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td><b>One per cap, in series at that cap's <code>DIN</code>, at the cap end of the pigtail.</b> The central-PCB star puts about a metre of wire between consecutive pixels — out to the board and back again — and metre-long unterminated hops are where WS2812 chains pick up reflections and show sparkle or wrong-coloured pixels. Ten resistors, not one.</td></tr>
+      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td><b>One on the controller board, nine inside caps 2–10.</b> The first is Jumper&nbsp;4 on the stripboard, in series between the shifter's <code>1Y</code> and ribbon position 5 — that one covers the hop into cap&nbsp;1, which therefore needs none of its own. The other nine go at the receiving ring's <code>DI</code> pad, because hops 2–10 never touch the controller board. See <b>Where the series resistors go</b>.</td></tr>
       <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
       <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
