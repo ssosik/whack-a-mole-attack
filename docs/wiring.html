@@ -3433,7 +3433,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <div class="tw"><table>
     <thead><tr><th class="m">Probe A</th><th class="m">Probe B</th><th class="m">Expect</th><th>Catches</th></tr></thead>
     <tbody>
-      <tr><td class="m">row 1</td><td class="m">row 2</td><td class="m"><b>OPEN</b></td><td><b>Do this one first.</b> A rail-to-rail short puts the supply across a dead short at power-up.</td></tr>
+      <tr><td class="m">row 1</td><td class="m">row 2</td><td class="m"><b>chirp,<br>then open</b></td><td><b>Do this one first.</b> A rail-to-rail short puts the supply across a dead short at power-up. But both caps are already soldered across these rails by this stage, so this is <b>not</b> a plain open — a <em>held</em> tone is the fault, a click is not. See the rule box below.</td></tr>
+      <tr><td class="m">row 11, c&nbsp;≥&nbsp;17</td><td class="m">row 12, c&nbsp;≥&nbsp;17</td><td class="m"><b>chirp,<br>then open</b></td><td>Where the incoming feed actually lands. Jumpers 1 and 2 make this the <em>same net</em> as rows 1 and 2, so a bridge here reads identically — and these two are adjacent strips as well. Rework on the power wires lands here, not on the rails.</td></tr>
       <tr><td class="m">row N</td><td class="m">row N+1</td><td class="m"><b>OPEN</b></td><td>Solder bridges. Walk the dense areas: the DIP, the header, both Teensy pin columns.</td></tr>
       <tr><td class="m">r21,23,24,26–34 c3</td><td class="m">same row, c11</td><td class="m">SHORT</td><td>The twelve switch strips. These should already be continuous — no jumper involved.</td></tr>
       <tr><td class="m">r11 c18</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 1.</td></tr>
@@ -3448,6 +3449,32 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">r9c7 · r10c10 · r7c10</td><td class="m">everything</td><td class="m"><b>OPEN</b></td><td>The three unused outputs. If any reads to a rail, jumper 8 or 9 caught the wrong column.</td></tr>
     </tbody>
   </table></div>
+
+  <div class="rule-box">
+    <h3>Rows 1 and 2 cannot read open — the capacitors are across them</h3>
+    <p>The <b>100 µF</b> and the <b>0.1 µF</b> both sit directly between the two rails, and a
+    continuity tester pushes DC into them. An empty capacitor is a short until it charges. With
+    a typical meter — roughly 1 mA of test current and a beep threshold of a few tens of ohms —
+    100 µF leaves that window in about <b>5 ms</b>. So the honest expectation is a <b>click or a
+    chirp</b>: not silence, and not a held tone. The button board's 1000 µF takes ten times as
+    long, around 50 ms, which is why the chirp is easier to hear over there.</p>
+    <p><b>Use the resistance range instead of the beeper</b> and the ambiguity disappears. Short
+    the 100 µF's legs with a screwdriver to discharge it first, then probe. The reading should
+    climb from near zero and keep climbing, settling high. A reading that <b>parks at a stable
+    value and stays</b> is the fault, and the value says which kind: <b>under 1 Ω</b> is copper
+    to copper, <b>a few to tens of ohms</b> is a short or a reversed electrolytic, and a stable
+    <b>kΩ</b> is a path through a chip left in its socket.</p>
+    <p>If it holds, look in this order. The <b>gap between rows 1 and 2</b>, which are adjacent
+    strips about 0.5 mm apart — walk the full length. Then <b>rows 11 and 12 at column 17 and
+    right</b>, also adjacent, where the 22 AWG feed lands and where any rework on the power
+    wires has been: a single escaped strand of stranded wire reaching the next strip is the
+    commonest cause of this exact symptom. Then the <b>100 µF's polarity</b> — striped lead to
+    row 2. Then pull both chips: the Teensy's <code>VIN</code> is on row 11, which jumper 1 ties
+    to row 1, so its regulator and bulk caps are on your rails too.</p>
+    <p>The definitive test is to <b>lift one leg of the 100 µF</b>. With that leg up and both
+    sockets empty, rows 1 and 2 must read genuinely open. If they still do not, it is copper,
+    and copper is findable.</p>
+  </div>
 
   <h3 class="sub-h">Stage 3 — power, still no chips</h3>
   <ul class="plain">
@@ -3466,7 +3493,9 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <h3 class="sub-h">Stage 4 — chips in</h3>
   <p>Power off. Check the socket's pin-1 end matches the chip's notch. Insert the 125 and the
-  Teensy, re-check row 1 to row 2 is still open, then power up. Steady draw should be around
+  Teensy, re-check row 1 to row 2 the same way as in Stage 2 — chirp then climbing, never a
+  held tone, and now with the Teensy's own bulk capacitance added to the chirp — then power
+  up. Steady draw should be around
   100 mA — the Teensy alone. A jump means a part is in backwards.</p>
 
   <h3 class="sub-h">PCB Stage 1 — populated, nothing plugged in</h3>
