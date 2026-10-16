@@ -44,7 +44,8 @@ display/               CircuitPython for the Matrix Portal S3
 hardware/              3D printed bushings
 ```
 
-Copy the contents of `display/` onto the CIRCUITPY drive.
+Copying `display/` onto the CIRCUITPY drive is most of it, but not all of it —
+see [Flashing the Matrix Portal](#flashing-the-matrix-portal).
 
 # Code
 
@@ -92,6 +93,67 @@ make matrix    # compile all four input/lamp combinations
 make upload    # compile and flash a connected Teensy
 make lint      # clang-format check + ruff
 ```
+
+# Flashing the Matrix Portal
+
+The Portal runs CircuitPython, so this is three separate things: the interpreter,
+one library, and the files in `display/`.
+
+**Unplug the 5 V pigtail from the Portal's USB-C before connecting a computer.**
+That port is both its power inlet and its data port, and its screw terminals are fed
+from the same node. Adafruit warns that two sources on it at once can damage the board.
+
+## 1. CircuitPython
+
+Double-tap **RESET**; a bootloader drive appears. Drag the UF2 for this board onto it
+from [circuitpython.org](https://circuitpython.org/board/adafruit_matrixportal_s3/).
+It reboots as `CIRCUITPY`.
+
+`code.py` uses `display.root_group` and `OnDiskBitmap(filename)`, so it needs
+**CircuitPython 9 or later**; 10.x is what it is developed against. Nothing in it
+needs porting for 10.
+
+## 2. The one library
+
+`code.py` imports `adafruit_display_text`, which is neither built in nor in this repo.
+Everything else it imports — `board`, `busio`, `displayio`, `framebufferio`,
+`rgbmatrix`, `terminalio`, `storage`, `digitalio` — is already in the UF2.
+
+```sh
+pip install circup
+circup install adafruit_display_text
+```
+
+`circup` matches the bundle to the installed CircuitPython. By hand works too: copy
+`adafruit_display_text/` out of the bundle for your major version into `CIRCUITPY/lib/`.
+A bundle from the wrong major version fails at import with *incompatible .mpy file*.
+
+## 3. The files
+
+All three go in the **root** of `CIRCUITPY`; the bitmap is opened by a relative path.
+
+```sh
+cp display/code.py display/boot.py display/running-monty-mole.bmp /Volumes/CIRCUITPY/
+```
+
+Copy `boot.py` last. On the next reset it calls `storage.remount("/", readonly=False)`,
+which hands writes to the program and makes the drive **read-only to your computer**.
+That is the point — it is what lets `highscore.txt` persist — but it does mean you
+cannot drag files any more.
+
+**To edit the drive again, hold the UP button while powering on.** If you are already
+locked out, Ctrl-C into the REPL and run `import storage; storage.remount("/", readonly=True)`.
+
+## Checking it
+
+On reset, before any serial traffic, `code.py` scrolls **"Whack A Mole Attack"**
+vertically in two columns — green for P1, pink for P2. That proves CircuitPython, the
+library, the HUB75 wiring and the panel, with the Teensy not involved.
+
+The handshake is Teensy-driven: it sends `#CONREADY` and waits in `DisplayReadyWait`,
+and the Portal answers `#DSPREADY`. A panel that scrolls while the Teensy never advances
+is a serial-link fault — check the TX/RX crossover first. Once they are talking, the
+debug `DISPLAY` screen sends every protocol message in turn.
 
 # Debug mode
 
