@@ -110,7 +110,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <figure>
     <div class="scroll">
-      <svg viewBox="0 0 900 470" role="img" aria-label="Power flows from a USB power bank through a 5 volt PD trigger straight onto a shared 5 volt and ground bus, with no converter in between, which taps down to each lit cap separately, while the pixel data line daisy-chains from the Teensy through a level shifter and series resistor into each ring in turn. All twelve switches, including the two unlit start buttons, return on their own GPIO.">
+      <svg viewBox="0 0 900 470" role="img" aria-label="Power flows from a USB power bank through a 5 volt PD trigger straight onto a shared 5 volt and ground bus, with no converter in between, which taps down to each lit cap separately, while the pixel data line daisy-chains from the Teensy through a level shifter into each ring in turn, with a series resistor at every ring's data input inside the cap. All twelve switches, including the two unlit start buttons, return on their own GPIO.">
         <defs>
           <marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--data)"/></marker>
           <marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--sw)"/></marker>
@@ -152,10 +152,8 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
         <path class="wd thin" d="M116,288 H140" marker-end="url(#ad)"/>
         <text class="ts td" x="128" y="279" text-anchor="middle">pin 8</text>
 
-        <rect class="blk" x="246" y="280" width="34" height="17" rx="2"/>
-        <text class="ts" x="263" y="293" text-anchor="middle">330Ω</text>
-        <path class="wd thin" d="M234,288 H246"/>
-        <path class="wd thin" d="M280,288 H296" marker-end="url(#ad)"/>
+        <path class="wd thin" d="M234,288 H296" marker-end="url(#ad)"/>
+        <text class="ts td" x="150" y="356">330 Ω at every ring&#8217;s DI</text>
 
         <!-- buttons -->
         <g>
@@ -223,7 +221,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <div class="legend">
     <span><i style="border-color:var(--v5)"></i>18 AWG bus, 22 AWG drops</span>
-    <span><i style="border-color:var(--data)"></i>26 AWG point to point</span>
+    <span><i style="border-color:var(--data)"></i>28 AWG point to point</span>
     <span><i style="border-color:var(--sw)"></i>22 AWG returns</span>
   </div>
 </section>
@@ -356,25 +354,23 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
   <h3 class="sub-h">Where the series resistors go</h3>
 
-  <p>A WS2812 chain wants a series resistor of a few hundred ohms at each data input. There are
-  ten hops in this chain and <b>only the first one passes through the controller board</b>, which
-  decides where the resistors can physically live.</p>
+  <p>A WS2812 chain wants a series resistor of a few hundred ohms at each data input.
+  <b>All ten live inside the caps</b>, at the receiving ring's <code>DI</code> pad — one per cap,
+  no exceptions. Nothing on the controller board sits in the pixel path but wire.</p>
 
-  <div class="tw"><table>
-    <thead><tr><th>Hop</th><th>Driven by</th><th>Resistor sits</th></tr></thead>
-    <tbody>
-      <tr><td>Into cap 1</td><td>74AHCT125 <code>1Y</code> on the controller board</td><td><b>On the stripboard</b> — Jumper 4, between <code>1Y</code> and ribbon position 5. Already in the cut-and-jumper tables.</td></tr>
-      <tr><td>Into caps 2–10</td><td>the last WS2812 <i>inside the previous cap</i></td><td><b>At the receiving ring's <code>DI</code> pad</b>, inside that cap. Nine of them.</td></tr>
-    </tbody>
-  </table></div>
+  <p>Nine of them could never have gone anywhere else. The data for hops 2–10 leaves one cap's
+  ring <code>DO</code>, crosses the PCB on <code>DATA_J1_J2</code> and its siblings, and enters
+  the next cap's <code>DI</code> — the controller board is not in that path at any point, so a
+  resistor there would have no electrical relationship to the signal.</p>
 
-  <p><b>Nine of these cannot go on the controller board, and it is not a matter of taste.</b> The
-  data for hops 2–10 leaves one cap's ring <code>DO</code>, crosses the PCB on
-  <code>DATA_J1_J2</code> and its siblings, and enters the next cap's <code>DI</code>. The
-  controller board is not in that path at any point, so a resistor there has no electrical
-  relationship to the signal. <b>Cap 1 gets none of its own</b> — it already sits behind the
-  stripboard's resistor, and two in series would put 660&nbsp;Ω on that line, past the useful
-  range.</p>
+  <p><b>The tenth is a choice.</b> The hop into cap 1 is the only one that passes through the
+  controller board, so its resistor could sit on the stripboard instead, in series between the
+  shifter's <code>1Y</code> and ribbon position 5 — and did, in an earlier revision of this
+  document. Moving it into the cap makes <b>all ten caps electrically identical</b>, so any
+  finished cap plugs into any of the ten connectors. A spare is a spare, and there is no
+  "cap 1 is the special one" exception to remember at two in the morning. It also matches
+  Adafruit's own instruction to put the resistor "at the end of the wire closest to the
+  NeoPixel(s), not the microcontroller".</p>
 
   <p>Fit them as part of the ring wiring: one leg into the <code>DI</code> pad, the yellow
   28&nbsp;AWG onto the other leg, heatshrink over the body. That adds no joints — the wire was
@@ -382,13 +378,12 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   lengths short and let the bore plug support the body.</p>
 
   <div class="rule-box">
-    <h3>These nine are insurance, not a requirement</h3>
-    <p> A pixel chain is not a passive bus —
-    every WS2812 re-clocks and re-drives the signal, so the metre-long hops this star topology
-    creates are driven by an active repeater at each end and will usually work bare. The reason
-    to fit them during assembly is that retrofitting one means opening a cap. If you would rather
-    not, build the chain, run <code>LED WALK</code>, and add a resistor only to a cap that
-    sparkles or shows the wrong colour.</p>
+    <h3>These are insurance, not a requirement</h3>
+    <p>A pixel chain is not a passive bus — every WS2812 re-clocks and re-drives the signal, so
+    the metre-long hops this star topology creates are driven by an active repeater at each end
+    and will usually work bare. The reason to fit them during assembly is that retrofitting one
+    means opening a cap. If you would rather not, build the chain, run <code>LED WALK</code>, and
+    add a resistor only to a cap that sparkles or shows the wrong colour.</p>
   </div>
 
   <h3 class="sub-h">Length</h3>
@@ -659,7 +654,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
 
         <rect class="blk-a" x="320" y="174" width="250" height="92" rx="3"/>
         <text class="t" x="340" y="202">Controller board</text>
-        <text class="ts" x="340" y="220">Teensy 4.1 · 74AHCT125 · 330 Ω</text>
+        <text class="ts" x="340" y="220">Teensy 4.1 · 74AHCT125</text>
         <text class="ts" x="340" y="236">100 µF · 0.1 µF</text>
 
         <rect class="blk-a" x="320" y="308" width="250" height="92" rx="3"/>
@@ -1919,7 +1914,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">23</td><td class="m">11</td><td>P1 RED</td></tr>
       <tr><td class="m">24</td><td class="m">12</td><td>P1 WHITE</td></tr>
       <tr><td class="m">22</td><td class="m">—</td><td>Ribbon GND</td><td>Cut from Teensy; jumper to the GND rail</td></tr>
-      <tr><td class="m">25</td><td class="m">—</td><td>Ribbon pixel in</td><td>Cut from Teensy; fed by the 330 Ω</td></tr>
+      <tr><td class="m">25</td><td class="m">—</td><td>Ribbon pixel in</td><td>Cut from Teensy; fed by Jumper 4</td></tr>
       <tr><td class="m">26–34</td><td class="m">24–32</td><td>P1 GREEN → P2 START</td><td>Strip, no jumper</td></tr>
     </tbody>
   </table></div>
@@ -1947,7 +1942,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">1</td><td class="m">row 11, right of cut</td><td class="m">row 1</td><td>Incoming 5 V up to the rail, past the Teensy&#8217;s cut.</td></tr>
       <tr><td class="m">2</td><td class="m">row 12, right of cut</td><td class="m">row 2</td><td>Incoming ground up to the rail.</td></tr>
       <tr><td class="m">3</td><td class="m">row 20 (pin 8)</td><td class="m">row 5 — <code>1A</code></td><td>Pixel data into the level shifter.</td></tr>
-      <tr><td class="m">4</td><td class="m">row 6 — <code>1Y</code></td><td class="m">row 25, via 330 Ω</td><td>Shifter output to the ribbon&#8217;s pixel pin.</td></tr>
+      <tr><td class="m">4</td><td class="m">row 6 — <code>1Y</code></td><td class="m">row 25</td><td>Shifter output to the ribbon&#8217;s pixel pin. A plain jumper — every series resistor lives in a cap, not here.</td></tr>
       <tr><td class="m">5</td><td class="m">row 22, left of cut</td><td class="m">row 2</td><td><b>The ribbon&#8217;s ground.</b> Its strip is cut from the Teensy, so without this the switch returns float.</td></tr>
       <tr><td class="m">6</td><td class="m">row 4, col 10 — V<sub>CC</sub></td><td class="m">row 1</td><td>Level shifter supply.</td></tr>
       <tr><td class="m">7</td><td class="m">row 10, col 7 — pin 7</td><td class="m">row 2</td><td>Level shifter ground.</td></tr>
@@ -3440,7 +3435,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td class="m">r11 c18</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 1.</td></tr>
       <tr><td class="m">r12 c18</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 2.</td></tr>
       <tr><td class="m">r20 c11</td><td class="m">r5 c7</td><td class="m">SHORT</td><td>Jumper 3 — pixel data into the shifter.</td></tr>
-      <tr><td class="m">r6 c7</td><td class="m">r25 c3</td><td class="m"><b>≈ 330 Ω</b></td><td>Jumper 4. Not a short — the resistor is in it. A beep here means the resistor is bridged.</td></tr>
+      <tr><td class="m">r6 c7</td><td class="m">r25 c3</td><td class="m">SHORT</td><td>Jumper 4 — pixel data out to the ribbon. A plain jumper: every series resistor is inside a cap. Reading ≈ 330 Ω here means you built this from an older revision.</td></tr>
       <tr><td class="m">r22 c3</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 5 — the ribbon ground.</td></tr>
       <tr><td class="m">r4 c10</td><td class="m">row 1</td><td class="m">SHORT</td><td>Jumper 6 — socket V<sub>CC</sub>.</td></tr>
       <tr><td class="m">r10 c7</td><td class="m">row 2</td><td class="m">SHORT</td><td>Jumper 7 — socket ground.</td></tr>
@@ -3774,7 +3769,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
       <tr><td>USB-C PD sink</td><td class="m">1</td><td class="m">Adafruit&nbsp;5807</td><td>HUSB238, configured for <b>5 V</b> and <b>3 A</b> by solder jumper — not I2C, which cannot be set before the Teensy has power. The current jumper ships at 1 A; leave it there and the source may cut power when the table draws 2.5 A.</td></tr>
       <tr><td>Level shifter, 74<b>AHCT</b>125</td><td class="m">2</td><td class="m">TI SN74AHCT125N<br>DK 296-4655-5-ND</td><td>Teensy is 3.3 V; WS2812B wants 0.7×VDD on data. 14-DIP, through-hole. See the note below.</td></tr>
       <tr><td>14-pin DIP socket</td><td class="m">2</td><td class="m">—</td><td>On hand-soldered stripboard, turns a desoldering job into a pull.</td></tr>
-      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td><b>One on the controller board, nine inside caps 2–10.</b> The first is Jumper&nbsp;4 on the stripboard, in series between the shifter's <code>1Y</code> and ribbon position 5 — that one covers the hop into cap&nbsp;1, which therefore needs none of its own. The other nine go at the receiving ring's <code>DI</code> pad, because hops 2–10 never touch the controller board. See <b>Where the series resistors go</b>.</td></tr>
+      <tr><td>330 Ω resistor, ¼ W</td><td class="m">10</td><td class="m">any film, 5%</td><td><b>One inside every cap</b>, at the receiving ring's <code>DI</code> pad — ten caps, ten resistors, no exceptions. That is what makes any finished cap interchangeable with any other. Adafruit specifies <b>300–500 Ω</b> and asks for it "at the end of the wire closest to the NeoPixel(s), not the microcontroller", which is where these sit. See <b>Where the series resistors go</b>.</td></tr>
       <tr><td>1000 µF electrolytic, <b>16 V</b></td><td class="m">1–2</td><td class="m">radial, low-ESR</td><td>Across 5 V and ground at the star point. 16 V, not 6.3 V — convention is roughly twice the rail, so a transient has somewhere to go.</td></tr>
       <tr><td>100 µF electrolytic, 16 V</td><td class="m">3</td><td class="m">radial</td><td>Local bulk at the Teensy and the Matrix Portal.</td></tr>
       <tr><td>0.1 µF ceramic, 50 V</td><td class="m">10</td><td class="m">—</td><td>One across pins 14 and 7 of the level shifter, as close to the chip as it will sit.</td></tr>
@@ -3856,7 +3851,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
     <tbody>
       <tr><td class="m">1</td><td class="m">1OE</td><td class="m">r4 c7</td><td><b>GND</b></td><td>Active-low; grounding it enables the one gate in use.</td></tr>
       <tr><td class="m">2</td><td class="m">1A</td><td class="m">r5 c7</td><td>Teensy pin <b>8</b> (r20)</td><td>3.3 V pixel data in.</td></tr>
-      <tr><td class="m">3</td><td class="m">1Y</td><td class="m">r6 c7</td><td>330 Ω → ribbon r25</td><td>5 V pixel data out, on to the button board.</td></tr>
+      <tr><td class="m">3</td><td class="m">1Y</td><td class="m">r6 c7</td><td>Jumper 4 → ribbon r25</td><td>5 V pixel data out, on to the button board.</td></tr>
       <tr><td class="m">4</td><td class="m">2OE</td><td class="m">r7 c7</td><td><b>V<sub>CC</sub></b></td><td rowspan="2">Gate 2 unused: output disabled, input held.</td></tr>
       <tr><td class="m">5</td><td class="m">2A</td><td class="m">r8 c7</td><td>GND</td></tr>
       <tr><td class="m">6</td><td class="m">2Y</td><td class="m">r9 c7</td><td>—</td><td>Genuinely open. That is what tri-state disabled means.</td></tr>
@@ -3892,7 +3887,7 @@ h3.sub-h{margin-top:26px;margin-bottom:10px}
   <ol class="steps">
     <li><b>Do the two board modifications first</b>Cut the Teensy's VUSB/VIN pads and confirm with a meter. Make the Matrix Portal's USB-C power pigtail. Both are easier on the bench than under a table, and the Teensy cut changes how you program it.</li>
     <li><b>Wire one cap completely</b>Ring, switch, connector, all six conductors. Getting the first one right tells you the gauge and connector choices work before you repeat them nine times.</li>
-    <li><b>Run it on the bench</b>Level shifter, resistor, cap, one button. Flash the firmware with <code>WAM_LIGHTS_PIXELS 1</code> and open the debug <code>LED WALK</code> screen — one ring is enough to prove the data path.</li>
+    <li><b>Run it on the bench</b>Level shifter, one finished cap with its own resistor, one button. Flash the firmware with <code>WAM_LIGHTS_PIXELS 1</code> and open the debug <code>LED WALK</code> screen — one ring is enough to prove the data path.</li>
     <li><b>Order the PCB early</b>Two to three weeks of lead time runs in parallel with everything else here. Nothing downstream of the one-cap bench test is blocked by it.</li>
     <li><b>Build the 14-way harness and meter it end to end</b>Fourteen crimps with a different connector on each end, against the <b>Ribbon pinout</b> table. Continuity-check all fourteen and confirm no two are shorted <i>before</i> it goes near either board — it is the one part of this build that is tedious to redo in place.</li>
     <li><b>Populate the PCB, power it with nothing plugged in</b>Screw terminal, the 1000 µF, the net tie, then the connectors. Feed 5 V into <code>J14</code> and confirm the rail at each of the ten cap connectors with the caps still unplugged. Ten minutes here beats finding a solder bridge with ten rings attached.</li>
